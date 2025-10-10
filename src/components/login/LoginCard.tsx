@@ -1,6 +1,17 @@
+'use client'
+
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 export function LoginCard() {
+	const router = useRouter()
+	const handleLogin = () => {
+		// TODO: 카카오 로그인 연동
+		// window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/oauth2/authorization/kakao`
+
+		router.push('/oauth-success')
+	}
+
 	return (
 		<div className="relative flex min-h-[calc(100vh-112px)] items-center justify-center px-4 py-10 sm:px-6">
 			{/* 배경 블러 원들 */}
@@ -57,7 +68,10 @@ export function LoginCard() {
 					</div>
 
 					{/* 카카오 로그인 버튼 (동작은 추후 연동) */}
-					<button className="mb-5 inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-2xl bg-[#F7C600] text-sm font-semibold text-black shadow-[inset_0_-3px_rgba(0,0,0,0.10)] transition active:translate-y-[1px]">
+					<button
+						onClick={handleLogin}
+						className="mb-5 inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-2xl bg-[#F7C600] text-sm font-semibold text-black shadow-[inset_0_-3px_rgba(0,0,0,0.10)] transition active:translate-y-[1px]"
+					>
 						<span className="mr-2 inline-flex h-5 w-5 items-center justify-center">
 							<Image src="/kakao.svg" alt="Kakao" width={20} height={20} />
 						</span>

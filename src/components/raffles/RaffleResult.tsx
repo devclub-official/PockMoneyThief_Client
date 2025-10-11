@@ -156,9 +156,9 @@ export function RaffleResult({
 	raffleId,
 }: RaffleResultContainerProps) {
 	const router = useRouter()
-	const intro = useFadeMount({ initialVisible: true, durationMs: 500 })
-	const overlay = useFadeMount({ initialVisible: false, durationMs: 500 })
-	const result = useFadeMount({ initialVisible: false, durationMs: 700 })
+	const intro = useFadeMount({ initialVisible: true })
+	const overlay = useFadeMount()
+	const result = useFadeMount({ durationMs: 700 })
 
 	/**
 	 * TODO: API Spec 작성된 이후 '참여자 목록, 당첨자 정보(인덱스, 이름)' 외부에서 주입하도록 수정

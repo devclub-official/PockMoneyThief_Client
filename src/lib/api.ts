@@ -15,3 +15,8 @@ export const shipmentApi = {
 	update: (id: string, payload: unknown) =>
 		api.patch(`shipments/${id}`, { json: payload }).json<unknown>(),
 }
+
+export const loginApi = {
+	// checkOnboardingStatus: () => api.get('users/onboarding-status').json<boolean>(),
+	checkOnboardingStatus: () => new Promise((resolve) => setTimeout(() => resolve(false), 2000)),
+}

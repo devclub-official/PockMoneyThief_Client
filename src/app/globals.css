@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 :root {
-	--background: #ffffff;
+	--background: #f4f7ff; /* very light navy tint */
 	--foreground: #171717;
 }
 
@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--background: #0a0a0a;
+		--background: #0b1220; /* deep navy for dark mode */
 		--foreground: #ededed;
 	}
 }

@@ -1,10 +1,9 @@
 import { api } from '@/lib/api-client'
+import type { RaffleListResponse } from '@/types'
 
-// Basic API stubs: typed wrappers around ky for future integration
+// Raffle API
 export const raffleApi = {
-	getList: () => api.get('raffles').json<unknown[]>(),
-	getById: (id: string) => api.get(`raffles/${id}`).json<unknown>(),
-	create: (payload: unknown) => api.post('raffles', { json: payload }).json<unknown>(),
+	getList: () => api.get('raffles').json<RaffleListResponse>(),
 }
 
 export const entryApi = {

@@ -1,83 +1,253 @@
-import Image from 'next/image'
+'use client'
 
-export default function Home() {
-	return (
-		<div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-sans sm:p-20">
-			<main className="row-start-2 flex flex-col items-center gap-[32px] sm:items-start">
-				<Image
-					className="dark:invert"
-					src="/next.svg"
-					alt="Next.js logo"
-					width={180}
-					height={38}
-					priority
-				/>
-				<ol className="list-inside list-decimal text-center font-mono text-sm/6 sm:text-left">
-					<li className="mb-2 tracking-[-.01em]">
-						Get started by editing{' '}
-						<code className="rounded bg-black/[.05] px-1 py-0.5 font-mono font-semibold dark:bg-white/[.06]">
-							src/app/page.tsx
-						</code>
-						.
-					</li>
-					<li className="tracking-[-.01em]">Save and see your changes instantly.</li>
-				</ol>
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ImageWithFallback } from '@/components/common/ImageWithFallback'
+import { Clock, Users, Gift, TrendingUp } from 'lucide-react'
+import { useRaffles } from '@/hooks/useRaffles'
+import { TIME_CONSTANTS } from '@/lib/constants'
+import { formatTimeLeft, formatPrice } from '@/lib/utils'
+import { useState } from 'react'
+import type { RaffleFilter } from '@/types'
 
-				<div className="flex flex-col items-center gap-4 sm:flex-row">
-					<a
-						className="bg-foreground text-background flex h-10 items-center justify-center gap-2 rounded-full border border-solid border-transparent px-4 text-sm font-medium transition-colors hover:bg-[#383838] sm:h-12 sm:w-auto sm:px-5 sm:text-base dark:hover:bg-[#ccc]"
-						href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						<Image
-							className="dark:invert"
-							src="/vercel.svg"
-							alt="Vercel logomark"
-							width={20}
-							height={20}
-						/>
-						Deploy now
-					</a>
-					<a
-						className="flex h-10 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm font-medium transition-colors hover:border-transparent hover:bg-[#f2f2f2] sm:h-12 sm:w-auto sm:px-5 sm:text-base md:w-[158px] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-						href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Read our docs
-					</a>
+export default function HomePage() {
+	const [filter, setFilter] = useState<RaffleFilter>('all')
+	const [currentTime] = useState(() => Date.now())
+
+	// API 연동: 래플 목록 조회
+	const { data: raffleData, isLoading, isError } = useRaffles()
+
+	const raffles = raffleData?.items || []
+
+	// 통계 계산 (실제 데이터 기반)
+	const stats = {
+		totalLotteries: raffles.length,
+		activeLotteries: raffles.length,
+		totalParticipants: 0, // TODO: 참여자 수 API 추가 필요
+		avgWinRate: 0, // TODO: 당첨률 API 추가 필요
+	}
+
+	// 필터링
+	const filteredRaffles = raffles.filter((raffle) => {
+		if (filter === 'active') return true // 모든 항목이 진행중으로 간주
+		if (filter === 'ending-soon') {
+			const deadlineTime = new Date(raffle.deadlineAt).getTime()
+			const timeLeft = deadlineTime - currentTime
+			return timeLeft < TIME_CONSTANTS.ENDING_SOON_THRESHOLD
+		}
+		return true
+	})
+
+	// 로딩 상태
+	if (isLoading) {
+		return (
+			<div className="flex min-h-[50vh] items-center justify-center">
+				<div className="text-center">
+					<div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+					<p className="text-muted-foreground">추첨 목록을 불러오는 중...</p>
 				</div>
-			</main>
-			<footer className="row-start-3 flex flex-wrap items-center justify-center gap-[24px]">
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
-					Learn
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image aria-hidden src="/window.svg" alt="Window icon" width={16} height={16} />
-					Examples
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image aria-hidden src="/globe.svg" alt="Globe icon" width={16} height={16} />
-					Go to nextjs.org →
-				</a>
-			</footer>
+			</div>
+		)
+	}
+
+	// 에러 상태
+	if (isError) {
+		return (
+			<div className="flex min-h-[50vh] items-center justify-center">
+				<div className="text-center">
+					<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
+						<Gift className="h-8 w-8 text-destructive" />
+					</div>
+					<h3 className="mb-2 text-lg font-semibold">오류가 발생했습니다</h3>
+					<p className="text-muted-foreground mb-4">
+						추첨 목록을 불러오는데 실패했습니다.
+					</p>
+					<Button onClick={() => window.location.reload()}>다시 시도</Button>
+				</div>
+			</div>
+		)
+	}
+
+	return (
+		<div className="space-y-6">
+			{/* Header */}
+			<div>
+				<h1 className="text-2xl font-semibold text-foreground">대시보드</h1>
+				<p className="text-muted-foreground">
+					가차 추첨 플랫폼의 현황을 한눈에 확인하세요
+				</p>
+			</div>
+
+			{/* Stats Cards */}
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+				<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6 relative overflow-hidden">
+					<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-red-500/20"></div>
+					<div className="flex items-center justify-between">
+						<div>
+							<p className="text-sm font-medium text-muted-foreground">전체 추첨</p>
+							<p className="text-2xl font-semibold text-foreground">
+								{raffles.length}
+							</p>
+							<p className="text-xs text-muted-foreground mt-1">Total lotteries</p>
+						</div>
+						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+							<Gift className="h-6 w-6 text-red-600" />
+						</div>
+					</div>
+				</div>
+
+				<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6 relative overflow-hidden">
+					<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-violet-500/20"></div>
+					<div className="flex items-center justify-between">
+						<div>
+							<p className="text-sm font-medium text-muted-foreground">진행중 추첨</p>
+							<p className="text-2xl font-semibold text-foreground">
+								{raffles.length}
+							</p>
+							<p className="text-xs text-muted-foreground mt-1">Active lotteries</p>
+						</div>
+						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100">
+							<Clock className="h-6 w-6 text-violet-600" />
+						</div>
+					</div>
+				</div>
+
+				<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6 relative overflow-hidden">
+					<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-orange-500/20"></div>
+					<div className="flex items-center justify-between">
+						<div>
+							<p className="text-sm font-medium text-muted-foreground">총 참여자</p>
+							<p className="text-2xl font-semibold text-foreground">
+								{stats.totalParticipants}
+							</p>
+							<p className="text-xs text-muted-foreground mt-1">Total participants</p>
+						</div>
+						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+							<Users className="h-6 w-6 text-orange-600" />
+						</div>
+					</div>
+				</div>
+
+				<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6 relative overflow-hidden">
+					<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-green-500/20"></div>
+					<div className="flex items-center justify-between">
+						<div>
+							<p className="text-sm font-medium text-muted-foreground">평균 당첨률</p>
+							<p className="text-2xl font-semibold text-foreground">
+								{stats.avgWinRate}%
+							</p>
+							<p className="text-xs text-muted-foreground mt-1">Average win rate</p>
+						</div>
+						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+							<TrendingUp className="h-6 w-6 text-green-600" />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* Filters */}
+			<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6">
+				<div className="flex items-center justify-between mb-4">
+					<h2 className="text-lg font-semibold text-foreground">추첨 목록</h2>
+					<Tabs
+						defaultValue="all"
+						value={filter}
+						onValueChange={(value) => setFilter(value as RaffleFilter)}
+					>
+						<TabsList className="bg-muted">
+							<TabsTrigger value="all">전체</TabsTrigger>
+							<TabsTrigger value="active">진행중</TabsTrigger>
+							<TabsTrigger value="ending-soon">마감임박</TabsTrigger>
+						</TabsList>
+					</Tabs>
+				</div>
+
+				{/* Lottery Grid */}
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{filteredRaffles.map((raffle) => {
+						const deadlineTime = new Date(raffle.deadlineAt)
+
+						return (
+							<div
+								key={raffle.id}
+								className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group overflow-hidden"
+							>
+								<div className="aspect-video relative overflow-hidden rounded-t-lg">
+									<ImageWithFallback
+										src={raffle.imageUrl}
+										alt={raffle.title}
+										className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+									/>
+									<div className="absolute top-3 left-3">
+										<Badge variant="default" className="bg-primary">
+											{raffle.status}
+										</Badge>
+									</div>
+								</div>
+
+								<div className="p-4 space-y-4">
+									<div>
+										<h3 className="font-semibold text-foreground line-clamp-1">
+											{raffle.title}
+										</h3>
+									</div>
+
+									<div className="flex items-center justify-between">
+										<div>
+											<p className="text-xs text-muted-foreground">래플 ID</p>
+											<p className="text-sm text-muted-foreground">#{raffle.id}</p>
+										</div>
+										<div className="text-right">
+											<p className="text-xs text-muted-foreground">참여비</p>
+											<p className="font-semibold text-primary">
+												₩{formatPrice(raffle.entryFee)}
+											</p>
+										</div>
+									</div>
+
+									<div className="space-y-2">
+										<div className="flex items-center justify-between text-sm">
+											<span className="text-muted-foreground">마감 시간</span>
+											<span
+												className={
+													deadlineTime.getTime() - currentTime <
+													TIME_CONSTANTS.URGENT_THRESHOLD
+														? 'text-destructive font-medium'
+														: 'text-foreground font-medium'
+												}
+											>
+												{formatTimeLeft(deadlineTime)}
+											</span>
+										</div>
+									</div>
+
+									<Button className="w-full" size="sm">
+										참여하기
+									</Button>
+								</div>
+							</div>
+						)
+					})}
+				</div>
+
+				{filteredRaffles.length === 0 && (
+					<div className="text-center py-12">
+						<div className="flex h-16 w-16 items-center justify-center mx-auto rounded-full bg-muted mb-4">
+							<Gift className="h-8 w-8 text-muted-foreground" />
+						</div>
+						<h3 className="text-lg font-semibold mb-2">추첨이 없습니다</h3>
+						<p className="text-muted-foreground mb-6">
+							{filter === 'active'
+								? '현재 진행중인 추첨이 없습니다.'
+								: filter === 'ending-soon'
+									? '마감 임박한 추첨이 없습니다.'
+									: '등록된 추첨이 없습니다.'}
+						</p>
+						<Button>첫 추첨 등록하기</Button>
+					</div>
+				)}
+			</div>
 		</div>
 	)
 }

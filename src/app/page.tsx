@@ -44,7 +44,7 @@ export default function HomePage() {
 		return (
 			<div className="flex min-h-[50vh] items-center justify-center">
 				<div className="text-center">
-					<div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+					<div className="border-primary mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-solid border-r-transparent"></div>
 					<p className="text-muted-foreground">추첨 목록을 불러오는 중...</p>
 				</div>
 			</div>
@@ -56,13 +56,11 @@ export default function HomePage() {
 		return (
 			<div className="flex min-h-[50vh] items-center justify-center">
 				<div className="text-center">
-					<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
-						<Gift className="h-8 w-8 text-destructive" />
+					<div className="bg-destructive/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+						<Gift className="text-destructive h-8 w-8" />
 					</div>
 					<h3 className="mb-2 text-lg font-semibold">오류가 발생했습니다</h3>
-					<p className="text-muted-foreground mb-4">
-						추첨 목록을 불러오는데 실패했습니다.
-					</p>
+					<p className="text-muted-foreground mb-4">추첨 목록을 불러오는데 실패했습니다.</p>
 					<Button onClick={() => window.location.reload()}>다시 시도</Button>
 				</div>
 			</div>
@@ -73,23 +71,19 @@ export default function HomePage() {
 		<div className="space-y-6">
 			{/* Header */}
 			<div>
-				<h1 className="text-2xl font-semibold text-foreground">대시보드</h1>
-				<p className="text-muted-foreground">
-					가차 추첨 플랫폼의 현황을 한눈에 확인하세요
-				</p>
+				<h1 className="text-foreground text-2xl font-semibold">대시보드</h1>
+				<p className="text-muted-foreground">가차 추첨 플랫폼의 현황을 한눈에 확인하세요</p>
 			</div>
 
 			{/* Stats Cards */}
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-				<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6 relative overflow-hidden">
-					<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-red-500/20"></div>
+			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+				<div className="bg-card border-border relative overflow-hidden rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
+					<div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-red-500 to-red-500/20"></div>
 					<div className="flex items-center justify-between">
 						<div>
-							<p className="text-sm font-medium text-muted-foreground">전체 추첨</p>
-							<p className="text-2xl font-semibold text-foreground">
-								{raffles.length}
-							</p>
-							<p className="text-xs text-muted-foreground mt-1">Total lotteries</p>
+							<p className="text-muted-foreground text-sm font-medium">전체 추첨</p>
+							<p className="text-foreground text-2xl font-semibold">{raffles.length}</p>
+							<p className="text-muted-foreground mt-1 text-xs">Total lotteries</p>
 						</div>
 						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
 							<Gift className="h-6 w-6 text-red-600" />
@@ -97,15 +91,13 @@ export default function HomePage() {
 					</div>
 				</div>
 
-				<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6 relative overflow-hidden">
-					<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 to-violet-500/20"></div>
+				<div className="bg-card border-border relative overflow-hidden rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
+					<div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-violet-500 to-violet-500/20"></div>
 					<div className="flex items-center justify-between">
 						<div>
-							<p className="text-sm font-medium text-muted-foreground">진행중 추첨</p>
-							<p className="text-2xl font-semibold text-foreground">
-								{raffles.length}
-							</p>
-							<p className="text-xs text-muted-foreground mt-1">Active lotteries</p>
+							<p className="text-muted-foreground text-sm font-medium">진행중 추첨</p>
+							<p className="text-foreground text-2xl font-semibold">{raffles.length}</p>
+							<p className="text-muted-foreground mt-1 text-xs">Active lotteries</p>
 						</div>
 						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100">
 							<Clock className="h-6 w-6 text-violet-600" />
@@ -113,15 +105,13 @@ export default function HomePage() {
 					</div>
 				</div>
 
-				<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6 relative overflow-hidden">
-					<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-orange-500/20"></div>
+				<div className="bg-card border-border relative overflow-hidden rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
+					<div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-orange-500 to-orange-500/20"></div>
 					<div className="flex items-center justify-between">
 						<div>
-							<p className="text-sm font-medium text-muted-foreground">총 참여자</p>
-							<p className="text-2xl font-semibold text-foreground">
-								{stats.totalParticipants}
-							</p>
-							<p className="text-xs text-muted-foreground mt-1">Total participants</p>
+							<p className="text-muted-foreground text-sm font-medium">총 참여자</p>
+							<p className="text-foreground text-2xl font-semibold">{stats.totalParticipants}</p>
+							<p className="text-muted-foreground mt-1 text-xs">Total participants</p>
 						</div>
 						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
 							<Users className="h-6 w-6 text-orange-600" />
@@ -129,15 +119,13 @@ export default function HomePage() {
 					</div>
 				</div>
 
-				<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6 relative overflow-hidden">
-					<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-green-500/20"></div>
+				<div className="bg-card border-border relative overflow-hidden rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
+					<div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-green-500 to-green-500/20"></div>
 					<div className="flex items-center justify-between">
 						<div>
-							<p className="text-sm font-medium text-muted-foreground">평균 당첨률</p>
-							<p className="text-2xl font-semibold text-foreground">
-								{stats.avgWinRate}%
-							</p>
-							<p className="text-xs text-muted-foreground mt-1">Average win rate</p>
+							<p className="text-muted-foreground text-sm font-medium">평균 당첨률</p>
+							<p className="text-foreground text-2xl font-semibold">{stats.avgWinRate}%</p>
+							<p className="text-muted-foreground mt-1 text-xs">Average win rate</p>
 						</div>
 						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
 							<TrendingUp className="h-6 w-6 text-green-600" />
@@ -147,9 +135,9 @@ export default function HomePage() {
 			</div>
 
 			{/* Filters */}
-			<div className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 p-6">
-				<div className="flex items-center justify-between mb-4">
-					<h2 className="text-lg font-semibold text-foreground">추첨 목록</h2>
+			<div className="bg-card border-border rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
+				<div className="mb-4 flex items-center justify-between">
+					<h2 className="text-foreground text-lg font-semibold">추첨 목록</h2>
 					<Tabs
 						defaultValue="all"
 						value={filter}
@@ -164,20 +152,20 @@ export default function HomePage() {
 				</div>
 
 				{/* Lottery Grid */}
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{filteredRaffles.map((raffle) => {
+				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+					{filteredRaffles.map((raffle, index) => {
 						const deadlineTime = new Date(raffle.deadlineAt)
 
 						return (
 							<div
-								key={raffle.id}
-								className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group overflow-hidden"
+								key={`${raffle.id}-${index}`}
+								className="bg-card border-border group cursor-pointer overflow-hidden rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md"
 							>
-								<div className="aspect-video relative overflow-hidden rounded-t-lg">
+								<div className="relative aspect-video overflow-hidden rounded-t-lg">
 									<ImageWithFallback
 										src={raffle.imageUrl}
 										alt={raffle.title}
-										className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+										className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
 									/>
 									<div className="absolute top-3 left-3">
 										<Badge variant="default" className="bg-primary">
@@ -186,23 +174,19 @@ export default function HomePage() {
 									</div>
 								</div>
 
-								<div className="p-4 space-y-4">
+								<div className="space-y-4 p-4">
 									<div>
-										<h3 className="font-semibold text-foreground line-clamp-1">
-											{raffle.title}
-										</h3>
+										<h3 className="text-foreground line-clamp-1 font-semibold">{raffle.title}</h3>
 									</div>
 
 									<div className="flex items-center justify-between">
 										<div>
-											<p className="text-xs text-muted-foreground">래플 ID</p>
-											<p className="text-sm text-muted-foreground">#{raffle.id}</p>
+											<p className="text-muted-foreground text-xs">래플 ID</p>
+											<p className="text-muted-foreground text-sm">#{raffle.id}</p>
 										</div>
 										<div className="text-right">
-											<p className="text-xs text-muted-foreground">참여비</p>
-											<p className="font-semibold text-primary">
-												₩{formatPrice(raffle.entryFee)}
-											</p>
+											<p className="text-muted-foreground text-xs">참여비</p>
+											<p className="text-primary font-semibold">₩{formatPrice(raffle.entryFee)}</p>
 										</div>
 									</div>
 
@@ -211,8 +195,7 @@ export default function HomePage() {
 											<span className="text-muted-foreground">마감 시간</span>
 											<span
 												className={
-													deadlineTime.getTime() - currentTime <
-													TIME_CONSTANTS.URGENT_THRESHOLD
+													deadlineTime.getTime() - currentTime < TIME_CONSTANTS.URGENT_THRESHOLD
 														? 'text-destructive font-medium'
 														: 'text-foreground font-medium'
 												}
@@ -232,11 +215,11 @@ export default function HomePage() {
 				</div>
 
 				{filteredRaffles.length === 0 && (
-					<div className="text-center py-12">
-						<div className="flex h-16 w-16 items-center justify-center mx-auto rounded-full bg-muted mb-4">
-							<Gift className="h-8 w-8 text-muted-foreground" />
+					<div className="py-12 text-center">
+						<div className="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+							<Gift className="text-muted-foreground h-8 w-8" />
 						</div>
-						<h3 className="text-lg font-semibold mb-2">추첨이 없습니다</h3>
+						<h3 className="mb-2 text-lg font-semibold">추첨이 없습니다</h3>
 						<p className="text-muted-foreground mb-6">
 							{filter === 'active'
 								? '현재 진행중인 추첨이 없습니다.'

@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -8,10 +10,10 @@ import { Clock, Users, Gift, TrendingUp } from 'lucide-react'
 import { useRaffles } from '@/hooks/useRaffles'
 import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
-import { useState } from 'react'
 import type { RaffleFilter } from '@/types'
 
 export default function HomePage() {
+	const router = useRouter()
 	const [filter, setFilter] = useState<RaffleFilter>('all')
 	const [currentTime] = useState(() => Date.now())
 
@@ -160,6 +162,7 @@ export default function HomePage() {
 							<div
 								key={`${raffle.id}-${index}`}
 								className="bg-card border-border group cursor-pointer overflow-hidden rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md"
+								onClick={() => router.push(`/raffle/${raffle.id}`)}
 							>
 								<div className="relative aspect-video overflow-hidden rounded-t-lg">
 									<ImageWithFallback
@@ -205,7 +208,14 @@ export default function HomePage() {
 										</div>
 									</div>
 
-									<Button className="w-full" size="sm">
+									<Button
+										className="w-full"
+										size="sm"
+										onClick={(e) => {
+											e.stopPropagation()
+											router.push(`/raffle/${raffle.id}`)
+										}}
+									>
 										참여하기
 									</Button>
 								</div>

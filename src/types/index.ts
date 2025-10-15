@@ -12,6 +12,29 @@ export interface RaffleApiResponse {
 	deadlineAt: string
 }
 
+// 래플 상세 응답 타입
+export interface RaffleDetailResponse {
+	id: string
+	title: string
+	description: string
+	entryFee: number
+	minParticipants: number
+	maxParticipants: number
+	imageUrl: string
+	deadlineAt: string
+	tiers: TierResponse[]
+	status: string
+	createdAt: string
+	participantsCount: number
+}
+
+export interface TierResponse {
+	rank: number
+	name: string
+	imageUrl?: string
+	quantity: number
+}
+
 // 래플 생성 요청 타입
 export interface CreateRaffleRequest {
 	title: string

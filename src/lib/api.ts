@@ -1,9 +1,11 @@
 import { api } from '@/lib/api-client'
-import type { RaffleListResponse } from '@/types'
+import type { RaffleListResponse, CreateRaffleRequest, RaffleApiResponse } from '@/types'
 
 // Raffle API
 export const raffleApi = {
 	getList: () => api.get('raffles').json<RaffleListResponse>(),
+	create: (data: CreateRaffleRequest) =>
+		api.post('raffles', { json: data }).json<RaffleApiResponse>(),
 }
 
 // TODO: 추후 사용 예정

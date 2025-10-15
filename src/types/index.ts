@@ -12,6 +12,24 @@ export interface RaffleApiResponse {
 	deadlineAt: string
 }
 
+// 래플 생성 요청 타입
+export interface CreateRaffleRequest {
+	title: string
+	entryFee: number
+	minParticipants: number
+	maxParticipants: number
+	deadlineAt: string
+	imageUrl: string
+	description: string
+	tiers: TierRequest[]
+}
+
+export interface TierRequest {
+	rank: number
+	name: string
+	quantity: number
+	imageUrl?: string
+}
+
 // 필터 타입
 export type RaffleFilter = 'all' | 'active' | 'ending-soon'
-

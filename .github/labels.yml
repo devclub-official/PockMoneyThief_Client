@@ -1,0 +1,86 @@
+# ✨ Feature & Improvements
+- name: "✨ Feature"
+  color: "7FDBDA"
+  description: "새로운 기능 추가 또는 신규 페이지 개발"
+
+- name: "🎨 UI·UX"
+  color: "FEE191"
+  description: "디자인, 레이아웃, 스타일링 관련 수정"
+
+- name: "🧠 Logic"
+  color: "9FA8DA"
+  description: "상태 관리나 비즈니스 로직 관련 수정"
+
+- name: "🕒 Performance"
+  color: "FFD580"
+  description: "성능 최적화, 로딩 개선 관련 작업"
+
+- name: "🧩 Integration"
+  color: "81C784"
+  description: "외부 서비스나 모듈 연동 작업"
+
+# 🐞 Bug & Fix
+- name: "🐛 BugFix"
+  color: "E5534B"
+  description: "버그 수정 또는 오류 해결"
+
+- name: "🔥 Hotfix"
+  color: "F25C54"
+  description: "긴급 수정 / 배포 후 즉시 대응"
+
+# ⚙️ Infra & Config
+- name: "🚀 Deploy"
+  color: "B9E0B0"
+  description: "배포 및 빌드 관련 작업"
+
+- name: "⚙️ Config"
+  color: "BFC3C4"
+  description: "환경 설정, 패키지, CI/CD 등 설정 변경"
+
+- name: "🧱 Infra"
+  color: "A8CABA"
+  description: "서버, GCP, Docker 등 인프라 관련 작업"
+
+# 🧹 Maintenance
+- name: "🔧 Refactor"
+  color: "F59E42"
+  description: "코드 구조 개선, 불필요한 로직 정리"
+
+- name: "🧹 Chore"
+  color: "D9D9D9"
+  description: "단순 수정, 의존성 업데이트, 유지보수"
+
+- name: "✅ Test"
+  color: "C3F7C0"
+  description: "테스트 코드 추가, Storybook, Jest 등"
+
+- name: "📃 Docs"
+  color: "4F8BE3"
+  description: "문서, 주석, README 업데이트"
+
+# 🌍 Compatibility & Quality
+- name: "♿ Accessibility"
+  color: "FAD4D4"
+  description: "웹 접근성 개선 작업 (키보드/스크린리더 등)"
+
+- name: "🌐 CrossBrowser"
+  color: "C7D8F9"
+  description: "브라우저 호환성 관련 수정"
+
+# 💬 Communication
+- name: "🙋 Question"
+  color: "B1D854"
+  description: "논의나 질의가 필요한 항목"
+
+- name: "💬 Discussion"
+  color: "77A6F7"
+  description: "기획/디자인/기능 관련 논의"
+
+- name: "💥 Breaking Change"
+  color: "D73A4A"
+  description: "기존 기능이나 API와 호환되지 않는 변경"
+
+- name: "📡 API"
+  color: "C7B4F9"
+  description: "API 통신 및 백엔드 연동 관련 작업"
+

@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/ui/Badge'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { ImageWithFallback } from '@/components/common/ImageWithFallback'
 import { Clock, Users, Gift, TrendingUp } from 'lucide-react'
 import { TIME_CONSTANTS } from '@/lib/constants'

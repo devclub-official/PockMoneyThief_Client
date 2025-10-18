@@ -4,8 +4,7 @@ import './globals.css'
 import { ReactQueryProvider } from '@/lib/react-query-provider'
 import '@/lib/sentry.client'
 import { ThemeProvider } from '@/lib/theme-provider'
-import { Header } from '@/components/common/Header'
-import { Footer } from '@/components/common/Footer'
+import { LayoutClient } from '@/components/common/LayoutClient'
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -28,13 +27,11 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang="en">
+		<html lang="ko">
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider>
 					<ReactQueryProvider>
-						<Header />
-						<main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
-						<Footer />
+						<LayoutClient>{children}</LayoutClient>
 					</ReactQueryProvider>
 				</ThemeProvider>
 			</body>

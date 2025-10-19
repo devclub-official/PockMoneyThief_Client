@@ -81,3 +81,94 @@ export interface RaffleResult {
 	hash: string
 	generatedAt: string
 }
+
+// 래플 관리 API 응답 타입들
+export interface RaffleLockResponse {
+	raffleId: string
+	status: string
+	lockedAt: string
+}
+
+export interface RaffleCancelResponse {
+	raffleId: string
+	status: string
+	cancelledAt: string
+	reason: string
+}
+
+// 추첨 관련 타입들
+export interface DrawResponse {
+	raffleId: string
+	seed: {
+		externalSeed: string
+		participantListHash: string
+		masterSeed: string
+	}
+	assignments: Assignment[]
+	publishedAt: string
+}
+
+export interface Assignment {
+	participantId: string
+	displayName: string
+	rank: number
+	itemName: string
+}
+
+export interface RaffleResultResponse {
+	raffleId: string
+	assignments: Assignment[]
+	seed: {
+		externalSeed: string
+		participantListHash: string
+		masterSeed: string
+	}
+}
+
+export interface VerifyBundleResponse {
+	// TODO: 후순위 작성예정
+	raffleId: string
+	participants: unknown[]
+	seed: unknown
+	code: unknown
+}
+
+// 배송 관련 타입들
+export interface ShippingInfoRequest {
+	name: string
+	phone: string
+	zipcode: string
+	address1: string
+	address2?: string
+}
+
+export interface ShippingUpdateRequest {
+	carrier?: string
+	trackingNo?: string
+	status: 'PENDING' | 'INFO_SUBMITTED' | 'SHIPPED' | 'DELIVERED'
+}
+
+export interface ShippingInfo {
+	name?: string
+	phone?: string
+	zipcode?: string
+	address1?: string
+	address2?: string
+	carrier?: string
+	trackingNo?: string
+	status: 'PENDING' | 'INFO_SUBMITTED' | 'SHIPPED' | 'DELIVERED'
+	updatedAt?: string
+}
+
+export interface Winner {
+	participantId: string
+	displayName: string
+	rank: number
+	itemName: string
+	shipping: ShippingInfo
+}
+
+export interface WinnersResponse {
+	raffleId: string
+	winners: Winner[]
+}

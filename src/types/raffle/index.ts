@@ -12,6 +12,7 @@ export interface RaffleApiResponse {
 	imageUrl: string
 	status: string
 	deadlineAt: string
+	externalSeedDescription?: string // 목록에서는 선택적
 }
 
 // 래플 상세 응답 타입
@@ -24,6 +25,8 @@ export interface RaffleDetailResponse {
 	maxParticipants: number
 	imageUrl: string
 	deadlineAt: string
+	externalSeedDescription: string
+	externalSeed: string | null
 	tiers: TierResponse[]
 	status: string
 	createdAt: string
@@ -46,6 +49,7 @@ export interface CreateRaffleRequest {
 	deadlineAt: string
 	imageUrl: string
 	description: string
+	externalSeedDescription: string
 	tiers: TierRequest[]
 }
 
@@ -160,12 +164,23 @@ export interface ShippingInfo {
 	updatedAt?: string
 }
 
+// API 응답용 Winner 타입 (배송 정보 포함)
 export interface Winner {
 	participantId: string
 	displayName: string
 	rank: number
 	itemName: string
-	shipping: ShippingInfo
+	shipping: {
+		name?: string
+		phone?: string // 마스킹 처리됨 (예: "010****5678")
+		zipcode?: string
+		address1?: string // 마스킹 처리됨 (예: "서울특별시 강남구 테헤란로 ***")
+		address2?: string
+		carrier?: string
+		trackingNo?: string
+		status: 'PENDING' | 'INFO_SUBMITTED' | 'SHIPPED' | 'DELIVERED'
+		updatedAt?: string
+	}
 }
 
 export interface WinnersResponse {

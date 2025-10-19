@@ -1,21 +1,20 @@
 import { memo, useMemo } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import type { ShippingStatusBadgeProps } from '@/types/dashboard'
-import { SHIPPING_STATUS } from '@/lib/constants/dashboard'
 
 export const ShippingStatusBadge = memo(({ status }: ShippingStatusBadgeProps) => {
 	const badgeConfig = useMemo(() => {
 		switch (status) {
 			case 'PENDING':
-				return { variant: 'outline' as const, text: SHIPPING_STATUS.PENDING }
+				return { variant: 'outline' as const, text: '배송정보 대기' }
 			case 'INFO_SUBMITTED':
-				return { variant: 'secondary' as const, text: SHIPPING_STATUS.INFO_SUBMITTED }
+				return { variant: 'secondary' as const, text: '배송정보 완료' }
 			case 'SHIPPED':
-				return { variant: 'default' as const, text: SHIPPING_STATUS.SHIPPED }
+				return { variant: 'default' as const, text: '배송중' }
 			case 'DELIVERED':
-				return { variant: 'secondary' as const, text: SHIPPING_STATUS.DELIVERED }
+				return { variant: 'secondary' as const, text: '배송완료' }
 			default:
-				return { variant: 'outline' as const, text: SHIPPING_STATUS.UNKNOWN }
+				return { variant: 'outline' as const, text: '상태 없음' }
 		}
 	}, [status])
 

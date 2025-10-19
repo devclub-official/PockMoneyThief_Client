@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 // import { raffleApi, shippingApi } from '@/lib/api' // TODO: 실제 API 연동 시 사용
 import type { MyRaffle, ParticipatedRaffle, Winner } from '@/types/dashboard'
-import { DIALOG_MESSAGES } from '@/lib/constants/dashboard'
 
 export function useDashboard() {
 	const [myRaffles, setMyRaffles] = useState<MyRaffle[]>([])
@@ -112,15 +111,15 @@ export function useDashboard() {
 					raffle.id === raffleId ? { ...raffle, status: 'LOCKED' as const } : raffle,
 				),
 			)
-			alert(DIALOG_MESSAGES.SUCCESS_LOCK)
+			alert('래플이 잠금되었습니다.')
 		} catch (error) {
 			console.error('래플 잠금 실패:', error)
-			alert(DIALOG_MESSAGES.ERROR_LOCK)
+			alert('래플 잠금에 실패했습니다.')
 		}
 	}, [])
 
 	const handleCancelRaffle = useCallback(async (raffleId: string) => {
-		if (!confirm(DIALOG_MESSAGES.CONFIRM_CANCEL)) return
+		if (!confirm('정말로 이 래플을 취소하시겠습니까?')) return
 
 		try {
 			// TODO: 실제 API 연동 시 사용
@@ -132,15 +131,15 @@ export function useDashboard() {
 					raffle.id === raffleId ? { ...raffle, status: 'CANCELLED' as const } : raffle,
 				),
 			)
-			alert(DIALOG_MESSAGES.SUCCESS_CANCEL)
+			alert('래플이 취소되었습니다.')
 		} catch (error) {
 			console.error('래플 취소 실패:', error)
-			alert(DIALOG_MESSAGES.ERROR_CANCEL)
+			alert('래플 취소에 실패했습니다.')
 		}
 	}, [])
 
 	const handleDrawRaffle = useCallback(async (raffleId: string) => {
-		if (!confirm(DIALOG_MESSAGES.CONFIRM_DRAW)) return
+		if (!confirm('추첨을 실행하시겠습니까? 실행 후에는 되돌릴 수 없습니다.')) return
 
 		try {
 			// TODO: 실제 API 연동 시 사용
@@ -175,10 +174,10 @@ export function useDashboard() {
 						: raffle,
 				),
 			)
-			alert(DIALOG_MESSAGES.SUCCESS_DRAW)
+			alert('추첨이 완료되었습니다!')
 		} catch (error) {
 			console.error('추첨 실행 실패:', error)
-			alert(DIALOG_MESSAGES.ERROR_DRAW)
+			alert('추첨 실행에 실패했습니다.')
 		}
 	}, [])
 
@@ -189,7 +188,7 @@ export function useDashboard() {
 
 	const handleTrackingConfirm = useCallback(async () => {
 		if (!trackingNumber.trim() || !carrier.trim()) {
-			alert(DIALOG_MESSAGES.ENTER_CARRIER_TRACKING)
+			alert('택배사와 송장번호를 모두 입력해주세요.')
 			return
 		}
 		if (!selectedWinner) return
@@ -217,14 +216,14 @@ export function useDashboard() {
 				}),
 			)
 
-			alert(DIALOG_MESSAGES.SUCCESS_TRACKING)
+			alert('송장번호가 등록되었습니다!')
 			setShowTrackingDialog(false)
 			setTrackingNumber('')
 			setCarrier('')
 			setSelectedWinner(null)
 		} catch (error) {
 			console.error('송장번호 등록 실패:', error)
-			alert(DIALOG_MESSAGES.ERROR_TRACKING)
+			alert('송장번호 등록에 실패했습니다.')
 		}
 	}, [trackingNumber, carrier, selectedWinner])
 

@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import type { Winner } from '@/types/dashboard'
-import { DIALOG_MESSAGES, ACCESSIBILITY_LABELS } from '@/lib/constants/dashboard'
 
 // 동적 import로 Dialog 컴포넌트 지연 로딩
 const Dialog = dynamic(
@@ -52,8 +51,8 @@ export function TrackingDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>{DIALOG_MESSAGES.TRACKING_TITLE}</DialogTitle>
-					<DialogDescription>{DIALOG_MESSAGES.TRACKING_DESCRIPTION}</DialogDescription>
+					<DialogTitle>송장번호 입력</DialogTitle>
+					<DialogDescription>당첨자에게 발송한 택배의 송장번호를 입력해주세요</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-4 py-4">
 					{selectedWinner && (
@@ -64,27 +63,27 @@ export function TrackingDialog({
 					)}
 
 					<div>
-						<Label htmlFor="carrier" aria-label={ACCESSIBILITY_LABELS.CARRIER}>
+						<Label htmlFor="carrier" aria-label="택배사">
 							택배사
 						</Label>
 						<Input
 							id="carrier"
 							value={carrier}
 							onChange={(e) => setCarrier(e.target.value)}
-							placeholder={DIALOG_MESSAGES.CARRIER_PLACEHOLDER}
+							placeholder="예: CJ대한통운"
 							aria-describedby="carrier-help"
 						/>
 					</div>
 
 					<div>
-						<Label htmlFor="trackingNumber" aria-label={ACCESSIBILITY_LABELS.TRACKING_NUMBER}>
+						<Label htmlFor="trackingNumber" aria-label="송장번호">
 							송장번호
 						</Label>
 						<Input
 							id="trackingNumber"
 							value={trackingNumber}
 							onChange={(e) => setTrackingNumber(e.target.value)}
-							placeholder={DIALOG_MESSAGES.TRACKING_PLACEHOLDER}
+							placeholder="예: 123456789012"
 							aria-describedby="tracking-help"
 						/>
 					</div>

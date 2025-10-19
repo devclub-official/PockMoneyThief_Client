@@ -1,21 +1,20 @@
 import { memo, useMemo } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import type { StatusBadgeProps } from '@/types/dashboard'
-import { RAFFLE_STATUS } from '@/lib/constants/dashboard'
 
 export const StatusBadge = memo(({ status }: StatusBadgeProps) => {
 	const badgeConfig = useMemo(() => {
 		switch (status) {
 			case 'PUBLISHED':
-				return { variant: 'default' as const, text: RAFFLE_STATUS.PUBLISHED }
+				return { variant: 'default' as const, text: '진행중' }
 			case 'LOCKED':
-				return { variant: 'secondary' as const, text: RAFFLE_STATUS.LOCKED }
+				return { variant: 'secondary' as const, text: '잠금' }
 			case 'COMPLETED':
-				return { variant: 'secondary' as const, text: RAFFLE_STATUS.COMPLETED }
+				return { variant: 'secondary' as const, text: '완료' }
 			case 'CANCELLED':
-				return { variant: 'destructive' as const, text: RAFFLE_STATUS.CANCELLED }
+				return { variant: 'destructive' as const, text: '취소' }
 			default:
-				return { variant: 'outline' as const, text: RAFFLE_STATUS.UNKNOWN }
+				return { variant: 'outline' as const, text: '알 수 없음' }
 		}
 	}, [status])
 

@@ -1,4 +1,20 @@
 // 대시보드 관련 타입 정의
+import type { Winner as ApiWinner } from '../raffle'
+
+// 대시보드용 Winner 타입 (API Winner를 확장)
+export interface Winner extends ApiWinner {
+	id: string
+	raffleId: string
+	shippingStatus: 'PENDING' | 'INFO_SUBMITTED' | 'SHIPPED' | 'DELIVERED'
+	shippingInfo?: {
+		name: string
+		phone: string
+		zipcode: string
+		address1: string
+		address2?: string
+	}
+	trackingNumber?: string
+}
 
 export interface MyRaffle {
 	id: string

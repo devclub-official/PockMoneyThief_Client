@@ -6,7 +6,6 @@ import { StatusBadge } from './StatusBadge'
 import { ShippingStatusBadge } from './ShippingStatusBadge'
 import { Users, Clock, Lock, X, Play, Truck } from 'lucide-react'
 import type { RaffleCardProps } from '@/types/dashboard'
-import { RAFFLE_ACTIONS, ACCESSIBILITY_LABELS } from '@/lib/constants/dashboard'
 
 export const RaffleCard = memo(
 	({
@@ -40,10 +39,7 @@ export const RaffleCard = memo(
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between text-sm">
-						<span
-							className="flex items-center gap-1"
-							aria-label={ACCESSIBILITY_LABELS.PARTICIPANTS}
-						>
+						<span className="flex items-center gap-1" aria-label="참여자 수">
 							<Users className="h-4 w-4" />
 							참여자
 						</span>
@@ -54,7 +50,7 @@ export const RaffleCard = memo(
 
 					{raffle.status === 'PUBLISHED' && (
 						<div className="flex items-center justify-between text-sm">
-							<span className="flex items-center gap-1" aria-label={ACCESSIBILITY_LABELS.TIME_LEFT}>
+							<span className="flex items-center gap-1" aria-label="남은 시간">
 								<Clock className="h-4 w-4" />
 								남은 시간
 							</span>
@@ -73,7 +69,7 @@ export const RaffleCard = memo(
 								aria-label={`${raffle.title} 래플 잠금`}
 							>
 								<Lock className="mr-2 h-4 w-4" />
-								{RAFFLE_ACTIONS.LOCK}
+								잠금
 							</Button>
 							<Button
 								variant="outline"
@@ -83,7 +79,7 @@ export const RaffleCard = memo(
 								aria-label={`${raffle.title} 래플 취소`}
 							>
 								<X className="mr-2 h-4 w-4" />
-								{RAFFLE_ACTIONS.CANCEL}
+								취소
 							</Button>
 						</div>
 					)}
@@ -97,13 +93,13 @@ export const RaffleCard = memo(
 							aria-label={`${raffle.title} 추첨 실행`}
 						>
 							<Play className="mr-2 h-4 w-4" />
-							{RAFFLE_ACTIONS.DRAW}
+							추첨 실행
 						</Button>
 					)}
 
 					{raffle.status === 'COMPLETED' && raffle.winners && (
 						<div className="space-y-3">
-							<h4 className="font-medium" aria-label={ACCESSIBILITY_LABELS.WINNER_MANAGEMENT}>
+							<h4 className="font-medium" aria-label="당첨자 관리">
 								당첨자 관리
 							</h4>
 							{raffle.winners.map((winner, index) => (
@@ -115,10 +111,7 @@ export const RaffleCard = memo(
 									<p className="text-muted-foreground text-sm">{winner.itemName}</p>
 
 									{winner.shippingInfo && (
-										<div
-											className="text-muted-foreground space-y-1 text-xs"
-											aria-label={ACCESSIBILITY_LABELS.SHIPPING_INFO}
-										>
+										<div className="text-muted-foreground space-y-1 text-xs" aria-label="배송 정보">
 											<p>이름: {winner.shippingInfo.name}</p>
 											<p>연락처: {winner.shippingInfo.phone}</p>
 											<p>주소: {winner.shippingInfo.address1}</p>
@@ -133,12 +126,12 @@ export const RaffleCard = memo(
 											aria-label={`${winner.displayName} 송장번호 입력`}
 										>
 											<Truck className="mr-2 h-4 w-4" />
-											{RAFFLE_ACTIONS.TRACKING_INPUT}
+											송장번호 입력
 										</Button>
 									)}
 
 									{winner.trackingNumber && (
-										<div className="text-xs" aria-label={ACCESSIBILITY_LABELS.TRACKING_NUMBER}>
+										<div className="text-xs" aria-label="송장번호">
 											<span className="text-muted-foreground">송장번호: </span>
 											<span className="font-mono">{winner.trackingNumber}</span>
 										</div>
@@ -155,7 +148,7 @@ export const RaffleCard = memo(
 							className="flex-1"
 							aria-label={`${raffle.title} 상세보기`}
 						>
-							{RAFFLE_ACTIONS.VIEW_DETAILS}
+							상세보기
 						</Button>
 						{raffle.status === 'COMPLETED' && (
 							<Button
@@ -164,7 +157,7 @@ export const RaffleCard = memo(
 								className="flex-1"
 								aria-label={`${raffle.title} 결과보기`}
 							>
-								{RAFFLE_ACTIONS.VIEW_RESULTS}
+								결과보기
 							</Button>
 						)}
 					</div>

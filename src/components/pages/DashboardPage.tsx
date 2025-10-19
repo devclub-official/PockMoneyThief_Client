@@ -13,7 +13,6 @@ import { ShippingStatusBadge } from '@/components/dashboard/ShippingStatusBadge'
 import { TrackingDialog } from '@/components/dashboard/TrackingDialog'
 import { useDashboard } from '@/hooks/useDashboard'
 import { Plus, Package, Users, CheckCircle } from 'lucide-react'
-import { DASHBOARD_MESSAGES } from '@/lib/constants/dashboard'
 // import { MyRaffle, ParticipatedRaffle } from '@/types/dashboard' // 사용하지 않음
 
 export function DashboardPage() {
@@ -54,30 +53,23 @@ export function DashboardPage() {
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="mb-8">
-				<h1
-					className="text-foreground text-2xl font-semibold"
-					aria-label={DASHBOARD_MESSAGES.TITLE_ARIA}
-				>
-					{DASHBOARD_MESSAGES.TITLE}
+				<h1 className="text-foreground text-2xl font-semibold" aria-label="내 대시보드 페이지">
+					내 대시보드
 				</h1>
-				<p className="text-muted-foreground" aria-label={DASHBOARD_MESSAGES.SUBTITLE_ARIA}>
-					{DASHBOARD_MESSAGES.SUBTITLE}
+				<p className="text-muted-foreground" aria-label="등록 및 참여한 추첨 관리 안내">
+					등록한 추첨과 참여한 추첨을 관리하세요
 				</p>
 			</div>
 
 			<Tabs defaultValue="my-raffles" className="space-y-6">
-				<TabsList
-					className="grid w-1/2 grid-cols-2"
-					role="tablist"
-					aria-label={DASHBOARD_MESSAGES.TABS_ARIA_LABEL}
-				>
+				<TabsList className="grid w-1/2 grid-cols-2" role="tablist" aria-label="추첨 목록 탭">
 					<TabsTrigger
 						value="my-raffles"
 						className="w-full"
 						role="tab"
 						aria-controls="my-raffles-content"
 					>
-						{DASHBOARD_MESSAGES.MY_RAFFLES_TAB}
+						내가 등록한 추첨
 					</TabsTrigger>
 					<TabsTrigger
 						value="participated"
@@ -85,7 +77,7 @@ export function DashboardPage() {
 						role="tab"
 						aria-controls="participated-content"
 					>
-						{DASHBOARD_MESSAGES.PARTICIPATED_RAFFLES_TAB}
+						참여한 추첨
 					</TabsTrigger>
 				</TabsList>
 
@@ -100,37 +92,26 @@ export function DashboardPage() {
 					<div className="flex items-center justify-between">
 						<h2
 							className="text-xl font-semibold"
-							aria-label={`${DASHBOARD_MESSAGES.MY_RAFFLES_COUNT_ARIA} ${myRaffles.length}`}
+							aria-label={`등록한 추첨 개수 ${myRaffles.length}`}
 						>
-							{DASHBOARD_MESSAGES.MY_RAFFLES_HEADING} ({myRaffles.length})
+							등록한 추첨 ({myRaffles.length})
 						</h2>
-						<Button
-							onClick={() => router.push('/create')}
-							aria-label={DASHBOARD_MESSAGES.CREATE_RAFFLE_BUTTON_ARIA}
-						>
-							<Plus className="mr-2 h-4 w-4" />
-							{DASHBOARD_MESSAGES.CREATE_RAFFLE_BUTTON}
+						<Button onClick={() => router.push('/create')} aria-label="새로운 추첨 등록하기">
+							<Plus className="mr-2 h-4 w-4" />새 추첨 등록
 						</Button>
 					</div>
 
 					{myRaffles.length === 0 ? (
-						<Card className="text-center" aria-label={DASHBOARD_MESSAGES.NO_MY_RAFFLES_CARD_ARIA}>
+						<Card className="text-center" aria-label="등록한 추첨이 없음을 알리는 카드">
 							<CardContent className="py-12">
 								<Package
 									className="text-muted-foreground mx-auto mb-4 h-12 w-12"
 									aria-hidden="true"
 								/>
-								<h3 className="mb-2 text-lg font-semibold">
-									{DASHBOARD_MESSAGES.NO_MY_RAFFLES_HEADING}
-								</h3>
-								<p className="text-muted-foreground mb-4">
-									{DASHBOARD_MESSAGES.NO_MY_RAFFLES_SUBTITLE}
-								</p>
-								<Button
-									onClick={() => router.push('/create')}
-									aria-label={DASHBOARD_MESSAGES.CREATE_RAFFLE_BUTTON_ARIA}
-								>
-									{DASHBOARD_MESSAGES.CREATE_RAFFLE_BUTTON}
+								<h3 className="mb-2 text-lg font-semibold">등록한 추첨이 없습니다</h3>
+								<p className="text-muted-foreground mb-4">첫 번째 가차 추첨을 등록해보세요</p>
+								<Button onClick={() => router.push('/create')} aria-label="새로운 추첨 등록하기">
+									새 추첨 등록
 								</Button>
 							</CardContent>
 						</Card>
@@ -162,42 +143,29 @@ export function DashboardPage() {
 				>
 					<h2
 						className="text-xl font-semibold"
-						aria-label={`${DASHBOARD_MESSAGES.PARTICIPATED_RAFFLES_COUNT_ARIA} ${participatedRaffles.length}`}
+						aria-label={`참여한 추첨 개수 ${participatedRaffles.length}`}
 					>
-						{DASHBOARD_MESSAGES.PARTICIPATED_RAFFLES_HEADING} ({participatedRaffles.length})
+						참여한 추첨 ({participatedRaffles.length})
 					</h2>
 
 					{participatedRaffles.length === 0 ? (
-						<Card
-							className="text-center"
-							aria-label={DASHBOARD_MESSAGES.NO_PARTICIPATED_RAFFLES_CARD_ARIA}
-						>
+						<Card className="text-center" aria-label="참여한 추첨이 없음을 알리는 카드">
 							<CardContent className="py-12">
 								<Users
 									className="text-muted-foreground mx-auto mb-4 h-12 w-12"
 									aria-hidden="true"
 								/>
-								<h3 className="mb-2 text-lg font-semibold">
-									{DASHBOARD_MESSAGES.NO_PARTICIPATED_RAFFLES_HEADING}
-								</h3>
-								<p className="text-muted-foreground mb-4">
-									{DASHBOARD_MESSAGES.NO_PARTICIPATED_RAFFLES_SUBTITLE}
-								</p>
-								<Button
-									onClick={() => router.push('/')}
-									aria-label={DASHBOARD_MESSAGES.BROWSE_RAFFLES_BUTTON_ARIA}
-								>
-									{DASHBOARD_MESSAGES.BROWSE_RAFFLES_BUTTON}
+								<h3 className="mb-2 text-lg font-semibold">참여한 추첨이 없습니다</h3>
+								<p className="text-muted-foreground mb-4">흥미로운 추첨에 참여해보세요</p>
+								<Button onClick={() => router.push('/')} aria-label="추첨 목록 둘러보기">
+									추첨 둘러보기
 								</Button>
 							</CardContent>
 						</Card>
 					) : (
 						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 							{participatedRaffles.map((raffle) => (
-								<Card
-									key={raffle.id}
-									aria-label={`${DASHBOARD_MESSAGES.PARTICIPATED_RAFFLE_CARD_ARIA} ${raffle.title}`}
-								>
+								<Card key={raffle.id} aria-label={`참여한 추첨 카드 ${raffle.title}`}>
 									<CardContent className="space-y-4 p-6">
 										<div className="flex items-start gap-4">
 											<div className="relative h-12 w-12 overflow-hidden rounded-lg">
@@ -215,17 +183,16 @@ export function DashboardPage() {
 														<Badge
 															variant="default"
 															className="bg-yellow-500"
-															aria-label={DASHBOARD_MESSAGES.WINNER_BADGE_ARIA}
+															aria-label="당첨자 배지"
 														>
-															{DASHBOARD_MESSAGES.WINNER_BADGE}
+															당첨!
 														</Badge>
 													)}
 												</div>
 												<CardDescription
-													aria-label={`${DASHBOARD_MESSAGES.PARTICIPATED_DATE_ARIA} ${new Date(raffle.participatedAt).toLocaleDateString('ko-KR')}`}
+													aria-label={`참여한 날짜 ${new Date(raffle.participatedAt).toLocaleDateString('ko-KR')}`}
 												>
-													{DASHBOARD_MESSAGES.PARTICIPATED_DATE_PREFIX}:{' '}
-													{new Date(raffle.participatedAt).toLocaleDateString('ko-KR')}
+													참여일: {new Date(raffle.participatedAt).toLocaleDateString('ko-KR')}
 												</CardDescription>
 											</div>
 										</div>
@@ -233,13 +200,11 @@ export function DashboardPage() {
 										{raffle.isWinner && raffle.itemName && (
 											<div
 												className="rounded-lg border border-yellow-200 bg-yellow-50 p-3"
-												aria-label={DASHBOARD_MESSAGES.WINNING_ITEM_CARD_ARIA}
+												aria-label="당첨 상품 정보 카드"
 											>
 												<div className="mb-1 flex items-center gap-2">
 													<CheckCircle className="h-4 w-4 text-yellow-600" aria-hidden="true" />
-													<span className="font-medium text-yellow-800">
-														{DASHBOARD_MESSAGES.WINNING_ITEM_HEADING}
-													</span>
+													<span className="font-medium text-yellow-800">당첨 상품</span>
 												</div>
 												<p className="text-sm text-yellow-700">{raffle.itemName}</p>
 												{raffle.shippingStatus && (
@@ -255,18 +220,18 @@ export function DashboardPage() {
 												variant="outline"
 												onClick={() => router.push(`/raffle/${raffle.id}`)}
 												className="flex-1"
-												aria-label={`${DASHBOARD_MESSAGES.VIEW_DETAILS_BUTTON_ARIA} ${raffle.title}`}
+												aria-label={`상세보기 버튼 ${raffle.title}`}
 											>
-												{DASHBOARD_MESSAGES.VIEW_DETAILS_BUTTON}
+												상세보기
 											</Button>
 											{raffle.status === 'COMPLETED' && (
 												<Button
 													variant="outline"
 													onClick={() => router.push(`/raffles/${raffle.id}/result`)}
 													className="flex-1"
-													aria-label={`${DASHBOARD_MESSAGES.VIEW_RESULTS_BUTTON_ARIA} ${raffle.title}`}
+													aria-label={`결과보기 버튼 ${raffle.title}`}
 												>
-													{DASHBOARD_MESSAGES.VIEW_RESULTS_BUTTON}
+													결과보기
 												</Button>
 											)}
 										</div>

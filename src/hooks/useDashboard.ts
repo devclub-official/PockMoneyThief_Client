@@ -44,6 +44,14 @@ export function useDashboard() {
 							rank: 1,
 							itemName: '피카츄 넨도로이드 #1355',
 							shippingStatus: 'INFO_SUBMITTED',
+							shipping: {
+								name: '김가차',
+								phone: '010-1234-5678',
+								zipcode: '12345',
+								address1: '서울시 강남구 테헤란로 123',
+								address2: '101동 101호',
+								status: 'INFO_SUBMITTED',
+							},
 							shippingInfo: {
 								name: '김가차',
 								phone: '010-1234-5678',
@@ -103,7 +111,15 @@ export function useDashboard() {
 	const handleLockRaffle = useCallback(async (raffleId: string) => {
 		try {
 			// TODO: 실제 API 연동 시 사용
-			// await raffleApi.lock(raffleId)
+			// const response = await raffleApi.lock(raffleId)
+			// API 명세서 응답: { raffleId, status, lockedAt }
+
+			// Mock: API 명세서에 맞는 응답 시뮬레이션
+			const mockLockResponse = {
+				raffleId,
+				status: 'LOCKED',
+				lockedAt: new Date().toISOString(),
+			}
 
 			// Mock: 상태 업데이트
 			setMyRaffles((prev) =>
@@ -123,7 +139,16 @@ export function useDashboard() {
 
 		try {
 			// TODO: 실제 API 연동 시 사용
-			// await raffleApi.cancel(raffleId)
+			// const response = await raffleApi.cancel(raffleId)
+			// API 명세서 응답: { raffleId, status, cancelledAt, reason }
+
+			// Mock: API 명세서에 맞는 응답 시뮬레이션
+			const mockCancelResponse = {
+				raffleId,
+				status: 'CANCELLED',
+				cancelledAt: new Date().toISOString(),
+				reason: '사용자 요청에 의한 취소',
+			}
 
 			// Mock: 상태 업데이트
 			setMyRaffles((prev) =>
@@ -154,18 +179,38 @@ export function useDashboard() {
 			// 	shippingStatus: 'PENDING' as const,
 			// }))
 
-			// Mock: 추첨 결과
-			const mockWinners: Winner[] = [
-				{
-					id: 'winner_1',
-					raffleId,
-					participantId: 'pt_999',
-					displayName: 'GachaKing',
-					rank: 1,
-					itemName: '피카츄 넨도로이드 #1355',
-					shippingStatus: 'PENDING',
+			// Mock: 추첨 결과 (API 명세서에 맞게)
+			const mockDrawResponse = {
+				raffleId,
+				seed: {
+					externalSeed: '1',
+					participantListHash: 'abcdef1234567890',
+					masterSeed: 'fedcba0987654321',
 				},
-			]
+				assignments: [
+					{
+						participantId: 'pt_999',
+						displayName: 'GachaKing',
+						rank: 1,
+						itemName: '피카츄 넨도로이드 #1355',
+					},
+				],
+				publishedAt: new Date().toISOString(),
+			}
+
+			// 대시보드용 Winner 타입으로 변환
+			const mockWinners: Winner[] = mockDrawResponse.assignments.map((assignment, index) => ({
+				id: `winner_${index + 1}`,
+				raffleId,
+				participantId: assignment.participantId,
+				displayName: assignment.displayName,
+				rank: assignment.rank,
+				itemName: assignment.itemName,
+				shippingStatus: 'PENDING' as const,
+				shipping: {
+					status: 'PENDING' as const,
+				},
+			}))
 
 			setMyRaffles((prev) =>
 				prev.map((raffle) =>
@@ -195,11 +240,12 @@ export function useDashboard() {
 
 		try {
 			// TODO: 실제 API 연동 시 사용
-			// await shippingApi.updateShippingInfo(selectedWinner.raffleId, selectedWinner.participantId, {
+			// const response = await shippingApi.updateShippingInfo(selectedWinner.raffleId, selectedWinner.participantId, {
 			// 	carrier,
 			// 	trackingNo: trackingNumber,
 			// 	status: 'SHIPPED',
 			// })
+			// API 명세서 응답: 200 OK (빈 응답)
 
 			// Mock: 상태 업데이트
 			setMyRaffles((prev) =>

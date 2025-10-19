@@ -13,7 +13,6 @@ import { ShippingStatusBadge } from '@/components/dashboard/ShippingStatusBadge'
 import { TrackingDialog } from '@/components/dashboard/TrackingDialog'
 import { useDashboard } from '@/hooks/useDashboard'
 import { Plus, Package, Users, CheckCircle } from 'lucide-react'
-// import { MyRaffle, ParticipatedRaffle } from '@/types/dashboard' // 사용하지 않음
 
 export function DashboardPage() {
 	const router = useRouter()
@@ -53,16 +52,12 @@ export function DashboardPage() {
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="mb-8">
-				<h1 className="text-foreground text-2xl font-semibold" aria-label="내 대시보드 페이지">
-					내 대시보드
-				</h1>
-				<p className="text-muted-foreground" aria-label="등록 및 참여한 추첨 관리 안내">
-					등록한 추첨과 참여한 추첨을 관리하세요
-				</p>
+				<h1 className="text-foreground text-2xl font-semibold">내 대시보드</h1>
+				<p className="text-muted-foreground">등록한 추첨과 참여한 추첨을 관리하세요</p>
 			</div>
 
 			<Tabs defaultValue="my-raffles" className="space-y-6">
-				<TabsList className="grid w-1/2 grid-cols-2" role="tablist" aria-label="추첨 목록 탭">
+				<TabsList className="grid w-1/2 grid-cols-2" role="tablist">
 					<TabsTrigger
 						value="my-raffles"
 						className="w-full"

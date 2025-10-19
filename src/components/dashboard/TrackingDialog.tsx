@@ -1,30 +1,14 @@
-import dynamic from 'next/dynamic'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/Dialog'
 import type { Winner } from '@/types/dashboard'
-
-// 동적 import로 Dialog 컴포넌트 지연 로딩
-const Dialog = dynamic(
-	() => import('@/components/ui/Dialog').then((mod) => ({ default: mod.Dialog })),
-	{ ssr: false },
-)
-const DialogContent = dynamic(
-	() => import('@/components/ui/Dialog').then((mod) => ({ default: mod.DialogContent })),
-	{ ssr: false },
-)
-const DialogDescription = dynamic(
-	() => import('@/components/ui/Dialog').then((mod) => ({ default: mod.DialogDescription })),
-	{ ssr: false },
-)
-const DialogHeader = dynamic(
-	() => import('@/components/ui/Dialog').then((mod) => ({ default: mod.DialogHeader })),
-	{ ssr: false },
-)
-const DialogTitle = dynamic(
-	() => import('@/components/ui/Dialog').then((mod) => ({ default: mod.DialogTitle })),
-	{ ssr: false },
-)
 
 interface TrackingDialogProps {
 	open: boolean

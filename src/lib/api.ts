@@ -47,11 +47,6 @@ export const shippingApi = {
 		api.patch(`raffles/${raffleId}/winners/${participantId}/shipping`, { json: data }).json<void>(),
 }
 
-// TODO: 추후 사용 예정
-// export const entryApi = {
-// 	participate: (raffleId: string) => api.post(`raffles/${raffleId}/entries`).json<unknown>(),
-// }
-
 // Login API (로그인 기능)
 export const loginApi = {
 	// checkOnboardingStatus: () => api.get('users/onboarding-status').json<boolean>(),

@@ -12,7 +12,7 @@ export interface RaffleApiResponse {
 	imageUrl: string
 	status: string
 	deadlineAt: string
-	externalSeedDescription?: string // 목록에서는 선택적
+	externalSeedDescription: string // API 명세서에 따르면 필수
 }
 
 // 래플 상세 응답 타입

@@ -97,7 +97,7 @@ export const RaffleCard = memo(
 						</Button>
 					)}
 
-					{raffle.status === 'COMPLETED' && raffle.winners && (
+					{raffle.status === 'DRAWN' && raffle.winners && (
 						<div className="space-y-3">
 							<h4 className="font-medium" aria-label="당첨자 관리">
 								당첨자 관리
@@ -118,7 +118,7 @@ export const RaffleCard = memo(
 										</div>
 									)}
 
-									{winner.shippingStatus === 'INFO_SUBMITTED' && (
+									{winner.shippingStatus === 'SAVED' && (
 										<Button
 											size="sm"
 											variant="outline"
@@ -150,7 +150,7 @@ export const RaffleCard = memo(
 						>
 							상세보기
 						</Button>
-						{raffle.status === 'COMPLETED' && (
+						{raffle.status === 'DRAWN' && (
 							<Button
 								variant="outline"
 								onClick={() => router.push(`/raffles/${raffle.id}/result`)}

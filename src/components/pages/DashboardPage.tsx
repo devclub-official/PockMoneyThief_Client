@@ -2,17 +2,14 @@
 
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
-import { ImageWithFallback } from '@/components/common/ImageWithFallback'
 import { RaffleCard } from '@/components/dashboard/RaffleCard'
-import { StatusBadge } from '@/components/dashboard/StatusBadge'
-import { ShippingStatusBadge } from '@/components/dashboard/ShippingStatusBadge'
+import { ParticipatedRaffleCard } from '@/components/dashboard/ParticipatedRaffleCard'
 import { TrackingDialog } from '@/components/dashboard/TrackingDialog'
 import { useDashboard } from '@/hooks/useDashboard'
-import { Plus, Package, Users, CheckCircle } from 'lucide-react'
+import { Plus, Package, Users } from 'lucide-react'
 
 export function DashboardPage() {
 	const router = useRouter()
@@ -160,78 +157,12 @@ export function DashboardPage() {
 					) : (
 						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 							{participatedRaffles.map((raffle) => (
-								<Card key={raffle.id} aria-label={`참여한 추첨 카드 ${raffle.title}`}>
-									<CardContent className="space-y-4 p-6">
-										<div className="flex items-start gap-4">
-											<div className="relative h-12 w-12 overflow-hidden rounded-lg">
-												<ImageWithFallback
-													src={raffle.imageUrl}
-													alt={raffle.title}
-													className="h-full w-full object-cover"
-												/>
-											</div>
-											<div className="flex-1">
-												<div className="mb-1 flex items-center gap-2">
-													<CardTitle className="text-lg">{raffle.title}</CardTitle>
-													<StatusBadge status={raffle.status} />
-													{raffle.isWinner && (
-														<Badge
-															variant="default"
-															className="bg-yellow-500"
-															aria-label="당첨자 배지"
-														>
-															당첨!
-														</Badge>
-													)}
-												</div>
-												<CardDescription
-													aria-label={`참여한 날짜 ${new Date(raffle.participatedAt).toLocaleDateString('ko-KR')}`}
-												>
-													참여일: {new Date(raffle.participatedAt).toLocaleDateString('ko-KR')}
-												</CardDescription>
-											</div>
-										</div>
-
-										{raffle.isWinner && raffle.itemName && (
-											<div
-												className="rounded-lg border border-yellow-200 bg-yellow-50 p-3"
-												aria-label="당첨 상품 정보 카드"
-											>
-												<div className="mb-1 flex items-center gap-2">
-													<CheckCircle className="h-4 w-4 text-yellow-600" aria-hidden="true" />
-													<span className="font-medium text-yellow-800">당첨 상품</span>
-												</div>
-												<p className="text-sm text-yellow-700">{raffle.itemName}</p>
-												{raffle.shippingStatus && (
-													<div className="mt-2">
-														<ShippingStatusBadge status={raffle.shippingStatus} />
-													</div>
-												)}
-											</div>
-										)}
-
-										<div className="flex gap-2">
-											<Button
-												variant="outline"
-												onClick={() => router.push(`/raffle/${raffle.id}`)}
-												className="flex-1"
-												aria-label={`상세보기 버튼 ${raffle.title}`}
-											>
-												상세보기
-											</Button>
-											{raffle.status === 'COMPLETED' && (
-												<Button
-													variant="outline"
-													onClick={() => router.push(`/raffles/${raffle.id}/result`)}
-													className="flex-1"
-													aria-label={`결과보기 버튼 ${raffle.title}`}
-												>
-													결과보기
-												</Button>
-											)}
-										</div>
-									</CardContent>
-								</Card>
+								<ParticipatedRaffleCard
+									key={raffle.id}
+									raffle={raffle}
+									onViewDetail={(id) => router.push(`/raffle/${id}`)}
+									onViewResult={(id) => router.push(`/raffles/${id}/result`)}
+								/>
 							))}
 						</div>
 					)}

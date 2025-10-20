@@ -12,18 +12,15 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Plus, X, Gift, Users } from 'lucide-react'
 import { createRaffleSchema, type CreateRaffleFormData } from '@/lib/schemas'
 import { useCreateRaffle } from '@/hooks/useCreateRaffle'
+import { useToast } from '@/components/ui/Toast'
 
 export default function CreatePage() {
 	const router = useRouter()
 	const createRaffle = useCreateRaffle()
 	const [duration, setDuration] = useState(24)
+	const { addToast } = useToast()
 
-	const {
-		register,
-		handleSubmit,
-		control,
-		formState: { errors },
-	} = useForm<CreateRaffleFormData>({
+	const { register, handleSubmit, control } = useForm<CreateRaffleFormData>({
 		resolver: zodResolver(createRaffleSchema),
 		defaultValues: {
 			title: '',
@@ -69,14 +66,37 @@ export default function CreatePage() {
 			},
 			{
 				onSuccess: () => {
-					alert('성공적으로 등록되었습니다')
+					addToast({
+						title: '등록 완료',
+						description: '성공적으로 등록되었습니다',
+						variant: 'success',
+						duration: 3000,
+					})
 					router.push('/')
 				},
 				onError: () => {
-					alert('추첨 등록에 실패했습니다. 다시 시도해주세요.')
+					addToast({
+						title: '등록 실패',
+						description: '추첨 등록에 실패했습니다. 다시 시도해주세요.',
+						variant: 'error',
+						duration: 4000,
+					})
 				},
 			},
 		)
+	}
+
+	const onInvalid = (errors: Record<string, { message?: string }>) => {
+		// 첫 번째 에러를 토스트로 표시
+		const firstError = Object.values(errors)[0] as { message?: string }
+		if (firstError?.message) {
+			addToast({
+				title: '입력 오류',
+				description: firstError.message,
+				variant: 'error',
+				duration: 4000,
+			})
+		}
 	}
 
 	return (
@@ -94,7 +114,7 @@ export default function CreatePage() {
 				</div>
 			)}
 
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+			<form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
 				{/* 기본 정보 */}
 				<Card>
 					<CardHeader>
@@ -107,9 +127,6 @@ export default function CreatePage() {
 						<div>
 							<Label htmlFor="title">추첨명 *</Label>
 							<Input id="title" {...register('title')} placeholder="예: 피카츄 넨도로이드 #1355" />
-							{errors.title && (
-								<p className="text-destructive mt-1 text-xs">{errors.title.message}</p>
-							)}
 						</div>
 
 						<div>
@@ -120,9 +137,6 @@ export default function CreatePage() {
 								placeholder="추첨에 대한 자세한 설명을 입력해주세요"
 								rows={3}
 							/>
-							{errors.description && (
-								<p className="text-destructive mt-1 text-xs">{errors.description.message}</p>
-							)}
 						</div>
 
 						<div>
@@ -135,9 +149,6 @@ export default function CreatePage() {
 							<p className="text-muted-foreground mt-1 text-xs">
 								미입력 시 기본 이미지가 사용됩니다
 							</p>
-							{errors.imageUrl && (
-								<p className="text-destructive mt-1 text-xs">{errors.imageUrl.message}</p>
-							)}
 						</div>
 					</CardContent>
 				</Card>
@@ -159,9 +170,6 @@ export default function CreatePage() {
 								{...register('entryFee', { valueAsNumber: true })}
 								placeholder="5000"
 							/>
-							{errors.entryFee && (
-								<p className="text-destructive mt-1 text-xs">{errors.entryFee.message}</p>
-							)}
 						</div>
 
 						<div className="grid grid-cols-2 gap-4">
@@ -173,9 +181,6 @@ export default function CreatePage() {
 									{...register('minParticipants', { valueAsNumber: true })}
 									placeholder="3"
 								/>
-								{errors.minParticipants && (
-									<p className="text-destructive mt-1 text-xs">{errors.minParticipants.message}</p>
-								)}
 							</div>
 							<div>
 								<Label htmlFor="maxParticipants">최대 참여자 *</Label>
@@ -185,9 +190,6 @@ export default function CreatePage() {
 									{...register('maxParticipants', { valueAsNumber: true })}
 									placeholder="10"
 								/>
-								{errors.maxParticipants && (
-									<p className="text-destructive mt-1 text-xs">{errors.maxParticipants.message}</p>
-								)}
 							</div>
 						</div>
 
@@ -239,11 +241,6 @@ export default function CreatePage() {
 											{...register(`tiers.${index}.name`)}
 											placeholder="예: 리자몽 피규어"
 										/>
-										{errors.tiers?.[index]?.name && (
-											<p className="text-destructive mt-1 text-xs">
-												{errors.tiers[index]?.name?.message}
-											</p>
-										)}
 									</div>
 									<div>
 										<Label htmlFor={`tier-quantity-${index}`}>수량 *</Label>
@@ -255,11 +252,6 @@ export default function CreatePage() {
 											})}
 											min={1}
 										/>
-										{errors.tiers?.[index]?.quantity && (
-											<p className="text-destructive mt-1 text-xs">
-												{errors.tiers[index]?.quantity?.message}
-											</p>
-										)}
 									</div>
 									<div>
 										<Label htmlFor={`tier-image-${index}`}>이미지 URL</Label>
@@ -284,7 +276,6 @@ export default function CreatePage() {
 								)}
 							</div>
 						))}
-						{errors.tiers && <p className="text-destructive text-xs">{errors.tiers.message}</p>}
 					</CardContent>
 				</Card>
 

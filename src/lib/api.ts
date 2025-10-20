@@ -3,7 +3,7 @@ import type {
 	RaffleListResponse,
 	RaffleDetailResponse,
 	CreateRaffleRequest,
-	RaffleApiResponse,
+	CreateRaffleResponse,
 	RaffleLockResponse,
 	RaffleCancelResponse,
 	DrawResponse,
@@ -20,7 +20,7 @@ export const raffleApi = {
 	getList: () => api.get('raffles').json<RaffleListResponse>(),
 	getById: (id: string) => api.get(`raffles/${id}`).json<RaffleDetailResponse>(),
 	create: (data: CreateRaffleRequest) =>
-		api.post('raffles', { json: data }).json<RaffleApiResponse>(),
+		api.post('raffles', { json: data }).json<CreateRaffleResponse>(),
 
 	// 래플 관리
 	lock: (id: string) => api.post(`raffles/${id}/lock`).json<RaffleLockResponse>(),

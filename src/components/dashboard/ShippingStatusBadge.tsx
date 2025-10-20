@@ -7,7 +7,7 @@ export const ShippingStatusBadge = memo(({ status }: ShippingStatusBadgeProps) =
 		switch (status) {
 			case 'PENDING':
 				return { variant: 'outline' as const, text: '배송정보 대기' }
-			case 'INFO_SUBMITTED':
+			case 'SAVED':
 				return { variant: 'secondary' as const, text: '배송정보 완료' }
 			case 'SHIPPED':
 				return { variant: 'default' as const, text: '배송중' }

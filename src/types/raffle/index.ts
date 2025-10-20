@@ -53,6 +53,22 @@ export interface CreateRaffleRequest {
 	tiers: TierRequest[]
 }
 
+// 래플 생성 응답 타입 (API 명세서에 맞게 수정)
+export interface CreateRaffleResponse {
+	id: string
+	title: string
+	description: string
+	entryFee: number
+	minParticipants: number
+	maxParticipants: number
+	deadlineAt: string
+	imageUrl: string
+	externalSeedDescription: string
+	tiers: TierResponse[]
+	status: string
+	createdAt: string
+}
+
 export interface TierRequest {
 	rank: number
 	name: string
@@ -149,7 +165,7 @@ export interface ShippingInfoRequest {
 export interface ShippingUpdateRequest {
 	carrier?: string
 	trackingNo?: string
-	status: 'PENDING' | 'INFO_SUBMITTED' | 'SHIPPED' | 'DELIVERED'
+	status: 'PENDING' | 'SAVED' | 'SHIPPED' | 'DELIVERED'
 }
 
 export interface ShippingInfo {
@@ -160,7 +176,7 @@ export interface ShippingInfo {
 	address2?: string
 	carrier?: string
 	trackingNo?: string
-	status: 'PENDING' | 'INFO_SUBMITTED' | 'SHIPPED' | 'DELIVERED'
+	status: 'PENDING' | 'SAVED' | 'SHIPPED' | 'DELIVERED'
 	updatedAt?: string
 }
 
@@ -178,7 +194,7 @@ export interface Winner {
 		address2?: string
 		carrier?: string
 		trackingNo?: string
-		status: 'PENDING' | 'INFO_SUBMITTED' | 'SHIPPED' | 'DELIVERED'
+		status: 'PENDING' | 'SAVED' | 'SHIPPED' | 'DELIVERED'
 		updatedAt?: string
 	}
 }

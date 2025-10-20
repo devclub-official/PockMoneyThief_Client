@@ -9,7 +9,7 @@ export const StatusBadge = memo(({ status }: StatusBadgeProps) => {
 				return { variant: 'default' as const, text: '진행중' }
 			case 'LOCKED':
 				return { variant: 'secondary' as const, text: '잠금' }
-			case 'COMPLETED':
+			case 'DRAWN':
 				return { variant: 'secondary' as const, text: '완료' }
 			case 'CANCELLED':
 				return { variant: 'destructive' as const, text: '취소' }

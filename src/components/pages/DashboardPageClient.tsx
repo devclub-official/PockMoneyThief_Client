@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -11,22 +11,26 @@ import { TrackingDialog } from '@/components/dashboard/TrackingDialog'
 import { useDashboard } from '@/hooks/useDashboard'
 import { DASHBOARD_UI_TEXT } from '@/lib/constants'
 import { Plus, Package, Users } from 'lucide-react'
+import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
 
-export function DashboardPage() {
+interface DashboardPageClientProps {
+	initialMyRaffles: MyRaffle[]
+	initialParticipatedRaffles: ParticipatedRaffle[]
+}
+
+export function DashboardPageClient({
+	initialMyRaffles,
+	initialParticipatedRaffles,
+}: DashboardPageClientProps) {
 	const router = useRouter()
 	const {
-		myRaffles,
-		participatedRaffles,
 		selectedWinner,
-		// setSelectedWinner, // 사용하지 않음
 		trackingNumber,
 		setTrackingNumber,
 		carrier,
 		setCarrier,
 		showTrackingDialog,
 		setShowTrackingDialog,
-		loading,
-		loadDashboardData,
 		handleLockRaffle,
 		handleCancelRaffle,
 		handleDrawRaffle,
@@ -35,17 +39,9 @@ export function DashboardPage() {
 		formatTimeLeft,
 	} = useDashboard()
 
-	useEffect(() => {
-		loadDashboardData()
-	}, [loadDashboardData])
-
-	if (loading) {
-		return (
-			<div className="container mx-auto flex items-center justify-center px-4 py-8">
-				<div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2"></div>
-			</div>
-		)
-	}
+	// 서버에서 prefetch된 초기 데이터 사용
+	const displayMyRaffles = initialMyRaffles
+	const displayParticipatedRaffles = initialParticipatedRaffles
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -85,9 +81,9 @@ export function DashboardPage() {
 					<div className="flex items-center justify-between">
 						<h2
 							className="text-xl font-semibold"
-							aria-label={`등록한 추첨 개수 ${myRaffles.length}`}
+							aria-label={`등록한 추첨 개수 ${displayMyRaffles.length}`}
 						>
-							{DASHBOARD_UI_TEXT.MY_RAFFLES_HEADER} ({myRaffles.length})
+							{DASHBOARD_UI_TEXT.MY_RAFFLES_HEADER} ({displayMyRaffles.length})
 						</h2>
 						<Button onClick={() => router.push('/create')} aria-label="새로운 추첨 등록하기">
 							<Plus className="mr-2 h-4 w-4" />
@@ -95,7 +91,7 @@ export function DashboardPage() {
 						</Button>
 					</div>
 
-					{myRaffles.length === 0 ? (
+					{displayMyRaffles.length === 0 ? (
 						<Card className="text-center" aria-label="등록한 추첨이 없음을 알리는 카드">
 							<CardContent className="py-12">
 								<Package
@@ -115,7 +111,7 @@ export function DashboardPage() {
 						</Card>
 					) : (
 						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-							{myRaffles.map((raffle) => (
+							{displayMyRaffles.map((raffle) => (
 								<RaffleCard
 									key={raffle.id}
 									raffle={raffle}
@@ -141,12 +137,12 @@ export function DashboardPage() {
 				>
 					<h2
 						className="text-xl font-semibold"
-						aria-label={`참여한 추첨 개수 ${participatedRaffles.length}`}
+						aria-label={`참여한 추첨 개수 ${displayParticipatedRaffles.length}`}
 					>
-						{DASHBOARD_UI_TEXT.PARTICIPATED_HEADER} ({participatedRaffles.length})
+						{DASHBOARD_UI_TEXT.PARTICIPATED_HEADER} ({displayParticipatedRaffles.length})
 					</h2>
 
-					{participatedRaffles.length === 0 ? (
+					{displayParticipatedRaffles.length === 0 ? (
 						<Card className="text-center" aria-label="참여한 추첨이 없음을 알리는 카드">
 							<CardContent className="py-12">
 								<Users
@@ -166,7 +162,7 @@ export function DashboardPage() {
 						</Card>
 					) : (
 						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-							{participatedRaffles.map((raffle) => (
+							{displayParticipatedRaffles.map((raffle) => (
 								<ParticipatedRaffleCard
 									key={raffle.id}
 									raffle={raffle}

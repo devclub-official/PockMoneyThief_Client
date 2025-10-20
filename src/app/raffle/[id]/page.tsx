@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState, useMemo } from 'react'
+import { use, useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -67,7 +67,15 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 	const [participantName, setParticipantName] = useState('')
 	const [isParticipating, setIsParticipating] = useState(false)
 	const [showParticipateDialog, setShowParticipateDialog] = useState(false)
-	const [currentTime] = useState(() => Date.now())
+	const [currentTime, setCurrentTime] = useState<number>(0)
+
+	// 하이드레이션 안전성을 위해 useEffect에서 시간 설정
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setCurrentTime(Date.now())
+		}, 0)
+		return () => clearTimeout(timer)
+	}, [])
 
 	/**
 	 * TODO: 실제 API 연동 시 주석 해제

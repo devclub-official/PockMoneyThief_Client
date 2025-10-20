@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -18,7 +18,15 @@ interface HomePageClientProps {
 export function HomePageClient({ initialData }: HomePageClientProps) {
 	const router = useRouter()
 	const [filter, setFilter] = useState<RaffleFilter>('all')
-	const [currentTime] = useState(() => Date.now())
+	const [currentTime, setCurrentTime] = useState<number | null>(null)
+
+	// 하이드레이션 안전성을 위해 useEffect에서 시간 설정
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setCurrentTime(Date.now())
+		}, 0)
+		return () => clearTimeout(timer)
+	}, [])
 
 	// 서버에서 prefetch된 데이터 사용
 	const raffles = initialData.items || []
@@ -33,10 +41,10 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 		avgWinRate: 0, // TODO: 당첨률 API 추가 필요
 	}
 
-	// 필터링
+	// 필터링 (currentTime이 설정된 후에만 실행)
 	const filteredRaffles = raffles.filter((raffle) => {
 		if (filter === 'active') return true // 모든 항목이 진행중으로 간주
-		if (filter === 'ending-soon') {
+		if (filter === 'ending-soon' && currentTime) {
 			const deadlineTime = new Date(raffle.deadlineAt).getTime()
 			const timeLeft = deadlineTime - currentTime
 			return timeLeft < TIME_CONSTANTS.ENDING_SOON_THRESHOLD
@@ -201,6 +209,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 											<span className="text-muted-foreground">마감 시간</span>
 											<span
 												className={
+													currentTime &&
 													deadlineTime.getTime() - currentTime < TIME_CONSTANTS.URGENT_THRESHOLD
 														? 'text-destructive font-medium'
 														: 'text-foreground font-medium'

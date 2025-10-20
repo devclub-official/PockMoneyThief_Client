@@ -49,12 +49,14 @@ export default function CreatePage() {
 			data.imageUrl ||
 			'https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080'
 
-		// tiers의 rank 재정렬 및 빈 imageUrl 제거
+		// tiers의 rank 재정렬
 		const tiers = data.tiers.map((tier, index) => ({
 			rank: index + 1,
 			name: tier.name,
 			quantity: tier.quantity,
-			...(tier.imageUrl ? { imageUrl: tier.imageUrl } : {}),
+			imageUrl:
+				tier.imageUrl ||
+				'https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
 		}))
 
 		createRaffle.mutate(

@@ -350,7 +350,7 @@ export function useDashboard() {
 
 			try {
 				// TODO: 실제 API 연동 시 사용
-				// const result = await raffleApi.draw(raffleId)
+				// const result = await raffleApi.draw(raffleId, { externalSeed: '1' })
 				// const winners: Winner[] = result.assignments.map((assignment, index) => ({
 				// 	id: `winner_${index + 1}`,
 				// 	raffleId,
@@ -443,7 +443,7 @@ export function useDashboard() {
 			// 	trackingNo: trackingNumber,
 			// 	status: SHIPPING_STATUS.SHIPPED,
 			// })
-			// API 명세서 응답: 200 OK (빈 응답)
+			// API 명세서 응답: { winnerId, raffleId, carrier, trackingNo, status, updatedAt }
 
 			// Mock: 상태 업데이트
 			setMyRaffles((prev) =>

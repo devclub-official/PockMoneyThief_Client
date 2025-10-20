@@ -12,7 +12,6 @@ export interface RaffleApiResponse {
 	imageUrl: string
 	status: string
 	deadlineAt: string
-	externalSeedDescription: string // API 명세서에 따르면 필수
 }
 
 // 래플 상세 응답 타입
@@ -36,7 +35,7 @@ export interface RaffleDetailResponse {
 export interface TierResponse {
 	rank: number
 	name: string
-	imageUrl?: string
+	imageUrl: string
 	quantity: number
 }
 
@@ -73,7 +72,7 @@ export interface TierRequest {
 	rank: number
 	name: string
 	quantity: number
-	imageUrl?: string
+	imageUrl: string
 }
 
 // 필터 타입
@@ -89,6 +88,19 @@ export interface RaffleParticipation {
 	userId: string
 	participatedAt: string
 	ipAddress: string
+}
+
+// 래플 참여 요청 타입
+export interface ParticipateRequest {
+	displayName: string
+}
+
+// 래플 참여 응답 타입
+export interface ParticipateResponse {
+	participantId: string
+	raffleId: string
+	displayName: string
+	joinedAt: string
 }
 
 // 래플 결과 타입
@@ -117,6 +129,10 @@ export interface RaffleCancelResponse {
 }
 
 // 추첨 관련 타입들
+export interface DrawRequest {
+	externalSeed: string
+}
+
 export interface DrawResponse {
 	raffleId: string
 	seed: {
@@ -135,9 +151,23 @@ export interface Assignment {
 	itemName: string
 }
 
+// 추첨 결과 조회용 Assignment (participantId 없음)
+export interface ResultAssignment {
+	displayName: string
+	rank: number
+	itemName: string
+}
+
+// 추첨 미리보기 응답 타입
+export interface RafflePreviewResponse {
+	raffleId: string
+	externalSeed: string
+	assignments: Assignment[]
+}
+
 export interface RaffleResultResponse {
 	raffleId: string
-	assignments: Assignment[]
+	assignments: ResultAssignment[]
 	seed: {
 		externalSeed: string
 		participantListHash: string
@@ -162,9 +192,25 @@ export interface ShippingInfoRequest {
 	address2?: string
 }
 
+export interface ShippingInfoResponse {
+	winnerId: string
+	raffleId: string
+	status: string
+	updatedAt: string
+}
+
+export interface ShippingUpdateResponse {
+	winnerId: string
+	raffleId: string
+	carrier: string
+	trackingNo: string
+	status: string
+	updatedAt: string
+}
+
 export interface ShippingUpdateRequest {
-	carrier?: string
-	trackingNo?: string
+	carrier: string
+	trackingNo: string
 	status: 'PENDING' | 'SAVED' | 'SHIPPED' | 'DELIVERED'
 }
 
@@ -194,7 +240,7 @@ export interface Winner {
 		address2?: string
 		carrier?: string
 		trackingNo?: string
-		status: 'PENDING' | 'SAVED' | 'SHIPPED' | 'DELIVERED'
+		status: string
 		updatedAt?: string
 	}
 }
@@ -202,4 +248,17 @@ export interface Winner {
 export interface WinnersResponse {
 	raffleId: string
 	winners: Winner[]
+}
+
+// 참여자 목록 조회 응답 타입
+export interface ParticipantsResponse {
+	raffleId: string
+	participants: Participant[]
+	count: number
+}
+
+export interface Participant {
+	participantId: string
+	displayName: string
+	joinedAt: string
 }

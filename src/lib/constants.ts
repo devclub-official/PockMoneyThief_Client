@@ -58,6 +58,22 @@ export const DASHBOARD_MESSAGES = {
 	DATA_LOAD_FAILED: '대시보드 데이터 로드 실패:',
 } as const
 
+// 대시보드 UI 텍스트 상수
+export const DASHBOARD_UI_TEXT = {
+	PAGE_TITLE: '내 대시보드',
+	PAGE_DESCRIPTION: '등록한 추첨과 참여한 추첨을 관리하세요',
+	MY_RAFFLES_TAB: '내가 등록한 추첨',
+	PARTICIPATED_TAB: '참여한 추첨',
+	MY_RAFFLES_HEADER: '등록한 추첨',
+	PARTICIPATED_HEADER: '참여한 추첨',
+	CREATE_RAFFLE_BUTTON: '새 추첨 등록',
+	NO_MY_RAFFLES_TITLE: '등록한 추첨이 없습니다',
+	NO_MY_RAFFLES_DESCRIPTION: '첫 번째 가차 추첨을 등록해보세요',
+	NO_PARTICIPATED_TITLE: '참여한 추첨이 없습니다',
+	NO_PARTICIPATED_DESCRIPTION: '흥미로운 추첨에 참여해보세요',
+	BROWSE_RAFFLES_BUTTON: '추첨 둘러보기',
+} as const
+
 // 상태 관련 상수 (API 명세서에 맞게 수정)
 export const RAFFLE_STATUS = {
 	PUBLISHED: 'PUBLISHED',

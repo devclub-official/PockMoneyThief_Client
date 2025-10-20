@@ -9,6 +9,7 @@ import { RaffleCard } from '@/components/dashboard/RaffleCard'
 import { ParticipatedRaffleCard } from '@/components/dashboard/ParticipatedRaffleCard'
 import { TrackingDialog } from '@/components/dashboard/TrackingDialog'
 import { useDashboard } from '@/hooks/useDashboard'
+import { DASHBOARD_UI_TEXT } from '@/lib/constants'
 import { Plus, Package, Users } from 'lucide-react'
 
 export function DashboardPage() {
@@ -49,8 +50,8 @@ export function DashboardPage() {
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="mb-8">
-				<h1 className="text-foreground text-2xl font-semibold">내 대시보드</h1>
-				<p className="text-muted-foreground">등록한 추첨과 참여한 추첨을 관리하세요</p>
+				<h1 className="text-foreground text-2xl font-semibold">{DASHBOARD_UI_TEXT.PAGE_TITLE}</h1>
+				<p className="text-muted-foreground">{DASHBOARD_UI_TEXT.PAGE_DESCRIPTION}</p>
 			</div>
 
 			<Tabs defaultValue="my-raffles" className="space-y-6">
@@ -61,7 +62,7 @@ export function DashboardPage() {
 						role="tab"
 						aria-controls="my-raffles-content"
 					>
-						내가 등록한 추첨
+						{DASHBOARD_UI_TEXT.MY_RAFFLES_TAB}
 					</TabsTrigger>
 					<TabsTrigger
 						value="participated"
@@ -69,7 +70,7 @@ export function DashboardPage() {
 						role="tab"
 						aria-controls="participated-content"
 					>
-						참여한 추첨
+						{DASHBOARD_UI_TEXT.PARTICIPATED_TAB}
 					</TabsTrigger>
 				</TabsList>
 
@@ -86,10 +87,11 @@ export function DashboardPage() {
 							className="text-xl font-semibold"
 							aria-label={`등록한 추첨 개수 ${myRaffles.length}`}
 						>
-							등록한 추첨 ({myRaffles.length})
+							{DASHBOARD_UI_TEXT.MY_RAFFLES_HEADER} ({myRaffles.length})
 						</h2>
 						<Button onClick={() => router.push('/create')} aria-label="새로운 추첨 등록하기">
-							<Plus className="mr-2 h-4 w-4" />새 추첨 등록
+							<Plus className="mr-2 h-4 w-4" />
+							{DASHBOARD_UI_TEXT.CREATE_RAFFLE_BUTTON}
 						</Button>
 					</div>
 
@@ -100,10 +102,14 @@ export function DashboardPage() {
 									className="text-muted-foreground mx-auto mb-4 h-12 w-12"
 									aria-hidden="true"
 								/>
-								<h3 className="mb-2 text-lg font-semibold">등록한 추첨이 없습니다</h3>
-								<p className="text-muted-foreground mb-4">첫 번째 가차 추첨을 등록해보세요</p>
+								<h3 className="mb-2 text-lg font-semibold">
+									{DASHBOARD_UI_TEXT.NO_MY_RAFFLES_TITLE}
+								</h3>
+								<p className="text-muted-foreground mb-4">
+									{DASHBOARD_UI_TEXT.NO_MY_RAFFLES_DESCRIPTION}
+								</p>
 								<Button onClick={() => router.push('/create')} aria-label="새로운 추첨 등록하기">
-									새 추첨 등록
+									{DASHBOARD_UI_TEXT.CREATE_RAFFLE_BUTTON}
 								</Button>
 							</CardContent>
 						</Card>
@@ -137,7 +143,7 @@ export function DashboardPage() {
 						className="text-xl font-semibold"
 						aria-label={`참여한 추첨 개수 ${participatedRaffles.length}`}
 					>
-						참여한 추첨 ({participatedRaffles.length})
+						{DASHBOARD_UI_TEXT.PARTICIPATED_HEADER} ({participatedRaffles.length})
 					</h2>
 
 					{participatedRaffles.length === 0 ? (
@@ -147,10 +153,14 @@ export function DashboardPage() {
 									className="text-muted-foreground mx-auto mb-4 h-12 w-12"
 									aria-hidden="true"
 								/>
-								<h3 className="mb-2 text-lg font-semibold">참여한 추첨이 없습니다</h3>
-								<p className="text-muted-foreground mb-4">흥미로운 추첨에 참여해보세요</p>
+								<h3 className="mb-2 text-lg font-semibold">
+									{DASHBOARD_UI_TEXT.NO_PARTICIPATED_TITLE}
+								</h3>
+								<p className="text-muted-foreground mb-4">
+									{DASHBOARD_UI_TEXT.NO_PARTICIPATED_DESCRIPTION}
+								</p>
 								<Button onClick={() => router.push('/')} aria-label="추첨 목록 둘러보기">
-									추첨 둘러보기
+									{DASHBOARD_UI_TEXT.BROWSE_RAFFLES_BUTTON}
 								</Button>
 							</CardContent>
 						</Card>

@@ -28,4 +28,5 @@ export const raffleApi = {
 export const loginApi = {
 	// checkOnboardingStatus: () => api.get('users/onboarding-status').json<boolean>(),
 	checkOnboardingStatus: () => new Promise((resolve) => setTimeout(() => resolve(false), 2000)),
+	logout: () => api.post('auth/logout').json<void>(),
 }

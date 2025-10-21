@@ -7,9 +7,8 @@ export function LoginCard() {
 	const router = useRouter()
 	const handleLogin = () => {
 		// TODO: 카카오 로그인 연동
-		// window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/oauth2/authorization/kakao`
-
-		router.push('/oauth-success')
+		window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL}/oauth2/authorization/kakao`
+		// router.push('/oauth-success')
 	}
 
 	return (

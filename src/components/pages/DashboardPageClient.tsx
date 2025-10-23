@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { RaffleCard } from '@/components/dashboard/RaffleCard'
 import { ParticipatedRaffleCard } from '@/components/dashboard/ParticipatedRaffleCard'
 import { TrackingDialog } from '@/components/dashboard/TrackingDialog'
+import { EmptyState } from '@/components/common/EmptyState'
 import { useDashboard } from '@/hooks/useDashboard'
 import { DASHBOARD_UI_TEXT } from '@/lib/constants'
 import { Plus, Package, Users } from 'lucide-react'
@@ -94,19 +95,14 @@ export function DashboardPageClient({
 					{displayMyRaffles.length === 0 ? (
 						<Card className="text-center" aria-label="등록한 추첨이 없음을 알리는 카드">
 							<CardContent className="py-12">
-								<Package
-									className="text-muted-foreground mx-auto mb-4 h-12 w-12"
-									aria-hidden="true"
+								<EmptyState
+									icon={Package}
+									title={DASHBOARD_UI_TEXT.NO_MY_RAFFLES_TITLE}
+									description={DASHBOARD_UI_TEXT.NO_MY_RAFFLES_DESCRIPTION}
+									buttonText={DASHBOARD_UI_TEXT.CREATE_RAFFLE_BUTTON}
+									onButtonClick={() => router.push('/create')}
+									ariaLabel="등록한 추첨이 없음을 알리는 카드"
 								/>
-								<h3 className="mb-2 text-lg font-semibold">
-									{DASHBOARD_UI_TEXT.NO_MY_RAFFLES_TITLE}
-								</h3>
-								<p className="text-muted-foreground mb-4">
-									{DASHBOARD_UI_TEXT.NO_MY_RAFFLES_DESCRIPTION}
-								</p>
-								<Button onClick={() => router.push('/create')} aria-label="새로운 추첨 등록하기">
-									{DASHBOARD_UI_TEXT.CREATE_RAFFLE_BUTTON}
-								</Button>
 							</CardContent>
 						</Card>
 					) : (
@@ -145,19 +141,14 @@ export function DashboardPageClient({
 					{displayParticipatedRaffles.length === 0 ? (
 						<Card className="text-center" aria-label="참여한 추첨이 없음을 알리는 카드">
 							<CardContent className="py-12">
-								<Users
-									className="text-muted-foreground mx-auto mb-4 h-12 w-12"
-									aria-hidden="true"
+								<EmptyState
+									icon={Users}
+									title={DASHBOARD_UI_TEXT.NO_PARTICIPATED_TITLE}
+									description={DASHBOARD_UI_TEXT.NO_PARTICIPATED_DESCRIPTION}
+									buttonText={DASHBOARD_UI_TEXT.BROWSE_RAFFLES_BUTTON}
+									onButtonClick={() => router.push('/')}
+									ariaLabel="참여한 추첨이 없음을 알리는 카드"
 								/>
-								<h3 className="mb-2 text-lg font-semibold">
-									{DASHBOARD_UI_TEXT.NO_PARTICIPATED_TITLE}
-								</h3>
-								<p className="text-muted-foreground mb-4">
-									{DASHBOARD_UI_TEXT.NO_PARTICIPATED_DESCRIPTION}
-								</p>
-								<Button onClick={() => router.push('/')} aria-label="추첨 목록 둘러보기">
-									{DASHBOARD_UI_TEXT.BROWSE_RAFFLES_BUTTON}
-								</Button>
 							</CardContent>
 						</Card>
 					) : (

@@ -5,10 +5,37 @@ import { usePathname } from 'next/navigation'
 import { Gift, X } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { SIDEBAR_MENU_ITEMS, SIDEBAR_BOTTOM_ITEMS } from '@/lib/constants'
+import type { SidebarProps } from '@/types/common'
 
-interface SidebarProps {
-	isOpen: boolean
-	onClose: () => void
+// 네비게이션 아이템 렌더링 함수
+function renderNavigationItems(
+	items: readonly {
+		title: string
+		href: string
+		icon: React.ComponentType<{ className?: string }>
+	}[],
+	pathname: string,
+	onClose: () => void,
+) {
+	return items.map((item) => {
+		const isActive = pathname === item.href
+		return (
+			<Link
+				key={item.href}
+				href={item.href}
+				onClick={onClose}
+				className={cn(
+					'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+					isActive
+						? 'bg-primary text-primary-foreground shadow-sm'
+						: 'text-muted-foreground hover:text-foreground hover:bg-accent',
+				)}
+			>
+				<item.icon className="h-5 w-5" />
+				{item.title}
+			</Link>
+		)
+	})
 }
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
@@ -58,50 +85,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 				{/* Navigation */}
 				<nav className="flex-1 space-y-1 p-4">
 					<div className="space-y-1">
-						{SIDEBAR_MENU_ITEMS.map((item) => {
-							const isActive = pathname === item.href
-							return (
-								<Link
-									key={item.href}
-									href={item.href}
-									onClick={onClose}
-									className={cn(
-										'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-										isActive
-											? 'bg-primary text-primary-foreground shadow-sm'
-											: 'text-muted-foreground hover:text-foreground hover:bg-accent',
-									)}
-								>
-									<item.icon className="h-5 w-5" />
-									{item.title}
-								</Link>
-							)
-						})}
+						{renderNavigationItems(SIDEBAR_MENU_ITEMS, pathname, onClose)}
 					</div>
 				</nav>
 
 				{/* Bottom Navigation */}
 				<div className="border-border absolute right-0 bottom-0 left-0 border-t p-4">
 					<div className="space-y-1">
-						{SIDEBAR_BOTTOM_ITEMS.map((item) => {
-							const isActive = pathname === item.href
-							return (
-								<Link
-									key={item.href}
-									href={item.href}
-									onClick={onClose}
-									className={cn(
-										'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-										isActive
-											? 'bg-primary text-primary-foreground shadow-sm'
-											: 'text-muted-foreground hover:text-foreground hover:bg-accent',
-									)}
-								>
-									<item.icon className="h-5 w-5" />
-									{item.title}
-								</Link>
-							)
-						})}
+						{renderNavigationItems(SIDEBAR_BOTTOM_ITEMS, pathname, onClose)}
 					</div>
 				</div>
 			</div>

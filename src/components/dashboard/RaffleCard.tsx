@@ -7,6 +7,111 @@ import { ShippingStatusBadge } from './ShippingStatusBadge'
 import { Users, Clock, Lock, X, Play, Truck } from 'lucide-react'
 import type { RaffleCardProps } from '@/types/dashboard'
 
+// 관리 버튼 렌더링 함수
+function renderManagementButtons(
+	raffle: RaffleCardProps['raffle'],
+	onLock: RaffleCardProps['onLock'],
+	onCancel: RaffleCardProps['onCancel'],
+	onDraw: RaffleCardProps['onDraw'],
+) {
+	if (raffle.status === 'PUBLISHED') {
+		return (
+			<div className="flex gap-2">
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => onLock(raffle.id)}
+					className="flex-1"
+					aria-label={`${raffle.title} 래플 잠금`}
+				>
+					<Lock className="mr-2 h-4 w-4" />
+					잠금
+				</Button>
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => onCancel(raffle.id)}
+					className="flex-1"
+					aria-label={`${raffle.title} 래플 취소`}
+				>
+					<X className="mr-2 h-4 w-4" />
+					취소
+				</Button>
+			</div>
+		)
+	}
+
+	if (raffle.status === 'LOCKED') {
+		return (
+			<Button
+				variant="default"
+				size="sm"
+				onClick={() => onDraw(raffle.id)}
+				className="w-full"
+				aria-label={`${raffle.title} 추첨 실행`}
+			>
+				<Play className="mr-2 h-4 w-4" />
+				추첨 실행
+			</Button>
+		)
+	}
+
+	return null
+}
+
+// 당첨자 관리 UI 컴포넌트
+function WinnerManagementSection({
+	winners,
+	onTrackingSubmit,
+}: {
+	winners: NonNullable<RaffleCardProps['raffle']['winners']>
+	onTrackingSubmit: RaffleCardProps['onTrackingSubmit']
+}) {
+	return (
+		<div className="space-y-3">
+			<h4 className="font-medium" aria-label="당첨자 관리">
+				당첨자 관리
+			</h4>
+			{winners.map((winner, index) => (
+				<div key={index} className="space-y-2 rounded-lg border p-3">
+					<div className="flex items-center justify-between">
+						<span className="font-medium">{winner.displayName}</span>
+						<ShippingStatusBadge status={winner.shippingStatus} />
+					</div>
+					<p className="text-muted-foreground text-sm">{winner.itemName}</p>
+
+					{winner.shippingInfo && (
+						<div className="text-muted-foreground space-y-1 text-xs" aria-label="배송 정보">
+							<p>이름: {winner.shippingInfo.name}</p>
+							<p>연락처: {winner.shippingInfo.phone}</p>
+							<p>주소: {winner.shippingInfo.address1}</p>
+						</div>
+					)}
+
+					{winner.shippingStatus === 'SAVED' && (
+						<Button
+							size="sm"
+							variant="outline"
+							onClick={() => onTrackingSubmit(winner)}
+							aria-label={`${winner.displayName} 송장번호 입력`}
+						>
+							<Truck className="mr-2 h-4 w-4" />
+							송장번호 입력
+						</Button>
+					)}
+
+					{winner.trackingNumber && (
+						<div className="text-xs" aria-label="송장번호">
+							<span className="text-muted-foreground">송장번호: </span>
+							<span className="font-mono">{winner.trackingNumber}</span>
+						</div>
+					)}
+				</div>
+			))}
+		</div>
+	)
+}
+
 export const RaffleCard = memo(
 	({
 		raffle,
@@ -59,86 +164,10 @@ export const RaffleCard = memo(
 					)}
 
 					{/* 관리 버튼들 */}
-					{raffle.status === 'PUBLISHED' && (
-						<div className="flex gap-2">
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={() => onLock(raffle.id)}
-								className="flex-1"
-								aria-label={`${raffle.title} 래플 잠금`}
-							>
-								<Lock className="mr-2 h-4 w-4" />
-								잠금
-							</Button>
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={() => onCancel(raffle.id)}
-								className="flex-1"
-								aria-label={`${raffle.title} 래플 취소`}
-							>
-								<X className="mr-2 h-4 w-4" />
-								취소
-							</Button>
-						</div>
-					)}
-
-					{raffle.status === 'LOCKED' && (
-						<Button
-							variant="default"
-							size="sm"
-							onClick={() => onDraw(raffle.id)}
-							className="w-full"
-							aria-label={`${raffle.title} 추첨 실행`}
-						>
-							<Play className="mr-2 h-4 w-4" />
-							추첨 실행
-						</Button>
-					)}
+					{renderManagementButtons(raffle, onLock, onCancel, onDraw)}
 
 					{raffle.status === 'DRAWN' && raffle.winners && (
-						<div className="space-y-3">
-							<h4 className="font-medium" aria-label="당첨자 관리">
-								당첨자 관리
-							</h4>
-							{raffle.winners.map((winner, index) => (
-								<div key={index} className="space-y-2 rounded-lg border p-3">
-									<div className="flex items-center justify-between">
-										<span className="font-medium">{winner.displayName}</span>
-										<ShippingStatusBadge status={winner.shippingStatus} />
-									</div>
-									<p className="text-muted-foreground text-sm">{winner.itemName}</p>
-
-									{winner.shippingInfo && (
-										<div className="text-muted-foreground space-y-1 text-xs" aria-label="배송 정보">
-											<p>이름: {winner.shippingInfo.name}</p>
-											<p>연락처: {winner.shippingInfo.phone}</p>
-											<p>주소: {winner.shippingInfo.address1}</p>
-										</div>
-									)}
-
-									{winner.shippingStatus === 'SAVED' && (
-										<Button
-											size="sm"
-											variant="outline"
-											onClick={() => onTrackingSubmit(winner)}
-											aria-label={`${winner.displayName} 송장번호 입력`}
-										>
-											<Truck className="mr-2 h-4 w-4" />
-											송장번호 입력
-										</Button>
-									)}
-
-									{winner.trackingNumber && (
-										<div className="text-xs" aria-label="송장번호">
-											<span className="text-muted-foreground">송장번호: </span>
-											<span className="font-mono">{winner.trackingNumber}</span>
-										</div>
-									)}
-								</div>
-							))}
-						</div>
+						<WinnerManagementSection winners={raffle.winners} onTrackingSubmit={onTrackingSubmit} />
 					)}
 
 					<div className="flex gap-2">

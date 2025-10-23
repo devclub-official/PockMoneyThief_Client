@@ -192,15 +192,13 @@ interface HomePageClientProps {
 export function HomePageClient({ initialData }: HomePageClientProps) {
 	const router = useRouter()
 	const [filter, setFilter] = useState<RaffleFilter>('all')
-	const [currentTime, setCurrentTime] = useState<number | null>(null)
-
-	// 하이드레이션 안전성을 위해 useEffect에서 시간 설정
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setCurrentTime(Date.now())
-		}, 0)
-		return () => clearTimeout(timer)
-	}, [])
+	const [currentTime] = useState<number | null>(() => {
+		// 클라이언트에서만 실행되도록 보장
+		if (typeof window !== 'undefined') {
+			return Date.now()
+		}
+		return null
+	})
 
 	// 서버에서 prefetch된 데이터 사용
 	const raffles = initialData.items || []

@@ -67,15 +67,13 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 	const [participantName, setParticipantName] = useState('')
 	const [isParticipating, setIsParticipating] = useState(false)
 	const [showParticipateDialog, setShowParticipateDialog] = useState(false)
-	const [currentTime, setCurrentTime] = useState<number>(0)
-
-	// 하이드레이션 안전성을 위해 useEffect에서 시간 설정
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setCurrentTime(Date.now())
-		}, 0)
-		return () => clearTimeout(timer)
-	}, [])
+	const [currentTime] = useState<number>(() => {
+		// 클라이언트에서만 실행되도록 보장
+		if (typeof window !== 'undefined') {
+			return Date.now()
+		}
+		return 0
+	})
 
 	/**
 	 * TODO: 실제 API 연동 시 주석 해제

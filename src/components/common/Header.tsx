@@ -21,9 +21,8 @@ export function Header({ onMenuClick }: HeaderProps) {
 	const router = useRouter()
 
 	const handleLogout = async () => {
-		// TODO: 로그아웃 로직
 		await loginApi.logout()
-		router.push('/login')
+		return router.push('/login')
 	}
 
 	return (

@@ -5,6 +5,7 @@ import { ReactQueryProvider } from '@/lib/react-query-provider'
 import '@/lib/sentry.client'
 import { ThemeProvider } from '@/lib/theme-provider'
 import { LayoutClient } from '@/components/common/LayoutClient'
+import { ToastProvider } from '@/components/ui/Toast'
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -31,7 +32,9 @@ export default function RootLayout({
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider>
 					<ReactQueryProvider>
-						<LayoutClient>{children}</LayoutClient>
+						<ToastProvider>
+							<LayoutClient>{children}</LayoutClient>
+						</ToastProvider>
 					</ReactQueryProvider>
 				</ThemeProvider>
 			</body>

@@ -1,12 +1,12 @@
-import { raffleApi } from '@/lib/api'
+// import { raffleApi } from '@/lib/api'
 import React from 'react'
 
 interface LayoutProps extends React.PropsWithChildren {
 	params: Promise<{ raffleId: string }>
 }
 
-export default async function layout({ children, params }: LayoutProps) {
-	const { raffleId } = await params
+export default async function layout({ children }: LayoutProps) {
+	// const { raffleId } = await params
 	// const raffle = await raffleApi.getById(raffleId)
 	const title = '피카츄 넌드로이드'
 

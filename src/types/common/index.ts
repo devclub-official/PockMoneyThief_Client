@@ -76,3 +76,29 @@ export interface ExternalApiResponse {
 	timestamp: string
 	source: string
 }
+
+// 공통 컴포넌트 타입들
+export interface EmptyStateProps {
+	icon: React.ComponentType<{ className?: string }>
+	title: string
+	description: string
+	buttonText?: string
+	onButtonClick?: () => void
+	ariaLabel?: string
+}
+
+export interface LoadingStateProps {
+	message?: string
+}
+
+export interface ErrorStateProps {
+	title?: string
+	description?: string
+	buttonText?: string
+	onRetry?: () => void
+}
+
+export interface SidebarProps {
+	isOpen: boolean
+	onClose: () => void
+}

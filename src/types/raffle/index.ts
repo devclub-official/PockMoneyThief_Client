@@ -24,6 +24,8 @@ export interface RaffleDetailResponse {
 	maxParticipants: number
 	imageUrl: string
 	deadlineAt: string
+	externalSeedDescription: string
+	externalSeed: string | null
 	tiers: TierResponse[]
 	status: string
 	createdAt: string
@@ -33,7 +35,7 @@ export interface RaffleDetailResponse {
 export interface TierResponse {
 	rank: number
 	name: string
-	imageUrl?: string
+	imageUrl: string
 	quantity: number
 }
 
@@ -46,14 +48,31 @@ export interface CreateRaffleRequest {
 	deadlineAt: string
 	imageUrl: string
 	description: string
+	externalSeedDescription: string
 	tiers: TierRequest[]
+}
+
+// 래플 생성 응답 타입 (API 명세서에 맞게 수정)
+export interface CreateRaffleResponse {
+	id: string
+	title: string
+	description: string
+	entryFee: number
+	minParticipants: number
+	maxParticipants: number
+	deadlineAt: string
+	imageUrl: string
+	externalSeedDescription: string
+	tiers: TierResponse[]
+	status: string
+	createdAt: string
 }
 
 export interface TierRequest {
 	rank: number
 	name: string
 	quantity: number
-	imageUrl?: string
+	imageUrl: string
 }
 
 // 필터 타입
@@ -71,6 +90,19 @@ export interface RaffleParticipation {
 	ipAddress: string
 }
 
+// 래플 참여 요청 타입
+export interface ParticipateRequest {
+	displayName: string
+}
+
+// 래플 참여 응답 타입
+export interface ParticipateResponse {
+	participantId: string
+	raffleId: string
+	displayName: string
+	joinedAt: string
+}
+
 // 래플 결과 타입
 export interface RaffleResult {
 	id: string
@@ -80,4 +112,153 @@ export interface RaffleResult {
 	seed: string
 	hash: string
 	generatedAt: string
+}
+
+// 래플 관리 API 응답 타입들
+export interface RaffleLockResponse {
+	raffleId: string
+	status: string
+	lockedAt: string
+}
+
+export interface RaffleCancelResponse {
+	raffleId: string
+	status: string
+	cancelledAt: string
+	reason: string
+}
+
+// 추첨 관련 타입들
+export interface DrawRequest {
+	externalSeed: string
+}
+
+export interface DrawResponse {
+	raffleId: string
+	seed: {
+		externalSeed: string
+		participantListHash: string
+		masterSeed: string
+	}
+	assignments: Assignment[]
+	publishedAt: string
+}
+
+export interface Assignment {
+	participantId: string
+	displayName: string
+	rank: number
+	itemName: string
+}
+
+// 추첨 결과 조회용 Assignment (participantId 없음)
+export interface ResultAssignment {
+	displayName: string
+	rank: number
+	itemName: string
+}
+
+// 추첨 미리보기 응답 타입
+export interface RafflePreviewResponse {
+	raffleId: string
+	externalSeed: string
+	assignments: Assignment[]
+}
+
+export interface RaffleResultResponse {
+	raffleId: string
+	assignments: ResultAssignment[]
+	seed: {
+		externalSeed: string
+		participantListHash: string
+		masterSeed: string
+	}
+}
+
+export interface VerifyBundleResponse {
+	// TODO: 후순위 작성예정
+	raffleId: string
+	participants: unknown[]
+	seed: unknown
+	code: unknown
+}
+
+// 배송 관련 타입들
+export interface ShippingInfoRequest {
+	name: string
+	phone: string
+	zipcode: string
+	address1: string
+	address2?: string
+}
+
+export interface ShippingInfoResponse {
+	winnerId: string
+	raffleId: string
+	status: string
+	updatedAt: string
+}
+
+export interface ShippingUpdateResponse {
+	winnerId: string
+	raffleId: string
+	carrier: string
+	trackingNo: string
+	status: string
+	updatedAt: string
+}
+
+export interface ShippingUpdateRequest {
+	carrier: string
+	trackingNo: string
+	status: 'PENDING' | 'SAVED' | 'SHIPPED' | 'DELIVERED'
+}
+
+export interface ShippingInfo {
+	name?: string
+	phone?: string
+	zipcode?: string
+	address1?: string
+	address2?: string
+	carrier?: string
+	trackingNo?: string
+	status: 'PENDING' | 'SAVED' | 'SHIPPED' | 'DELIVERED'
+	updatedAt?: string
+}
+
+// API 응답용 Winner 타입 (배송 정보 포함)
+export interface Winner {
+	participantId: string
+	displayName: string
+	rank: number
+	itemName: string
+	shipping: {
+		name?: string
+		phone?: string // 마스킹 처리됨 (예: "010****5678")
+		zipcode?: string
+		address1?: string // 마스킹 처리됨 (예: "서울특별시 강남구 테헤란로 ***")
+		address2?: string
+		carrier?: string
+		trackingNo?: string
+		status: string
+		updatedAt?: string
+	}
+}
+
+export interface WinnersResponse {
+	raffleId: string
+	winners: Winner[]
+}
+
+// 참여자 목록 조회 응답 타입
+export interface ParticipantsResponse {
+	raffleId: string
+	participants: Participant[]
+	count: number
+}
+
+export interface Participant {
+	participantId: string
+	displayName: string
+	joinedAt: string
 }

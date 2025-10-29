@@ -1,0 +1,115 @@
+# 프로젝트 규칙
+
+## 기술 스택
+- Framework: Next.js 15 (App Router)
+- Language: TypeScript
+- Styling: Tailwind CSS
+- Data Fetching: React Query + ky
+- Form: React Hook Form + Zod
+- State: Jotai (필요시)
+- Formatting: ESLint + Prettier
+- Git Hooks: Husky
+- Package Manager: pnpm
+
+## 폴더 구조
+src/
+├── app/              # Next.js 페이지
+├── components/       # 컴포넌트 (common, features)
+├── hooks/            # 커스텀 훅 (React Query 포함)
+├── lib/              # API, 스키마, 상수, 유틸
+└── types/            # 타입 정의
+
+## 코딩 컨벤션
+
+### 파일명
+- 컴포넌트: PascalCase (Button.tsx)
+- 훅: camelCase (useRaffles.ts)
+- 유틸/API: camelCase (api.ts)
+- 타입: camelCase (index.ts)
+
+### 컴포넌트 작성
+- 함수형 컴포넌트만 사용
+- export function 사용 (export default 지양)
+- Props는 interface로 정의
+- 'use client' 필요한 경우에만 명시
+
+예시:
+```typescript
+interface ButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+
+export function Button({ children, onClick }: ButtonProps) {
+  return <button onClick={onClick}>{children}</button>;
+}
+```
+
+### API 작성
+- lib/api.ts에 모든 API 함수 작성
+- ky 사용
+- 타입 명시
+
+예시:
+```typescript
+export const raffleApi = {
+  getList: () => api.get('raffles').json<RaffleList>(),
+  getById: (id: string) => api.get(`raffles/${id}`).json<Raffle>(),
+};
+```
+
+### 커스텀 훅
+- use로 시작
+- React Query 사용시 queryKey 명확하게
+- 타입 제네릭 활용
+
+예시:
+```typescript
+export function useRaffles() {
+  return useQuery<RaffleList>({
+    queryKey: ['raffles'],
+    queryFn: () => raffleApi.getList(),
+  });
+}
+```
+
+### 스타일링
+- Tailwind CSS 유틸리티 클래스만 사용
+- cn() 함수로 조건부 클래스 처리
+- 인라인 스타일 지양
+
+### 타입 정의
+- interface 우선 사용
+- API 응답 타입은 types/index.ts에 정의
+- Zod 스키마는 lib/schemas.ts에 정의
+
+## 금지 사항
+- localStorage, sessionStorage 사용 금지 (React state 사용)
+- any 타입 사용 최소화
+- console.log는 개발 중에만, 커밋 전 제거
+- 하드코딩된 문자열/숫자는 constants.ts로 분리
+
+## Git 커밋 메시지
+- feat: 새 기능
+- fix: 버그 수정
+- refactor: 리팩토링
+- style: 스타일 변경
+- docs: 문서 수정
+- chore: 기타 변경
+
+예시: feat: 추첨 목록 조회 기능 추가
+
+## 작업 시 체크리스트
+1. 타입 정의 먼저
+2. API 함수 작성
+3. 커스텀 훅 작성
+4. 컴포넌트 작성
+5. 스타일링
+6. 에러 핸들링 추가
+
+## 추가 지침
+- 답변은 한국어로 할 것
+- localStorage, sessionStorage 사용 금지 (React state 사용)
+- Next.js 프로젝트 구축 시 CLI 기본 옵션 사용
+- 비대화형 플래그 사용해서 구축
+- 컴포넌트 기능을 최대한 활용하며 모던한 프론트엔드 설계 패턴 사용

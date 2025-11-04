@@ -23,6 +23,9 @@ import { Clock, Users, CheckCircle, AlertCircle } from 'lucide-react'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import { useRaffleDetail } from '@/hooks/useRaffleDetail'
 import { useParticipants } from '@/hooks/useParticipants'
+import { participantApi } from '@/lib/api'
+import { useQueryClient } from '@tanstack/react-query'
+import { useToast } from '@/components/ui/Toast'
 
 interface Participant {
 	id: string
@@ -62,6 +65,8 @@ const FALLBACK_IMAGE =
 export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 	const { id } = use(params)
 	const router = useRouter()
+	const queryClient = useQueryClient()
+	const { addToast } = useToast()
 	const [participantName, setParticipantName] = useState('')
 	const [isParticipating, setIsParticipating] = useState(false)
 	const [showParticipateDialog, setShowParticipateDialog] = useState(false)
@@ -80,11 +85,8 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 	const raffle = useMemo((): RaffleDetail | null => {
 		if (!raffleData) return null
 
-		// Mock 데이터 validation (백엔드가 실제 데이터 내려주면 제거)
-		const validParticipantsCount = Math.max(0, raffleData.participantsCount || 0)
-		const validEntryFee = Math.max(0, raffleData.entryFee || 0)
-		const validMinParticipants = Math.max(0, raffleData.minParticipants || 0)
-		const validMaxParticipants = Math.max(1, raffleData.maxParticipants || 1)
+		// 참여자 수는 participantsData.count 우선 사용 (가장 정확)
+		const currentParticipants = participantsData?.count ?? raffleData.participantsCount
 
 		// 실제 참여자 목록 사용
 		const participants: Participant[] = participantsData?.participants
@@ -100,10 +102,10 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 			title: raffleData.title,
 			description: raffleData.description,
 			imageUrl: raffleData.imageUrl,
-			entryFee: validEntryFee,
-			minParticipants: validMinParticipants,
-			maxParticipants: validMaxParticipants,
-			currentParticipants: validParticipantsCount,
+			entryFee: raffleData.entryFee,
+			minParticipants: raffleData.minParticipants,
+			maxParticipants: raffleData.maxParticipants,
+			currentParticipants,
 			endTime: new Date(raffleData.deadlineAt),
 			status: raffleData.status,
 			createdAt: new Date(raffleData.createdAt),
@@ -142,13 +144,36 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 
 		setIsParticipating(true)
 
-		// TODO: 실제 POST /raffles/{raffleId}/participants API 호출
-		setTimeout(() => {
-			alert('추첨 참여가 완료되었습니다!')
+		try {
+			// 실제 POST /raffles/{raffleId}/participants API 호출
+			await participantApi.participate(id, {
+				displayName: participantName,
+			})
+
+			// 성공 시 참여자 목록 새로고침
+			queryClient.invalidateQueries({ queryKey: ['participants', id] })
+			queryClient.invalidateQueries({ queryKey: ['raffle', id] })
+
+			addToast({
+				title: '참여 완료',
+				description: '추첨 참여가 완료되었습니다!',
+				variant: 'success',
+				duration: 3000,
+			})
+
 			setShowParticipateDialog(false)
+			setParticipantName('')
+			// router.push('/') // 페이지 이동 대신 현재 페이지에서 목록만 업데이트
+		} catch (error) {
+			addToast({
+				title: '참여 실패',
+				description: '추첨 참여에 실패했습니다. 다시 시도해주세요.',
+				variant: 'error',
+				duration: 4000,
+			})
+		} finally {
 			setIsParticipating(false)
-			router.push('/')
-		}, 2000)
+		}
 	}
 
 	// 로딩 상태
@@ -289,7 +314,7 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 							<div className="flex items-center justify-between">
 								<span className="flex items-center gap-1">
 									<Clock className="h-4 w-4" />
-									남은 시간
+									{raffle.status === 'PUBLISHED' ? '남은 시간' : '상태'}
 								</span>
 								<span
 									className={
@@ -300,7 +325,13 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 												: 'text-foreground'
 									}
 								>
-									{formatTimeLeft(raffle.endTime)}
+									{raffle.status === 'PUBLISHED'
+										? formatTimeLeft(raffle.endTime)
+										: raffle.status === 'LOCKED'
+											? '참가 마감'
+											: raffle.status === 'CANCELLED'
+												? '취소됨'
+												: raffle.status}
 								</span>
 							</div>
 

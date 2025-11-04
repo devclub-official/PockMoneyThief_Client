@@ -132,9 +132,11 @@ function RaffleCard({
 							? '진행중'
 							: raffle.status === 'LOCKED'
 								? '마감'
-								: raffle.status === 'CANCELLED'
-									? '취소'
-									: raffle.status}
+								: raffle.status === 'DRAWN'
+									? '추첨완료'
+									: raffle.status === 'CANCELLED'
+										? '취소'
+										: raffle.status}
 					</Badge>
 				</div>
 			</div>
@@ -173,9 +175,11 @@ function RaffleCard({
 								? formatTimeLeft(deadlineTime)
 								: raffle.status === 'LOCKED'
 									? '참가 마감'
-									: raffle.status === 'CANCELLED'
-										? '취소됨'
-										: raffle.status}
+									: raffle.status === 'DRAWN'
+										? '추첨 완료'
+										: raffle.status === 'CANCELLED'
+											? '취소됨'
+											: raffle.status}
 						</span>
 					</div>
 				</div>

@@ -318,7 +318,9 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 								</span>
 								<span
 									className={
-										raffle.status === 'LOCKED' || raffle.status === 'CANCELLED'
+										raffle.status === 'LOCKED' ||
+										raffle.status === 'DRAWN' ||
+										raffle.status === 'CANCELLED'
 											? 'text-muted-foreground'
 											: raffle.endTime.getTime() - currentTime < 60 * 60 * 1000
 												? 'text-destructive'
@@ -329,9 +331,11 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 										? formatTimeLeft(raffle.endTime)
 										: raffle.status === 'LOCKED'
 											? '참가 마감'
-											: raffle.status === 'CANCELLED'
-												? '취소됨'
-												: raffle.status}
+											: raffle.status === 'DRAWN'
+												? '추첨 완료'
+												: raffle.status === 'CANCELLED'
+													? '취소됨'
+													: raffle.status}
 								</span>
 							</div>
 
@@ -413,11 +417,13 @@ export default function RaffleDetailPage({ params }: RaffleDetailPageProps) {
 							<Button size="lg" className="w-full" disabled>
 								{raffle.status === 'LOCKED'
 									? '참가 마감'
-									: raffle.status === 'CANCELLED'
-										? '취소된 추첨'
-										: raffle.currentParticipants >= raffle.maxParticipants
-											? '참여 마감'
-											: '참여 불가'}
+									: raffle.status === 'DRAWN'
+										? '추첨 완료'
+										: raffle.status === 'CANCELLED'
+											? '취소된 추첨'
+											: raffle.currentParticipants >= raffle.maxParticipants
+												? '참여 마감'
+												: '참여 불가'}
 							</Button>
 						)}
 					</div>

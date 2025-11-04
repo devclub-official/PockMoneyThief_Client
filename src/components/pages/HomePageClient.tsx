@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -105,7 +105,14 @@ function RaffleCard({
 	currentTime: number | null
 	router: ReturnType<typeof useRouter>
 }) {
-	const deadlineTime = new Date(raffle.deadlineAt)
+	// useMemo로 deadlineTime 메모이제이션
+	const deadlineTime = useMemo(() => new Date(raffle.deadlineAt), [raffle.deadlineAt])
+
+	// isUrgent을 useMemo로 직접 계산 (setState 불필요)
+	const isUrgent = useMemo(() => {
+		if (!currentTime) return false
+		return deadlineTime.getTime() - currentTime < TIME_CONSTANTS.URGENT_THRESHOLD
+	}, [currentTime, deadlineTime])
 
 	return (
 		<div
@@ -121,7 +128,13 @@ function RaffleCard({
 				/>
 				<div className="absolute top-3 left-3">
 					<Badge variant="default" className="bg-primary">
-						{raffle.status}
+						{raffle.status === 'PUBLISHED'
+							? '진행중'
+							: raffle.status === 'LOCKED'
+								? '마감'
+								: raffle.status === 'CANCELLED'
+									? '취소'
+									: raffle.status}
 					</Badge>
 				</div>
 			</div>
@@ -144,16 +157,25 @@ function RaffleCard({
 
 				<div className="space-y-2">
 					<div className="flex items-center justify-between text-sm">
-						<span className="text-muted-foreground">마감 시간</span>
+						<span className="text-muted-foreground">
+							{raffle.status === 'PUBLISHED' ? '마감 시간' : '상태'}
+						</span>
 						<span
 							className={
-								currentTime &&
-								deadlineTime.getTime() - currentTime < TIME_CONSTANTS.URGENT_THRESHOLD
-									? 'text-destructive font-medium'
-									: 'text-foreground font-medium'
+								raffle.status !== 'PUBLISHED'
+									? 'text-muted-foreground font-medium'
+									: isUrgent
+										? 'text-destructive font-medium'
+										: 'text-foreground font-medium'
 							}
 						>
-							{formatTimeLeft(deadlineTime)}
+							{raffle.status === 'PUBLISHED'
+								? formatTimeLeft(deadlineTime)
+								: raffle.status === 'LOCKED'
+									? '참가 마감'
+									: raffle.status === 'CANCELLED'
+										? '취소됨'
+										: raffle.status}
 						</span>
 					</div>
 				</div>
@@ -161,12 +183,15 @@ function RaffleCard({
 				<Button
 					className="w-full"
 					size="sm"
+					disabled={raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt) <= new Date()}
 					onClick={(e) => {
 						e.stopPropagation()
 						router.push(`/raffle/${raffle.id}`)
 					}}
 				>
-					참여하기
+					{raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt) > new Date()
+						? '참여하기'
+						: '상세보기'}
 				</Button>
 			</div>
 		</div>
@@ -192,13 +217,13 @@ interface HomePageClientProps {
 export function HomePageClient({ initialData }: HomePageClientProps) {
 	const router = useRouter()
 	const [filter, setFilter] = useState<RaffleFilter>('all')
-	const [currentTime] = useState<number | null>(() => {
-		// 클라이언트에서만 실행되도록 보장
-		if (typeof window !== 'undefined') {
-			return Date.now()
-		}
-		return null
-	})
+	const [currentTime, setCurrentTime] = useState<number | null>(null)
+
+	// 클라이언트에서만 시간 설정 (hydration 이슈 방지)
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		setCurrentTime(Date.now())
+	}, [])
 
 	// 서버에서 prefetch된 데이터 사용
 	const raffles = initialData.items || []

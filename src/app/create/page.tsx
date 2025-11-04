@@ -29,6 +29,7 @@ export default function CreatePage() {
 			minParticipants: 1,
 			maxParticipants: 10,
 			imageUrl: '',
+			externalSeedDescription: '',
 			tiers: [{ rank: 1, name: '', quantity: 1, imageUrl: '' }],
 		},
 	})
@@ -139,6 +140,18 @@ export default function CreatePage() {
 								placeholder="추첨에 대한 자세한 설명을 입력해주세요"
 								rows={3}
 							/>
+						</div>
+
+						<div>
+							<Label htmlFor="externalSeedDescription">외부 시드 설명 *</Label>
+							<Input
+								id="externalSeedDescription"
+								{...register('externalSeedDescription')}
+								placeholder="예: samsung-stock-2025-10-18-close-last-digit"
+							/>
+							<p className="text-muted-foreground mt-1 text-xs">
+								공정한 추첨을 위한 외부 데이터 원천 (예: 주식 종가, 날씨 데이터 등)
+							</p>
 						</div>
 
 						<div>

@@ -14,7 +14,7 @@ import type {
 	ShippingInfoResponse,
 	ShippingUpdateRequest,
 	ShippingUpdateResponse,
-	WinnersResponse,
+	// WinnersResponse,
 	ParticipateRequest,
 	ParticipateResponse,
 	ParticipantsResponse,
@@ -41,8 +41,9 @@ export const raffleApi = {
 	getVerifyBundle: (id: string) =>
 		api.get(`raffles/${id}/verify/bundle`).json<VerifyBundleResponse>(),
 
-	// 당첨자 관리
-	getWinners: (id: string) => api.get(`raffles/${id}/winners`).json<WinnersResponse>(),
+	// ❌ API 명세에 없는 엔드포인트 (백엔드 확인 필요)
+	// 당첨자 목록 조회는 명세에 없음. 배송정보 제출/수정만 있음
+	// getWinners: (id: string) => api.get(`raffles/${id}/winners`).json<WinnersResponse>(),
 }
 
 // 참여자 관리 API

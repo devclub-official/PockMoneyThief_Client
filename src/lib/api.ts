@@ -71,6 +71,38 @@ export const shippingApi = {
 			.json<ShippingUpdateResponse>(),
 }
 
+// 주소록 API
+export const addressApi = {
+	getMyAddresses: (): Promise<ShippingInfoRequest[]> => {
+		return new Promise((resolve) => {
+			resolve([
+				{
+					name: '집',
+					phone: '010-1234-5678',
+					zipcode: '12345',
+					address1: '서울시 강남구 테헤란로 123',
+					address2: '101동 101호',
+				},
+				{
+					name: '회사',
+					phone: '010-1234-5679',
+					zipcode: '12346',
+					address1: '서울시 강남구 테헤란로 124',
+					address2: '101동 102호',
+				},
+				{
+					name: '친구집',
+					phone: '010-1234-5680',
+					zipcode: '12346',
+					address1: '서울시 강남구 테헤란로 125',
+					address2: '101동 102호',
+				},
+			])
+		})
+	},
+	// getMyAddresses: () => api.get('users/me/addresses').json<ShippingAddress[]>(),
+}
+
 // Login API (로그인 기능)
 export const loginApi = {
 	// checkOnboardingStatus: () => api.get('users/onboarding-status').json<boolean>(),

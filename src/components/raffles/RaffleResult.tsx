@@ -4,15 +4,11 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useFadeMount } from '@/hooks/useFadeMount'
+import { RaffleDetailResponse } from '@/types'
 
 interface RaffleResultContainerProps {
-	title: string
-	description: string
-	organizer: string
-	closedAt: string
-	imageUrl: string
+	raffleDetail: RaffleDetailResponse
 	raffleResultVideoSrc?: string
-	raffleId: string
 }
 
 // Presentational components
@@ -93,11 +89,17 @@ function ResultSection({
 	winnerName,
 	participants,
 	winnerIndex,
+	externalSeedDescription,
+	externalSeed,
+	participantsCount,
 }: {
 	title: string
 	winnerName: string
 	participants: string[]
 	winnerIndex: number
+	externalSeedDescription: string
+	externalSeed: string | null
+	participantsCount: number
 }) {
 	return (
 		<div className="mt-10 translate-y-0 transform rounded-xl border border-gray-200 bg-white/80 p-6 opacity-100 shadow-sm backdrop-blur-sm transition-all duration-700 ease-out">
@@ -123,14 +125,16 @@ function ResultSection({
 				<p className="mt-1 text-sm text-gray-500">투명하고 공정한 추첨을 위한 검증 데이터입니다</p>
 				<div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
 					<div className="rounded-md bg-gray-50 px-4 py-3 text-sm">
-						2025-09-27 삼성전자 주가 마지막 자릿수
+						{externalSeedDescription || '외부 시드 설명 없음'}
 					</div>
-					<div className="rounded-md bg-gray-50 px-4 py-3 text-sm">실제 시드 값: 7</div>
+					<div className="rounded-md bg-gray-50 px-4 py-3 text-sm">
+						실제 시드 값: {externalSeed || '미확정'}
+					</div>
 				</div>
 			</div>
 
 			<div className="mt-6">
-				<div className="text-base font-semibold">참여자 목록 ({participants.length}명)</div>
+				<div className="text-base font-semibold">참여자 목록 ({participantsCount}명)</div>
 				<div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
 					{participants.map((name, idx) => (
 						<div
@@ -146,22 +150,16 @@ function ResultSection({
 	)
 }
 
-export function RaffleResult({
-	title,
-	description,
-	organizer,
-	closedAt,
-	imageUrl,
-	raffleResultVideoSrc,
-	raffleId,
-}: RaffleResultContainerProps) {
+export function RaffleResult({ raffleDetail, raffleResultVideoSrc }: RaffleResultContainerProps) {
 	const router = useRouter()
 	const intro = useFadeMount({ initialVisible: true })
 	const overlay = useFadeMount()
 	const result = useFadeMount({ durationMs: 700 })
 
 	/**
-	 * TODO: API Spec 작성된 이후 '참여자 목록, 당첨자 정보(인덱스, 이름)' 외부에서 주입하도록 수정
+	 * TODO: 참여자 목록, 당첨자 정보는 별도 API 연동 필요
+	 * - GET /raffles/{raffleId}/participants
+	 * - GET /raffles/{raffleId}/result
 	 */
 	const participants = [
 		'PokeExpert',
@@ -174,6 +172,28 @@ export function RaffleResult({
 	]
 	const winnerIndex = 2
 	const winnerName = participants[winnerIndex]
+
+	// 래플 상세 정보
+	const {
+		id: raffleId,
+		title,
+		description,
+		imageUrl,
+		createdAt,
+		status,
+		externalSeedDescription,
+		externalSeed,
+		participantsCount,
+	} = raffleDetail
+
+	// 날짜 포맷팅
+	const formattedDate = new Date(createdAt).toLocaleString('ko-KR', {
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+	})
 
 	useBodyScrollLock(overlay.mounted)
 
@@ -197,7 +217,7 @@ export function RaffleResult({
 					<div className="h-16 w-16 overflow-hidden rounded-md bg-gray-100">
 						<Image
 							src={imageUrl}
-							alt="raffle"
+							alt={title}
 							width={64}
 							height={64}
 							className="h-full w-full object-cover"
@@ -207,7 +227,8 @@ export function RaffleResult({
 						<div className="truncate text-sm font-semibold">{title}</div>
 						<div className="mt-1 truncate text-sm text-gray-600">{description}</div>
 						<div className="mt-1 text-xs text-gray-400">
-							등록자: {organizer} <span className="mx-2">·</span> 완료시간: {closedAt}
+							상태: {status === 'PUBLISHED' ? '추첨 완료' : status} <span className="mx-2">·</span>{' '}
+							생성일: {formattedDate}
 						</div>
 					</div>
 				</div>
@@ -236,6 +257,9 @@ export function RaffleResult({
 						winnerName={winnerName}
 						participants={participants}
 						winnerIndex={winnerIndex}
+						externalSeedDescription={externalSeedDescription}
+						externalSeed={externalSeed}
+						participantsCount={participantsCount}
 					/>
 					<button
 						onClick={() => router.push(`/raffles/${raffleId}/verify`)}

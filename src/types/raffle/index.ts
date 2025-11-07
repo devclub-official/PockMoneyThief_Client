@@ -185,11 +185,13 @@ export interface VerifyBundleResponse {
 
 // 배송 관련 타입들
 export interface ShippingInfoRequest {
+	id?: string
 	name: string
 	phone: string
 	zipcode: string
 	address1: string
 	address2?: string
+	isDefault?: boolean
 }
 
 export interface ShippingInfoResponse {

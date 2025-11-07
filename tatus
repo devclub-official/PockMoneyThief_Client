@@ -1,0 +1,143 @@
+[1mdiff --git a/src/components/pages/HomePageClient.tsx b/src/components/pages/HomePageClient.tsx[m
+[1mindex 3a5d811..76d462f 100644[m
+[1m--- a/src/components/pages/HomePageClient.tsx[m
+[1m+++ b/src/components/pages/HomePageClient.tsx[m
+[36m@@ -52,14 +52,19 @@[m [mfunction StatsSection({[m
+ 	stats,[m
+ 	raffles,[m
+ }: {[m
+[31m-	stats: { totalParticipants: number; avgWinRate: number }[m
+[32m+[m	[32mstats: {[m
+[32m+[m		[32mtotalLotteries: number[m
+[32m+[m		[32mactiveLotteries: number[m
+[32m+[m		[32mtotalParticipants: number[m
+[32m+[m		[32mavgWinRate: number[m
+[32m+[m	[32m}[m
+ 	raffles: RaffleListResponse['items'][m
+ }) {[m
+ 	return ([m
+ 		<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">[m
+ 			<StatsCard[m
+ 				title="전체 추첨"[m
+[31m-				value={raffles.length}[m
+[32m+[m				[32mvalue={stats.totalLotteries}[m
+ 				subtitle="Total lotteries"[m
+ 				icon={Gift}[m
+ 				iconBg="bg-red-100"[m
+[36m@@ -67,28 +72,12 @@[m [mfunction StatsSection({[m
+ 			/>[m
+ 			<StatsCard[m
+ 				title="진행중 추첨"[m
+[31m-				value={raffles.length}[m
+[32m+[m				[32mvalue={stats.activeLotteries}[m
+ 				subtitle="Active lotteries"[m
+ 				icon={Clock}[m
+ 				iconBg="bg-violet-100"[m
+ 				gradientColor="from-violet-500 to-violet-500/20"[m
+ 			/>[m
+[31m-			<StatsCard[m
+[31m-				title="총 참여자"[m
+[31m-				value={stats.totalParticipants}[m
+[31m-				subtitle="Total participants"[m
+[31m-				icon={Users}[m
+[31m-				iconBg="bg-orange-100"[m
+[31m-				gradientColor="from-orange-500 to-orange-500/20"[m
+[31m-			/>[m
+[31m-			<StatsCard[m
+[31m-				title="평균 당첨률"[m
+[31m-				value={`${stats.avgWinRate}%`}[m
+[31m-				subtitle="Average win rate"[m
+[31m-				icon={TrendingUp}[m
+[31m-				iconBg="bg-green-100"[m
+[31m-				gradientColor="from-green-500 to-green-500/20"[m
+[31m-			/>[m
+ 		</div>[m
+ 	)[m
+ }[m
+[36m@@ -207,8 +196,8 @@[m [mfunction getEmptyStateMessage(filter: RaffleFilter) {[m
+ 	switch (filter) {[m
+ 		case 'active':[m
+ 			return '현재 진행중인 추첨이 없습니다.'[m
+[31m-		case 'ending-soon':[m
+[31m-			return '마감 임박한 추첨이 없습니다.'[m
+[32m+[m		[32mcase 'closed':[m
+[32m+[m			[32mreturn '마감된 추첨이 없습니다.'[m
+ 		default:[m
+ 			return '등록된 추첨이 없습니다.'[m
+ 	}[m
+[36m@@ -235,21 +224,42 @@[m [mexport function HomePageClient({ initialData }: HomePageClientProps) {[m
+ 	const isError = false[m
+ [m
+ 	// 통계 계산 (실제 데이터 기반)[m
+[31m-	const stats = {[m
+[31m-		totalLotteries: raffles.length,[m
+[31m-		activeLotteries: raffles.length,[m
+[31m-		totalParticipants: 0, // TODO: 참여자 수 API 추가 필요[m
+[31m-		avgWinRate: 0, // TODO: 당첨률 API 추가 필요[m
+[31m-	}[m
+[32m+[m	[32mconst stats = useMemo(() => {[m
+[32m+[m		[32mconst activeLotteries = currentTime[m
+[32m+[m			[32m? raffles.filter([m
+[32m+[m					[32m(raffle) =>[m
+[32m+[m						[32mraffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime,[m
+[32m+[m				[32m).length[m
+[32m+[m			[32m: 0[m
+[32m+[m
+[32m+[m		[32mreturn {[m
+[32m+[m			[32mtotalLotteries: raffles.length,[m
+[32m+[m			[32mactiveLotteries,[m
+[32m+[m			[32mtotalParticipants: 0, // TODO: 참여자 수 API 추가 필요[m
+[32m+[m			[32mavgWinRate: 0, // TODO: 당첨률 API 추가 필요[m
+[32m+[m		[32m}[m
+[32m+[m	[32m}, [raffles, currentTime])[m
+ [m
+ 	// 필터링 (currentTime이 설정된 후에만 실행)[m
+ 	const filteredRaffles = raffles.filter((raffle) => {[m
+[31m-		if (filter === 'active') return true // 모든 항목이 진행중으로 간주[m
+[31m-		if (filter === 'ending-soon' && currentTime) {[m
+[31m-			const deadlineTime = new Date(raffle.deadlineAt).getTime()[m
+[31m-			const timeLeft = deadlineTime - currentTime[m
+[31m-			return timeLeft < TIME_CONSTANTS.ENDING_SOON_THRESHOLD[m
+[32m+[m		[32m// 전체 - 모든 항목 표시[m
+[32m+[m		[32mif (filter === 'all') return true[m
+[32m+[m
+[32m+[m		[32m// 진행중 - PUBLISHED 상태이면서 마감시간이 지나지 않은 항목[m
+[32m+[m		[32mif (filter === 'active' && currentTime) {[m
+[32m+[m			[32mreturn raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime[m
+ 		}[m
+[32m+[m
+[32m+[m		[32m// 마감 - LOCKED, DRAWN, CANCELLED 또는 마감시간이 지난 PUBLISHED 항목[m
+[32m+[m		[32mif (filter === 'closed' && currentTime) {[m
+[32m+[m			[32mreturn ([m
+[32m+[m				[32mraffle.status === 'LOCKED' ||[m
+[32m+[m				[32mraffle.status === 'DRAWN' ||[m
+[32m+[m				[32mraffle.status === 'CANCELLED' ||[m
+[32m+[m				[32m(raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() <= currentTime)[m
+[32m+[m			[32m)[m
+[32m+[m		[32m}[m
+[32m+[m
+ 		return true[m
+ 	})[m
+ [m
+[36m@@ -288,7 +298,7 @@[m [mexport function HomePageClient({ initialData }: HomePageClientProps) {[m
+ 						<TabsList className="bg-muted">[m
+ 							<TabsTrigger value="all">전체</TabsTrigger>[m
+ 							<TabsTrigger value="active">진행중</TabsTrigger>[m
+[31m-							<TabsTrigger value="ending-soon">마감임박</TabsTrigger>[m
+[32m+[m							[32m<TabsTrigger value="closed">마감</TabsTrigger>[m
+ 						</TabsList>[m
+ 					</Tabs>[m
+ 				</div>[m
+[1mdiff --git a/src/types/raffle/index.ts b/src/types/raffle/index.ts[m
+[1mindex 3682662..92b537a 100644[m
+[1m--- a/src/types/raffle/index.ts[m
+[1m+++ b/src/types/raffle/index.ts[m
+[36m@@ -76,7 +76,7 @@[m [mexport interface TierRequest {[m
+ }[m
+ [m
+ // 필터 타입[m
+[31m-export type RaffleFilter = 'all' | 'active' | 'ending-soon'[m
+[32m+[m[32mexport type RaffleFilter = 'all' | 'active' | 'closed'[m
+ [m
+ // 래플 상태 타입[m
+ export type RaffleStatus = 'active' | 'ended' | 'cancelled' | 'pending'[m

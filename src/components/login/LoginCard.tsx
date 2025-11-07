@@ -1,15 +1,28 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { OAUTH_ENDPOINTS } from '@/lib/constants'
+
+function getSafeReturnTo(searchParams: ReturnType<typeof useSearchParams>) {
+	const raw = searchParams.get('returnTo') || '/'
+
+	// 내부 경로만 허용: 반드시 '/'로 시작, '//'로 시작(프로토콜 상대) 금지
+	if (raw.startsWith('/') && !raw.startsWith('//')) return raw
+	return '/'
+}
 
 export function LoginCard() {
-	const router = useRouter()
+	const searchParams = useSearchParams()
 	const handleLogin = () => {
-		// TODO: 카카오 로그인 연동
-		// window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/oauth2/authorization/kakao`
+		const returnTo = getSafeReturnTo(searchParams)
 
-		router.push('/oauth-success')
+		const base = process.env.NEXT_PUBLIC_API_BASE_URL
+		if (!base) {
+			window.location.href = '/'
+			return
+		}
+		window.location.href = `${base}${OAUTH_ENDPOINTS.KAKAO}?returnTo=${encodeURIComponent(returnTo)}`
 	}
 
 	return (

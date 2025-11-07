@@ -15,12 +15,14 @@ interface RaffleResultContainerProps {
 function IntroCard({ visible, onOpen }: { visible: boolean; onOpen: () => void }) {
 	return (
 		<div
-			className={`mt-8 rounded-xl border border-gray-200 bg-white/60 p-8 text-center shadow-sm backdrop-blur-sm transition-opacity duration-500 ${
+			className={`mt-8 rounded-xl border border-gray-200 bg-white/60 p-8 text-center shadow-sm backdrop-blur-sm transition-opacity duration-500 dark:border-gray-700 dark:bg-gray-800/60 ${
 				visible ? 'opacity-100' : 'opacity-0'
 			}`}
 		>
-			<div className="text-base font-semibold">추첨 결과 확인</div>
-			<p className="mt-2 text-sm text-gray-500">투명하고 공정한 추첨 결과를 확인해보세요</p>
+			<div className="text-base font-semibold dark:text-gray-100">추첨 결과 확인</div>
+			<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+				투명하고 공정한 추첨 결과를 확인해보세요
+			</p>
 			<button
 				onClick={onOpen}
 				className="mx-auto mt-6 inline-flex min-w-40 items-center justify-center rounded-md bg-indigo-500 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 active:bg-indigo-700"
@@ -102,44 +104,52 @@ function ResultSection({
 	participantsCount: number
 }) {
 	return (
-		<div className="mt-10 translate-y-0 transform rounded-xl border border-gray-200 bg-white/80 p-6 opacity-100 shadow-sm backdrop-blur-sm transition-all duration-700 ease-out">
-			<div className="mb-4 flex items-center gap-2 text-lg font-semibold">
+		<div className="mt-10 translate-y-0 transform rounded-xl border border-gray-200 bg-white/80 p-6 opacity-100 shadow-sm backdrop-blur-sm transition-all duration-700 ease-out dark:border-gray-700 dark:bg-gray-800/80">
+			<div className="mb-4 flex items-center gap-2 text-lg font-semibold dark:text-gray-100">
 				<span>🏆</span>
 				<span>당첨자 발표</span>
 			</div>
-			<div className="flex items-center justify-between rounded-lg border border-indigo-100 bg-indigo-50/60 p-4">
+			<div className="flex items-center justify-between rounded-lg border border-indigo-100 bg-indigo-50/60 p-4 dark:border-indigo-900 dark:bg-indigo-950/40">
 				<div className="flex items-center gap-3">
-					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300">
 						🏅
 					</div>
 					<div>
-						<div className="text-sm font-semibold">{winnerName}</div>
-						<div className="text-xs text-gray-500">{title}</div>
+						<div className="text-sm font-semibold dark:text-gray-100">{winnerName}</div>
+						<div className="text-xs text-gray-500 dark:text-gray-400">{title}</div>
 					</div>
 				</div>
-				<div className="text-xs text-emerald-600">배송정보 완료</div>
+				<div className="text-xs text-emerald-600 dark:text-emerald-400">배송정보 완료</div>
 			</div>
 
 			<div className="mt-6">
-				<div className="text-base font-semibold">추첨 검증 정보</div>
-				<p className="mt-1 text-sm text-gray-500">투명하고 공정한 추첨을 위한 검증 데이터입니다</p>
+				<div className="text-base font-semibold dark:text-gray-100">추첨 검증 정보</div>
+				<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+					투명하고 공정한 추첨을 위한 검증 데이터입니다
+				</p>
 				<div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-					<div className="rounded-md bg-gray-50 px-4 py-3 text-sm">
+					<div className="rounded-md bg-gray-50 px-4 py-3 text-sm dark:bg-gray-700 dark:text-gray-200">
 						{externalSeedDescription || '외부 시드 설명 없음'}
 					</div>
-					<div className="rounded-md bg-gray-50 px-4 py-3 text-sm">
+					<div className="rounded-md bg-gray-50 px-4 py-3 text-sm dark:bg-gray-700 dark:text-gray-200">
 						실제 시드 값: {externalSeed || '미확정'}
 					</div>
 				</div>
 			</div>
 
 			<div className="mt-6">
-				<div className="text-base font-semibold">참여자 목록 ({participantsCount}명)</div>
+				<div className="text-base font-semibold dark:text-gray-100">
+					참여자 목록 ({participantsCount}명)
+				</div>
 				<div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
 					{participants.map((name, idx) => (
 						<div
 							key={name}
-							className={`rounded-md px-3 py-2 text-sm ${idx === winnerIndex ? 'bg-amber-50 ring-1 ring-amber-200' : 'bg-gray-50'}`}
+							className={`rounded-md px-3 py-2 text-sm ${
+								idx === winnerIndex
+									? 'bg-amber-50 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-200 dark:ring-amber-700'
+									: 'bg-gray-50 dark:bg-gray-700 dark:text-gray-200'
+							}`}
 						>
 							{idx + 1}. {name}
 						</div>
@@ -212,9 +222,9 @@ export function RaffleResult({ raffleDetail, raffleResultVideoSrc }: RaffleResul
 
 	return (
 		<>
-			<div className="rounded-xl border border-gray-200 bg-white/60 p-4 shadow-sm backdrop-blur-sm">
+			<div className="rounded-xl border border-gray-200 bg-white/60 p-4 shadow-sm backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/60">
 				<div className="flex items-center gap-4">
-					<div className="h-16 w-16 overflow-hidden rounded-md bg-gray-100">
+					<div className="h-16 w-16 overflow-hidden rounded-md bg-gray-100 dark:bg-gray-700">
 						<Image
 							src={imageUrl}
 							alt={title}
@@ -224,9 +234,11 @@ export function RaffleResult({ raffleDetail, raffleResultVideoSrc }: RaffleResul
 						/>
 					</div>
 					<div className="min-w-0 flex-1">
-						<div className="truncate text-sm font-semibold">{title}</div>
-						<div className="mt-1 truncate text-sm text-gray-600">{description}</div>
-						<div className="mt-1 text-xs text-gray-400">
+						<div className="truncate text-sm font-semibold dark:text-gray-100">{title}</div>
+						<div className="mt-1 truncate text-sm text-gray-600 dark:text-gray-300">
+							{description}
+						</div>
+						<div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
 							상태: {status === 'PUBLISHED' ? '추첨 완료' : status} <span className="mx-2">·</span>{' '}
 							생성일: {formattedDate}
 						</div>

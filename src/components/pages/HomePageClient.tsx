@@ -52,14 +52,19 @@ function StatsSection({
 	stats,
 	raffles,
 }: {
-	stats: { totalParticipants: number; avgWinRate: number }
+	stats: {
+		totalLotteries: number
+		activeLotteries: number
+		totalParticipants: number
+		avgWinRate: number
+	}
 	raffles: RaffleListResponse['items']
 }) {
 	return (
 		<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
 			<StatsCard
 				title="전체 추첨"
-				value={raffles.length}
+				value={stats.totalLotteries}
 				subtitle="Total lotteries"
 				icon={Gift}
 				iconBg="bg-red-100"
@@ -67,7 +72,7 @@ function StatsSection({
 			/>
 			<StatsCard
 				title="진행중 추첨"
-				value={raffles.length}
+				value={stats.activeLotteries}
 				subtitle="Active lotteries"
 				icon={Clock}
 				iconBg="bg-violet-100"
@@ -207,8 +212,8 @@ function getEmptyStateMessage(filter: RaffleFilter) {
 	switch (filter) {
 		case 'active':
 			return '현재 진행중인 추첨이 없습니다.'
-		case 'ending-soon':
-			return '마감 임박한 추첨이 없습니다.'
+		case 'closed':
+			return '마감된 추첨이 없습니다.'
 		default:
 			return '등록된 추첨이 없습니다.'
 	}
@@ -235,21 +240,42 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 	const isError = false
 
 	// 통계 계산 (실제 데이터 기반)
-	const stats = {
-		totalLotteries: raffles.length,
-		activeLotteries: raffles.length,
-		totalParticipants: 0, // TODO: 참여자 수 API 추가 필요
-		avgWinRate: 0, // TODO: 당첨률 API 추가 필요
-	}
+	const stats = useMemo(() => {
+		const activeLotteries = currentTime
+			? raffles.filter(
+					(raffle) =>
+						raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime,
+				).length
+			: 0
+
+		return {
+			totalLotteries: raffles.length,
+			activeLotteries,
+			totalParticipants: 0, // TODO: 참여자 수 API 추가 필요
+			avgWinRate: 0, // TODO: 당첨률 API 추가 필요
+		}
+	}, [raffles, currentTime])
 
 	// 필터링 (currentTime이 설정된 후에만 실행)
 	const filteredRaffles = raffles.filter((raffle) => {
-		if (filter === 'active') return true // 모든 항목이 진행중으로 간주
-		if (filter === 'ending-soon' && currentTime) {
-			const deadlineTime = new Date(raffle.deadlineAt).getTime()
-			const timeLeft = deadlineTime - currentTime
-			return timeLeft < TIME_CONSTANTS.ENDING_SOON_THRESHOLD
+		// 전체 - 모든 항목 표시
+		if (filter === 'all') return true
+
+		// 진행중 - PUBLISHED 상태이면서 마감시간이 지나지 않은 항목
+		if (filter === 'active' && currentTime) {
+			return raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime
 		}
+
+		// 마감 - LOCKED, DRAWN, CANCELLED 또는 마감시간이 지난 PUBLISHED 항목
+		if (filter === 'closed' && currentTime) {
+			return (
+				raffle.status === 'LOCKED' ||
+				raffle.status === 'DRAWN' ||
+				raffle.status === 'CANCELLED' ||
+				(raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() <= currentTime)
+			)
+		}
+
 		return true
 	})
 
@@ -288,7 +314,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 						<TabsList className="bg-muted">
 							<TabsTrigger value="all">전체</TabsTrigger>
 							<TabsTrigger value="active">진행중</TabsTrigger>
-							<TabsTrigger value="ending-soon">마감임박</TabsTrigger>
+							<TabsTrigger value="closed">마감</TabsTrigger>
 						</TabsList>
 					</Tabs>
 				</div>

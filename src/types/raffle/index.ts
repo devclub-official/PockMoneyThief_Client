@@ -76,7 +76,7 @@ export interface TierRequest {
 }
 
 // 필터 타입
-export type RaffleFilter = 'all' | 'active' | 'ending-soon'
+export type RaffleFilter = 'all' | 'active' | 'closed'
 
 // 래플 상태 타입
 export type RaffleStatus = 'active' | 'ended' | 'cancelled' | 'pending'

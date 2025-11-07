@@ -9,7 +9,7 @@ import { ImageWithFallback } from '@/components/common/ImageWithFallback'
 import { LoadingState } from '@/components/common/LoadingState'
 import { ErrorState } from '@/components/common/ErrorState'
 import { EmptyState } from '@/components/common/EmptyState'
-import { Clock, Users, Gift, TrendingUp } from 'lucide-react'
+import { Clock, Gift } from 'lucide-react'
 import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import type { RaffleFilter, RaffleListResponse } from '@/types'
@@ -55,13 +55,11 @@ function StatsSection({
 	stats: {
 		totalLotteries: number
 		activeLotteries: number
-		totalParticipants: number
-		avgWinRate: number
 	}
 	raffles: RaffleListResponse['items']
 }) {
 	return (
-		<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+		<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 			<StatsCard
 				title="전체 추첨"
 				value={stats.totalLotteries}
@@ -77,22 +75,6 @@ function StatsSection({
 				icon={Clock}
 				iconBg="bg-violet-100"
 				gradientColor="from-violet-500 to-violet-500/20"
-			/>
-			<StatsCard
-				title="총 참여자"
-				value={stats.totalParticipants}
-				subtitle="Total participants"
-				icon={Users}
-				iconBg="bg-orange-100"
-				gradientColor="from-orange-500 to-orange-500/20"
-			/>
-			<StatsCard
-				title="평균 당첨률"
-				value={`${stats.avgWinRate}%`}
-				subtitle="Average win rate"
-				icon={TrendingUp}
-				iconBg="bg-green-100"
-				gradientColor="from-green-500 to-green-500/20"
 			/>
 		</div>
 	)
@@ -251,8 +233,6 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 		return {
 			totalLotteries: raffles.length,
 			activeLotteries,
-			totalParticipants: 0, // TODO: 참여자 수 API 추가 필요
-			avgWinRate: 0, // TODO: 당첨률 API 추가 필요
 		}
 	}, [raffles, currentTime])
 

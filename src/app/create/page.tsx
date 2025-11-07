@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,10 +16,9 @@ import { useToast } from '@/components/ui/Toast'
 export default function CreatePage() {
 	const router = useRouter()
 	const createRaffle = useCreateRaffle()
-	const [duration, setDuration] = useState(24)
 	const { addToast } = useToast()
 
-	const { register, handleSubmit, control } = useForm<CreateRaffleFormData>({
+	const { register, handleSubmit, control, watch } = useForm<CreateRaffleFormData>({
 		resolver: zodResolver(createRaffleSchema),
 		defaultValues: {
 			title: '',
@@ -28,11 +26,14 @@ export default function CreatePage() {
 			entryFee: 0,
 			minParticipants: 1,
 			maxParticipants: 10,
+			duration: 24,
 			imageUrl: '',
 			externalSeedDescription: '',
 			tiers: [{ rank: 1, name: '', quantity: 1, imageUrl: '' }],
 		},
 	})
+
+	const duration = watch('duration')
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -213,8 +214,7 @@ export default function CreatePage() {
 							<Input
 								id="duration"
 								type="number"
-								value={duration}
-								onChange={(e) => setDuration(Number(e.target.value))}
+								{...register('duration', { valueAsNumber: true })}
 								placeholder="24"
 								min={1}
 							/>

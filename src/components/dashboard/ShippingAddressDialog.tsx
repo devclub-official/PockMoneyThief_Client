@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense, useMemo, useState } from 'react'
-import { CirclePlus } from 'lucide-react'
+import { CirclePlus, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -17,6 +17,9 @@ import {
 	DialogTitle,
 } from '@/components/ui/Dialog'
 import { useSubmitShippingInfo } from '@/hooks/useSubmitShippingInfo'
+import { useCreateAddress } from '@/hooks/useCreateAddress'
+import { useUpdateAddress } from '@/hooks/useUpdateAddress'
+import { useDeleteAddress } from '@/hooks/useDeleteAddress'
 import { ShippingInfoRequest } from '@/types'
 
 interface ShippingAddressDialogProps {
@@ -33,7 +36,10 @@ export function ShippingAddressDialog({
 	onOpenChange,
 }: ShippingAddressDialogProps) {
 	const [isAdding, setIsAdding] = useState(false)
+	const [editingId, setEditingId] = useState<string | null>(null)
 	const submitShippingInfo = useSubmitShippingInfo()
+	const createAddress = useCreateAddress()
+	const updateAddress = useUpdateAddress()
 	const form = useForm<ShippingAddressFormData>({
 		resolver: zodResolver(shippingAddressSchema),
 		defaultValues: {
@@ -46,21 +52,41 @@ export function ShippingAddressDialog({
 	})
 
 	const handleSubmit = form.handleSubmit((data) => {
-		// TODO: API 연동하여 배송지 저장 후 invalidate
-		console.log('submit address', data)
-		submitShippingInfo.mutate({
-			raffleId: raffleId,
-			participantId: participantId,
-			data: data,
-		})
-		onOpenChange(false)
+		if (editingId) {
+			// 수정 모드
+			updateAddress.mutate(
+				{
+					id: editingId,
+					data: data,
+				},
+				{
+					onSuccess: () => {
+						setEditingId(null)
+						setIsAdding(false)
+						form.reset()
+					},
+				},
+			)
+		} else {
+			// 새 배송지 추가
+			createAddress.mutate(data, {
+				onSuccess: () => {
+					setIsAdding(false)
+					form.reset()
+				},
+			})
+		}
 	})
 
 	return (
 		<Dialog
 			open={open}
 			onOpenChange={(v) => {
-				if (!v) setIsAdding(false)
+				if (!v) {
+					setIsAdding(false)
+					setEditingId(null)
+					form.reset()
+				}
 				onOpenChange(v)
 			}}
 		>
@@ -83,7 +109,7 @@ export function ShippingAddressDialog({
 				</div>
 
 				<div className="h-96 overflow-y-auto pr-1">
-					{isAdding ? (
+					{isAdding || editingId ? (
 						<form className="space-y-4" onSubmit={handleSubmit}>
 							<div className="space-y-2">
 								<Label htmlFor="name">수령인</Label>
@@ -154,17 +180,38 @@ export function ShippingAddressDialog({
 								)}
 							</div>
 							<div className="flex justify-end gap-2 pt-2">
-								<Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>
+								<Button
+									type="button"
+									variant="ghost"
+									onClick={() => {
+										setIsAdding(false)
+										setEditingId(null)
+										form.reset()
+									}}
+								>
 									취소
 								</Button>
-								<Button type="submit">저장</Button>
+								<Button type="submit">{editingId ? '수정' : '저장'}</Button>
 							</div>
 						</form>
 					) : (
 						<Suspense
 							fallback={<div className="text-muted-foreground text-sm">주소를 불러오는 중...</div>}
 						>
-							<AddressList raffleId={raffleId} participantId={participantId} />
+							<AddressList
+								raffleId={raffleId}
+								participantId={participantId}
+								onEdit={(address) => {
+									setEditingId(address.id!)
+									form.reset({
+										name: address.name,
+										phone: address.phone,
+										zipcode: address.zipcode,
+										address1: address.address1,
+										address2: address.address2 || '',
+									})
+								}}
+							/>
 						</Suspense>
 					)}
 				</div>
@@ -173,16 +220,38 @@ export function ShippingAddressDialog({
 	)
 }
 
-function AddressList({ raffleId, participantId }: { raffleId: string; participantId: string }) {
+interface AddressListProps {
+	raffleId: string
+	participantId: string
+	onEdit: (address: ShippingInfoRequest) => void
+}
+
+function AddressList({ raffleId, participantId, onEdit }: AddressListProps) {
 	const { data: addresses } = useShippingAddresses()
 	const submitShippingInfo = useSubmitShippingInfo()
-	const handleSubmitShippingInfo = (data: ShippingInfoRequest) => {
-		submitShippingInfo.mutate({
-			raffleId: raffleId,
-			participantId: participantId,
-			data: data,
+	const deleteAddress = useDeleteAddress()
+	const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+	const [selectConfirmAddress, setSelectConfirmAddress] = useState<ShippingInfoRequest | null>(null)
+
+	const handleConfirmSelect = () => {
+		if (selectConfirmAddress) {
+			submitShippingInfo.mutate({
+				raffleId: raffleId,
+				participantId: participantId,
+				data: selectConfirmAddress,
+			})
+			setSelectConfirmAddress(null)
+		}
+	}
+
+	const handleDelete = (id: string) => {
+		deleteAddress.mutate(id, {
+			onSuccess: () => {
+				setDeleteConfirmId(null)
+			},
 		})
 	}
+
 	const hasAddresses = addresses && addresses?.length > 0
 
 	if (!hasAddresses) {
@@ -194,20 +263,108 @@ function AddressList({ raffleId, participantId }: { raffleId: string; participan
 	}
 
 	return (
-		<div className="space-y-2">
-			{addresses.map((addr, idx) => (
-				<div
-					key={idx}
-					className="cursor-pointer rounded-md border p-3"
-					onClick={() => handleSubmitShippingInfo(addr)}
-				>
-					<p className="font-medium">{addr.name}</p>
-					<p className="text-sm text-gray-600 dark:text-gray-300">{addr.phone}</p>
-					<p className="text-sm">
-						({addr.zipcode}) {addr.address1} {addr.address2}
-					</p>
-				</div>
-			))}
-		</div>
+		<>
+			<div className="space-y-2">
+				{addresses.map((addr) => (
+					<div
+						key={addr.id}
+						className="relative cursor-pointer rounded-md border p-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
+						onClick={() => setSelectConfirmAddress(addr)}
+					>
+						<div className="mb-2 flex items-start justify-between">
+							<div className="flex items-center gap-2">
+								<p className="font-medium">{addr.name}</p>
+								{addr.isDefault && (
+									<span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+										기본
+									</span>
+								)}
+							</div>
+							<div className="flex gap-1">
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									className="h-9 w-9 p-0"
+									onClick={(e) => {
+										e.stopPropagation()
+										onEdit(addr)
+									}}
+									aria-label="배송지 수정"
+								>
+									<Pencil className="h-5 w-5" />
+								</Button>
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									className="h-9 w-9 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
+									onClick={(e) => {
+										e.stopPropagation()
+										setDeleteConfirmId(addr.id!)
+									}}
+									aria-label="배송지 삭제"
+								>
+									<Trash2 className="h-5 w-5" />
+								</Button>
+							</div>
+						</div>
+						<p className="text-sm text-gray-600 dark:text-gray-300">{addr.phone}</p>
+						<p className="text-sm">
+							({addr.zipcode}) {addr.address1} {addr.address2}
+						</p>
+					</div>
+				))}
+			</div>
+
+			{/* 배송지 선택 확인 다이얼로그 */}
+			<Dialog open={!!selectConfirmAddress} onOpenChange={() => setSelectConfirmAddress(null)}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>배송지 선택</DialogTitle>
+						<DialogDescription>이 배송지로 당첨 상품을 받으시겠습니까?</DialogDescription>
+					</DialogHeader>
+					{selectConfirmAddress && (
+						<div className="rounded-md border bg-gray-50 p-4 dark:bg-gray-800">
+							<p className="mb-2 font-medium">{selectConfirmAddress.name}</p>
+							<p className="mb-1 text-sm text-gray-600 dark:text-gray-300">
+								{selectConfirmAddress.phone}
+							</p>
+							<p className="text-sm">
+								({selectConfirmAddress.zipcode}) {selectConfirmAddress.address1}{' '}
+								{selectConfirmAddress.address2}
+							</p>
+						</div>
+					)}
+					<div className="flex justify-end gap-2">
+						<Button variant="ghost" onClick={() => setSelectConfirmAddress(null)}>
+							취소
+						</Button>
+						<Button onClick={handleConfirmSelect}>확인</Button>
+					</div>
+				</DialogContent>
+			</Dialog>
+
+			{/* 삭제 확인 다이얼로그 */}
+			<Dialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>배송지 삭제</DialogTitle>
+						<DialogDescription>이 배송지를 삭제하시겠습니까?</DialogDescription>
+					</DialogHeader>
+					<div className="flex justify-end gap-2">
+						<Button variant="ghost" onClick={() => setDeleteConfirmId(null)}>
+							취소
+						</Button>
+						<Button
+							variant="destructive"
+							onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
+						>
+							삭제
+						</Button>
+					</div>
+				</DialogContent>
+			</Dialog>
+		</>
 	)
 }

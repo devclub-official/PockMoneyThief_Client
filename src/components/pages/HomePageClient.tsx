@@ -50,13 +50,11 @@ function StatsCard({
 // 통계 섹션 컴포넌트
 function StatsSection({
 	stats,
-	raffles,
 }: {
 	stats: {
 		totalLotteries: number
 		activeLotteries: number
 	}
-	raffles: RaffleListResponse['items']
 }) {
 	return (
 		<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -83,12 +81,10 @@ function StatsSection({
 // 래플 카드 컴포넌트
 function RaffleCard({
 	raffle,
-	index,
 	currentTime,
 	router,
 }: {
 	raffle: RaffleListResponse['items'][0]
-	index: number
 	currentTime: number | null
 	router: ReturnType<typeof useRouter>
 }) {
@@ -103,7 +99,6 @@ function RaffleCard({
 
 	return (
 		<div
-			key={`${raffle.id}-${index}`}
 			className="bg-card border-border group cursor-pointer overflow-hidden rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md"
 			onClick={() => router.push(`/raffle/${raffle.id}`)}
 		>
@@ -217,7 +212,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 	}, [])
 
 	// 서버에서 prefetch된 데이터 사용
-	const raffles = initialData.items || []
+	const raffles = useMemo(() => initialData.items || [], [initialData.items])
 	const isLoading = false
 	const isError = false
 
@@ -280,7 +275,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 			</div>
 
 			{/* Stats Cards */}
-			<StatsSection stats={stats} raffles={raffles} />
+			<StatsSection stats={stats} />
 
 			{/* Filters */}
 			<div className="bg-card border-border rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
@@ -301,14 +296,8 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 
 				{/* Lottery Grid */}
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{filteredRaffles.map((raffle, index) => (
-						<RaffleCard
-							key={`${raffle.id}-${index}`}
-							raffle={raffle}
-							index={index}
-							currentTime={currentTime}
-							router={router}
-						/>
+					{filteredRaffles.map((raffle) => (
+						<RaffleCard key={raffle.id} raffle={raffle} currentTime={currentTime} router={router} />
 					))}
 				</div>
 

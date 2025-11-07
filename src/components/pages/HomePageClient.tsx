@@ -284,7 +284,12 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 					<Tabs
 						defaultValue="all"
 						value={filter}
-						onValueChange={(value) => setFilter(value as RaffleFilter)}
+						onValueChange={(value) => {
+							const allowed: RaffleFilter[] = ['all', 'active', 'closed']
+							if (allowed.includes(value as RaffleFilter)) {
+								setFilter(value as RaffleFilter)
+							}
+						}}
 					>
 						<TabsList className="bg-muted">
 							<TabsTrigger value="all">전체</TabsTrigger>

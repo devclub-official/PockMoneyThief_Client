@@ -118,7 +118,6 @@ export const ParticipatedRaffleCard = memo(
 				</Card>
 				<ShippingAddressDialog
 					raffleId={raffle.id}
-					participantId={raffle.participantId}
 					open={showAddressDialog}
 					onOpenChange={setShowAddressDialog}
 				/>

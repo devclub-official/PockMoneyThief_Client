@@ -59,10 +59,10 @@ export const participantApi = {
 // 배송 관리 API
 export const shippingApi = {
 	// 당첨자 배송 정보 제출
-	submitShippingInfo: (raffleId: string, participantId: string, data: ShippingInfoRequest) =>
-		api
-			.post(`raffles/${raffleId}/winners/${participantId}/shipping`, { json: data })
-			.json<ShippingInfoResponse>(),
+	submitShippingInfo: (raffleId: string, data: ShippingInfoRequest) =>
+		// deprecated된 endpoint
+		// TODO:추후 변경되는 endpoint로 수정 필요
+		api.post(`raffles/${raffleId}/winners/shipping`, { json: data }).json<ShippingInfoResponse>(),
 
 	// 배송 정보 수정 (호스트/관리자)
 	updateShippingInfo: (raffleId: string, participantId: string, data: ShippingUpdateRequest) =>

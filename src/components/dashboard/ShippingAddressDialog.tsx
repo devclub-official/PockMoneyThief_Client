@@ -24,14 +24,12 @@ import { ShippingInfoRequest } from '@/types'
 
 interface ShippingAddressDialogProps {
 	raffleId: string
-	participantId: string
 	open: boolean
 	onOpenChange: (open: boolean) => void
 }
 
 export function ShippingAddressDialog({
 	raffleId,
-	participantId,
 	open,
 	onOpenChange,
 }: ShippingAddressDialogProps) {
@@ -200,7 +198,6 @@ export function ShippingAddressDialog({
 						>
 							<AddressList
 								raffleId={raffleId}
-								participantId={participantId}
 								onEdit={(address) => {
 									setEditingId(address.id!)
 									form.reset({
@@ -222,11 +219,10 @@ export function ShippingAddressDialog({
 
 interface AddressListProps {
 	raffleId: string
-	participantId: string
 	onEdit: (address: ShippingInfoRequest) => void
 }
 
-function AddressList({ raffleId, participantId, onEdit }: AddressListProps) {
+function AddressList({ raffleId, onEdit }: AddressListProps) {
 	const { data: addresses } = useShippingAddresses()
 	const submitShippingInfo = useSubmitShippingInfo()
 	const deleteAddress = useDeleteAddress()
@@ -237,7 +233,6 @@ function AddressList({ raffleId, participantId, onEdit }: AddressListProps) {
 		if (selectConfirmAddress) {
 			submitShippingInfo.mutate({
 				raffleId: raffleId,
-				participantId: participantId,
 				data: selectConfirmAddress,
 			})
 			setSelectConfirmAddress(null)

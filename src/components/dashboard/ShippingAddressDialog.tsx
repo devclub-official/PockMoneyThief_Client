@@ -21,6 +21,7 @@ import { useCreateAddress } from '@/hooks/useCreateAddress'
 import { useUpdateAddress } from '@/hooks/useUpdateAddress'
 import { useDeleteAddress } from '@/hooks/useDeleteAddress'
 import { ShippingInfoRequest } from '@/types'
+import { AsyncBoundary } from '../boundary/AsyncBoundary'
 
 interface ShippingAddressDialogProps {
 	raffleId: string
@@ -193,8 +194,10 @@ export function ShippingAddressDialog({
 							</div>
 						</form>
 					) : (
-						<Suspense
-							fallback={<div className="text-muted-foreground text-sm">주소를 불러오는 중...</div>}
+						<AsyncBoundary
+							loadingFallback={
+								<div className="text-muted-foreground text-sm">주소를 불러오는 중...</div>
+							}
 						>
 							<AddressList
 								raffleId={raffleId}
@@ -209,7 +212,7 @@ export function ShippingAddressDialog({
 									})
 								}}
 							/>
-						</Suspense>
+						</AsyncBoundary>
 					)}
 				</div>
 			</DialogContent>

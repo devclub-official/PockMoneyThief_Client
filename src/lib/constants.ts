@@ -88,3 +88,8 @@ export const SHIPPING_STATUS = {
 	SHIPPED: 'SHIPPED',
 	DELIVERED: 'DELIVERED',
 } as const
+
+// OAuth 관련 엔드포인트 상수
+export const OAUTH_ENDPOINTS = {
+	KAKAO: '/oauth2/authorization/kakao',
+} as const

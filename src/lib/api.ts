@@ -173,5 +173,6 @@ export const addressApi = {
 // Login API (로그인 기능)
 export const loginApi = {
 	// checkOnboardingStatus: () => api.get('users/onboarding-status').json<boolean>(),
-	checkOnboardingStatus: () => new Promise((resolve) => setTimeout(() => resolve(false), 2000)),
+	checkOnboardingStatus: () => new Promise((resolve) => setTimeout(() => resolve(true), 2000)),
+	logout: () => api.post('logout').json<void>(),
 }

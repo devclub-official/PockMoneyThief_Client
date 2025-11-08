@@ -222,7 +222,9 @@ export default function CreatePage() {
 								type="button"
 								variant="outline"
 								size="sm"
-								onClick={() => append({ rank: fields.length + 1, name: '', quantity: 1 })}
+								onClick={() =>
+									append({ rank: fields.length + 1, name: '', quantity: 1, imageUrl: '' })
+								}
 							>
 								<Plus className="mr-1 h-4 w-4" />
 								경품 추가

@@ -145,16 +145,7 @@ function RaffleCard({
 				<div className="space-y-2">
 					<div className="flex items-center justify-between text-sm">
 						<span className="text-muted-foreground">마감 시간</span>
-						<span
-							className={
-								currentTime &&
-								deadlineTime.getTime() - currentTime < TIME_CONSTANTS.URGENT_THRESHOLD
-									? 'text-destructive font-medium'
-									: 'text-foreground font-medium'
-							}
-						>
-							{formatTimeLeft(deadlineTime)}
-						</span>
+						<span className={'text-foreground font-medium'}>{formatTimeLeft(deadlineTime)}</span>
 					</div>
 				</div>
 

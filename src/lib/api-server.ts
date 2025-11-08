@@ -1,5 +1,6 @@
 import type { RaffleListResponse } from '@/types'
 import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
+import { SHIPPING_STATUS } from './constants'
 
 // 서버 컴포넌트용 API 함수들 (React Query 없이 직접 호출)
 export const serverApi = {
@@ -127,6 +128,17 @@ export const serverApi = {
 					isWinner: true,
 					itemName: '원피스 조로 피규어',
 					shippingStatus: 'DELIVERED',
+					participatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+				},
+				{
+					id: 'rf_129',
+					title: '원피스 나미 피규어',
+					imageUrl:
+						'https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGZpZ3VyZSUyMGNvbGxlY3RpYmxlJTIwdG95fGVufDF8fHx8MTc1ODg2MzcxOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+					status: 'DRAWN',
+					isWinner: true,
+					itemName: '원피스 나미 피규어',
+					shippingStatus: SHIPPING_STATUS.PENDING,
 					participatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
 				},
 			]

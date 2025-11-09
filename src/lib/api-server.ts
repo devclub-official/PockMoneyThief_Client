@@ -22,7 +22,6 @@ export const serverApiClient = {
 		}
 	},
 
-	// ❌ API 명세에 없는 엔드포인트 (백엔드 확인 필요)
 	// getMyRaffles: async (): Promise<MyRaffle[]> => {
 	// 	try {
 	// 		return await serverApi.get('raffles/my').json<MyRaffle[]>()

@@ -122,7 +122,6 @@ function RaffleCard({
 					</Badge>
 				</div>
 			</div>
-
 			<div className="space-y-4 p-4">
 				<div>
 					<h3 className="text-foreground line-clamp-1 font-semibold">{raffle.title}</h3>

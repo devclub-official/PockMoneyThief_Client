@@ -13,6 +13,7 @@ export const api = ky.create({
 			},
 		],
 	},
+	credentials: 'include',
 }) as typeof ky
 
 export type ApiOptions = Options

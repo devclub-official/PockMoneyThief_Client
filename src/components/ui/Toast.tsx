@@ -14,7 +14,6 @@ export interface ToastProps {
 }
 
 export function Toast({
-	id,
 	title,
 	description,
 	variant = 'default',

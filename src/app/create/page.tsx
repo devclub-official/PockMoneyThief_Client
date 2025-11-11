@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,10 +16,9 @@ import { useToast } from '@/components/ui/Toast'
 export default function CreatePage() {
 	const router = useRouter()
 	const createRaffle = useCreateRaffle()
-	const [duration, setDuration] = useState(24)
 	const { addToast } = useToast()
 
-	const { register, handleSubmit, control } = useForm<CreateRaffleFormData>({
+	const { register, handleSubmit, control, watch } = useForm<CreateRaffleFormData>({
 		resolver: zodResolver(createRaffleSchema),
 		defaultValues: {
 			title: '',
@@ -28,10 +26,14 @@ export default function CreatePage() {
 			entryFee: 0,
 			minParticipants: 1,
 			maxParticipants: 10,
+			duration: 24,
 			imageUrl: '',
+			externalSeedDescription: '',
 			tiers: [{ rank: 1, name: '', quantity: 1, imageUrl: '' }],
 		},
 	})
+
+	const duration = watch('duration')
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -142,6 +144,18 @@ export default function CreatePage() {
 						</div>
 
 						<div>
+							<Label htmlFor="externalSeedDescription">외부 시드 설명 *</Label>
+							<Input
+								id="externalSeedDescription"
+								{...register('externalSeedDescription')}
+								placeholder="예: samsung-stock-2025-10-18-close-last-digit"
+							/>
+							<p className="text-muted-foreground mt-1 text-xs">
+								공정한 추첨을 위한 외부 데이터 원천 (예: 주식 종가, 날씨 데이터 등)
+							</p>
+						</div>
+
+						<div>
 							<Label htmlFor="imageUrl">이미지 URL</Label>
 							<Input
 								id="imageUrl"
@@ -200,8 +214,7 @@ export default function CreatePage() {
 							<Input
 								id="duration"
 								type="number"
-								value={duration}
-								onChange={(e) => setDuration(Number(e.target.value))}
+								{...register('duration', { valueAsNumber: true })}
 								placeholder="24"
 								min={1}
 							/>

@@ -24,6 +24,7 @@ export type CreateRaffleFormData = z.infer<typeof createRaffleSchema>
 
 // 배송지 입력 스키마
 export const shippingAddressSchema = z.object({
+	label: z.string().min(1, '배송지 이름을 입력해주세요').max(50),
 	name: z.string().min(1, '수령인 이름을 입력해주세요').max(50),
 	phone: z
 		.string()

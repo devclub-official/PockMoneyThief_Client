@@ -19,6 +19,7 @@ import type {
 	ParticipateResponse,
 	ParticipantsResponse,
 	RafflePreviewResponse,
+	AddressItem,
 } from '@/types'
 
 // Raffle API
@@ -59,10 +60,8 @@ export const participantApi = {
 // 배송 관리 API
 export const shippingApi = {
 	// 당첨자 배송 정보 제출
-	submitShippingInfo: (raffleId: string, data: ShippingInfoRequest) =>
-		// deprecated된 endpoint
-		// TODO:추후 변경되는 endpoint로 수정 필요
-		api.post(`raffles/${raffleId}/winners/shipping`, { json: data }).json<ShippingInfoResponse>(),
+	submitShippingInfo: (raffleId: string, addressId: string) =>
+		api.post(`my/shipping`, { json: { raffleId, addressId } }).json<ShippingInfoResponse>(),
 
 	// 배송 정보 수정 (호스트/관리자)
 	updateShippingInfo: (raffleId: string, participantId: string, data: ShippingUpdateRequest) =>
@@ -75,98 +74,86 @@ export const shippingApi = {
 export const addressApi = {
 	/**
 	 * 배송지 목록 조회
-	 * 실제 API 엔드포인트: GET /users/me/addresses
+	 * 실제 API 엔드포인트: GET /my/addresses
 	 */
-	getList: (): Promise<ShippingInfoRequest[]> => {
-		// TODO: 실제 API 연동 시 아래 주석 해제하고 임시 구현 제거
-		// return api.get('users/me/addresses').json<ShippingInfoRequest[]>()
-
-		// 임시 구현 (개발용)
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve([
-					{
-						id: 'addr-1',
-						name: '집',
-						phone: '010-1234-5678',
-						zipcode: '12345',
-						address1: '서울시 강남구 테헤란로 123',
-						address2: '101동 101호',
-						isDefault: true,
-					},
-					{
-						id: 'addr-2',
-						name: '회사',
-						phone: '010-1234-5679',
-						zipcode: '12346',
-						address1: '서울시 강남구 테헤란로 124',
-						address2: '101동 102호',
-						isDefault: false,
-					},
-					{
-						id: 'addr-3',
-						name: '친구집',
-						phone: '010-1234-5680',
-						zipcode: '12346',
-						address1: '서울시 강남구 테헤란로 125',
-						address2: '101동 102호',
-						isDefault: false,
-					},
-				])
-			}, 300)
-		})
-	},
+	getList: () => api.get('my/addresses').json<AddressItem[]>(),
+	// getList: async (): Promise<AddressItem[]> => {
+	// 	return new Promise((resolve) =>
+	// 		setTimeout(
+	// 			() =>
+	// 				resolve([
+	// 					{
+	// 						addressId: 'addr_abc123',
+	// 						name: '박민호',
+	// 						phone: '010-1234-5678',
+	// 						zipcode: '04524',
+	// 						address1: '서울특별시 중구 세종대로 110',
+	// 						address2: '12층',
+	// 						label: '집',
+	// 						isDefault: true,
+	// 						createdAt: '2025-11-10T14:23:45Z',
+	// 					},
+	// 					{
+	// 						addressId: 'addr_8e7b41c9d2',
+	// 						name: '박민호',
+	// 						phone: '010-9876-5432',
+	// 						zipcode: '06236',
+	// 						address1: '서울특별시 강남구 테헤란로 231',
+	// 						address2: '3층 위워크 삼성점',
+	// 						label: '회사',
+	// 						isDefault: false,
+	// 						createdAt: '2025-10-25T09:11:32Z',
+	// 					},
+	// 					{
+	// 						addressId: 'addr_5a0c72f4b1',
+	// 						name: '박민호',
+	// 						phone: '010-2222-3333',
+	// 						zipcode: '21990',
+	// 						address1: '인천광역시 연수구 송도과학로 32',
+	// 						address2: 'A동 1502호',
+	// 						label: '부모님댁',
+	// 						isDefault: false,
+	// 						createdAt: '2025-09-15T17:42:10Z',
+	// 					},
+	// 				]),
+	// 			1500,
+	// 		),
+	// 	)
+	// 	// return await api.get('my/addresses').json<AddressItem[]>()
+	// },
 
 	/**
 	 * 배송지 추가
-	 * 실제 API 엔드포인트: POST /users/me/addresses
+	 * 실제 API 엔드포인트: POST /my/addresses
 	 */
-	create: (data: ShippingInfoRequest): Promise<ShippingInfoRequest> => {
-		// TODO: 실제 API 연동 시 아래 주석 해제하고 임시 구현 제거
-		// return api.post('users/me/addresses', { json: data }).json<ShippingInfoRequest>()
-
-		// 임시 구현 (개발용)
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve({
-					...data,
-					id: `addr-${Date.now()}`,
-					isDefault: false,
-				})
-			}, 500)
-		})
+	create: (data: ShippingInfoRequest): Promise<void> => {
+		const { id, ...body } = data
+		return api.post('my/addresses', { json: body }).json<void>()
 	},
 
 	/**
 	 * 배송지 수정
-	 * 실제 API 엔드포인트: PATCH /users/me/addresses/:id
+	 * 실제 API 엔드포인트: PUT /my/addresses/{addressId}
 	 */
-	update: (id: string, data: ShippingInfoRequest): Promise<ShippingInfoRequest> => {
-		// TODO: 실제 API 연동 시 아래 주석 해제하고 임시 구현 제거
-		// return api.patch(`users/me/addresses/${id}`, { json: data }).json<ShippingInfoRequest>()
-
-		// 임시 구현 (개발용)
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve({ ...data, id })
-			}, 500)
-		})
+	update: (id: string, data: ShippingInfoRequest): Promise<void> => {
+		const { id: _, isDefault, ...body } = data
+		return api.put(`my/addresses/${id}`, { json: body }).json<void>()
 	},
 
 	/**
 	 * 배송지 삭제
-	 * 실제 API 엔드포인트: DELETE /users/me/addresses/:id
+	 * 실제 API 엔드포인트: DELETE /my/addresses/{addressId}
 	 */
 	delete: (id: string): Promise<void> => {
-		// TODO: 실제 API 연동 시 아래 주석 해제하고 임시 구현 제거
-		// return api.delete(`users/me/addresses/${id}`).json<void>()
+		return api.delete(`my/addresses/${id}`).json<void>()
+	},
 
-		// 임시 구현 (개발용)
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve()
-			}, 500)
-		})
+	/**
+	 * 기본 배송지 설정
+	 * 실제 API 엔드포인트: PATCH /my/addresses/{addressId}/default
+	 */
+	setDefault: (addressId: string): Promise<void> => {
+		return api.patch(`my/addresses/${addressId}/default`).json<void>()
 	},
 }
 

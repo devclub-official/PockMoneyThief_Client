@@ -194,6 +194,23 @@ export interface ShippingInfoRequest {
 	isDefault?: boolean
 }
 
+// 배송지 목록 조회 응답 타입
+export interface AddressItem {
+	addressId: string
+	name: string
+	phone: string
+	zipcode: string
+	address1: string
+	address2: string
+	label: string
+	isDefault: boolean
+	createdAt: string
+}
+
+export interface AddressListResponse {
+	addresses: AddressItem[]
+}
+
 export interface ShippingInfoResponse {
 	winnerId: string
 	raffleId: string

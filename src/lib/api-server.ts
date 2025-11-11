@@ -1,6 +1,7 @@
 import type { RaffleListResponse } from '@/types'
 import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
 import { SHIPPING_STATUS } from './constants'
+// import { serverKy } from '@/lib/api-client'
 
 // 서버 컴포넌트용 API 함수들 (React Query 없이 직접 호출)
 export const serverApi = {
@@ -113,38 +114,32 @@ export const serverApi = {
 	},
 
 	getParticipatedRaffles: async (): Promise<ParticipatedRaffle[]> => {
-		try {
-			// TODO: 실제 API 연동 시 주석 해제
-			// return await api.get('raffles/participated').json<ParticipatedRaffle[]>()
+		// return await serverKy.get('my/raffles/participated').json<ParticipatedRaffle[]>()
 
-			// Mock 데이터 반환 (개발 중)
-			return [
-				{
-					id: 'rf_128',
-					title: '원피스 조로 피규어',
-					imageUrl:
-						'https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGZpZ3VyZSUyMGNvbGxlY3RpYmxlJTIwdG95fGVufDF8fHx8MTc1ODg2MzcxOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-					status: 'DRAWN',
-					isWinner: true,
-					itemName: '원피스 조로 피규어',
-					shippingStatus: 'DELIVERED',
-					participatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-				},
-				{
-					id: 'rf_129',
-					title: '원피스 나미 피규어',
-					imageUrl:
-						'https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGZpZ3VyZSUyMGNvbGxlY3RpYmxlJTIwdG95fGVufDF8fHx8MTc1ODg2MzcxOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-					status: 'DRAWN',
-					isWinner: true,
-					itemName: '원피스 나미 피규어',
-					shippingStatus: SHIPPING_STATUS.PENDING,
-					participatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-				},
-			]
-		} catch (error) {
-			console.error('Failed to fetch participated raffles:', error)
-			return []
-		}
+		// Mock 데이터 반환 (개발 중)
+		return [
+			{
+				id: 'rf_abc122',
+				title: '원피스 조로 피규어',
+				imageUrl:
+					'https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGZpZ3VyZSUyMGNvbGxlY3RpYmxlJTIwdG95fGVufDF8fHx8MTc1ODg2MzcxOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+				status: 'DRAWN',
+				isWinner: true,
+				itemName: '원피스 조로 피규어',
+				shippingStatus: 'DELIVERED',
+				participatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+			},
+			{
+				id: 'rf_abc123',
+				title: '원피스 나미 피규어',
+				imageUrl:
+					'https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhbmltZSUyMGZpZ3VyZSUyMGNvbGxlY3RpYmxlJTIwdG95fGVufDF8fHx8MTc1ODg2MzcxOHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+				status: 'DRAWN',
+				isWinner: true,
+				itemName: '원피스 나미 피규어',
+				shippingStatus: SHIPPING_STATUS.PENDING,
+				participatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+			},
+		]
 	},
 }

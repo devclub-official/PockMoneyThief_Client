@@ -12,6 +12,17 @@ export const api = ky.create({
 				return request
 			},
 		],
+		afterResponse: [
+			(request, options, response) => {
+				if (response.status === 401) {
+					// 클라이언트 환경에서만 리다이렉트
+					if (typeof window !== 'undefined') {
+						window.location.href = '/login'
+					}
+				}
+				return response
+			},
+		],
 	},
 	credentials: 'include',
 }) as typeof ky

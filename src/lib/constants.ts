@@ -136,19 +136,19 @@ export const RAFFLE_DETAIL_UI_TEXT = {
 	SECTION_NO_PARTICIPANTS: '아직 참여자가 없습니다',
 } as const
 
-// 추첨 상태 관련 상수
+// 추첨 상태 관련 상수 (API 값과 일치)
 export const RAFFLE_STATUS = {
-	PUBLISHED: '진행중',
-	LOCKED: '참가 마감',
-	DRAWN: '추첨 완료',
-	CANCELLED: '취소됨',
+	PUBLISHED: 'PUBLISHED',
+	LOCKED: 'LOCKED',
+	DRAWN: 'DRAWN',
+	CANCELLED: 'CANCELLED',
 } as const
 
 export const SHIPPING_STATUS = {
-	PENDING: '배송 정보 미입력',
-	SAVED: '배송 정보 저장됨',
-	SHIPPED: '배송 시작',
-	DELIVERED: '배송 완료',
+	PENDING: 'PENDING',
+	SAVED: 'SAVED',
+	SHIPPED: 'SHIPPED',
+	DELIVERED: 'DELIVERED',
 } as const
 
 // OAuth 관련 엔드포인트 상수

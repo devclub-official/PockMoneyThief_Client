@@ -14,7 +14,9 @@ export const serverApiClient = {
 	// 추첨 목록 조회 (서버에서 prefetch)
 	getRaffles: async (): Promise<RaffleListResponse> => {
 		try {
-			return await serverApi.get('raffles').json<RaffleListResponse>()
+			// 백엔드 서버가 없으면 에러가 발생하고 catch로 이동
+			const response = await serverApi.get('raffles').json<RaffleListResponse>()
+			return response
 		} catch (error) {
 			console.error('Failed to fetch raffles:', error)
 			// 에러 시 빈 배열 반환

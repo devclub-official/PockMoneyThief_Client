@@ -210,8 +210,13 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 		setCurrentTime(Date.now())
 	}, [])
 
-	// 서버에서 prefetch된 데이터 사용
-	const raffles = useMemo(() => initialData.items || [], [initialData.items])
+	// 서버에서 prefetch된 데이터 사용 (중복 id 제거)
+	const raffles = useMemo(() => {
+		const items = initialData.items || []
+		// Map을 사용하여 중복된 id 제거 (마지막 항목이 유지됨)
+		const uniqueMap = new Map(items.map((item) => [item.id, item]))
+		return Array.from(uniqueMap.values())
+	}, [initialData.items])
 	const isLoading = false
 	const isError = false
 

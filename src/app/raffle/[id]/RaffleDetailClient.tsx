@@ -20,6 +20,7 @@ import { LoadingState } from '@/components/common/LoadingState'
 import { ErrorState } from '@/components/common/ErrorState'
 import { Clock, Users, CheckCircle, AlertCircle } from 'lucide-react'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
+import { RAFFLE_DETAIL_UI_TEXT } from '@/lib/constants'
 import { useRaffleDetail } from '@/hooks/useRaffleDetail'
 import { useParticipants } from '@/hooks/useParticipants'
 import { participantApi } from '@/lib/api'
@@ -140,16 +141,67 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 			return
 		}
 
-		// 개인정보 포함 여부 체크
-		const personalInfoPatterns = ['@', '핸드폰', '전화', '주소', '생년월일']
-		const hasPersonalInfo = personalInfoPatterns.some((pattern) =>
-			participantName.toLowerCase().includes(pattern),
+		// 개인정보 패턴 체크 - 정규식 사용
+		const phonePattern = /01[0-9]-?\d{3,4}-?\d{4}/ // 전화번호 패턴 (010-1234-5678, 01012345678)
+		const emailPattern = /@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/ // 이메일 패턴
+		const birthPattern = /\d{6}[-.]?\d{7}/ // 주민등록번호 패턴
+		const numberPattern = /\d{8,}/ // 8자리 이상 연속 숫자 (생년월일, 계좌번호 등)
+
+		const hasPhoneNumber = phonePattern.test(participantName)
+		const hasEmail = emailPattern.test(participantName)
+		const hasBirthNumber = birthPattern.test(participantName)
+		const hasLongNumber = numberPattern.test(participantName)
+
+		// 민감한 키워드 체크
+		const sensitiveKeywords = ['주소', '생년월일', '주민번호', '번호']
+		const hasSensitiveKeyword = sensitiveKeywords.some((keyword) =>
+			participantName.includes(keyword),
 		)
 
-		if (hasPersonalInfo) {
+		if (hasPhoneNumber) {
 			addToast({
 				title: '입력 오류',
-				description: '개인정보가 포함될 수 있는 이름은 사용할 수 없습니다.',
+				description: '전화번호는 포함할 수 없습니다.',
+				variant: 'error',
+				duration: 3000,
+			})
+			return
+		}
+
+		if (hasEmail) {
+			addToast({
+				title: '입력 오류',
+				description: '이메일 주소는 포함할 수 없습니다.',
+				variant: 'error',
+				duration: 3000,
+			})
+			return
+		}
+
+		if (hasBirthNumber) {
+			addToast({
+				title: '입력 오류',
+				description: '주민등록번호는 포함할 수 없습니다.',
+				variant: 'error',
+				duration: 3000,
+			})
+			return
+		}
+
+		if (hasLongNumber) {
+			addToast({
+				title: '입력 오류',
+				description: '8자리 이상의 숫자는 포함할 수 없습니다.',
+				variant: 'error',
+				duration: 3000,
+			})
+			return
+		}
+
+		if (hasSensitiveKeyword) {
+			addToast({
+				title: '입력 오류',
+				description: '개인정보 관련 키워드는 사용할 수 없습니다.',
 				variant: 'error',
 				duration: 3000,
 			})

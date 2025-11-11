@@ -123,8 +123,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 	const handleParticipate = async () => {
 		if (!participantName.trim()) {
 			addToast({
-				title: '입력 오류',
-				description: '참여자 이름을 입력해주세요.',
+				title: RAFFLE_DETAIL_UI_TEXT.VALIDATION_EMPTY_TITLE,
+				description: RAFFLE_DETAIL_UI_TEXT.VALIDATION_EMPTY_DESC,
 				variant: 'error',
 				duration: 3000,
 			})
@@ -133,8 +133,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 
 		if (participantName.includes(' ')) {
 			addToast({
-				title: '입력 오류',
-				description: '이름에 공백을 포함할 수 없습니다.',
+				title: RAFFLE_DETAIL_UI_TEXT.VALIDATION_EMPTY_TITLE,
+				description: RAFFLE_DETAIL_UI_TEXT.VALIDATION_SPACE_DESC,
 				variant: 'error',
 				duration: 3000,
 			})
@@ -160,8 +160,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 
 		if (hasPhoneNumber) {
 			addToast({
-				title: '입력 오류',
-				description: '전화번호는 포함할 수 없습니다.',
+				title: RAFFLE_DETAIL_UI_TEXT.VALIDATION_EMPTY_TITLE,
+				description: RAFFLE_DETAIL_UI_TEXT.VALIDATION_PHONE_DESC,
 				variant: 'error',
 				duration: 3000,
 			})
@@ -170,8 +170,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 
 		if (hasEmail) {
 			addToast({
-				title: '입력 오류',
-				description: '이메일 주소는 포함할 수 없습니다.',
+				title: RAFFLE_DETAIL_UI_TEXT.VALIDATION_EMPTY_TITLE,
+				description: RAFFLE_DETAIL_UI_TEXT.VALIDATION_EMAIL_DESC,
 				variant: 'error',
 				duration: 3000,
 			})
@@ -180,8 +180,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 
 		if (hasBirthNumber) {
 			addToast({
-				title: '입력 오류',
-				description: '주민등록번호는 포함할 수 없습니다.',
+				title: RAFFLE_DETAIL_UI_TEXT.VALIDATION_EMPTY_TITLE,
+				description: RAFFLE_DETAIL_UI_TEXT.VALIDATION_BIRTH_DESC,
 				variant: 'error',
 				duration: 3000,
 			})
@@ -190,8 +190,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 
 		if (hasLongNumber) {
 			addToast({
-				title: '입력 오류',
-				description: '8자리 이상의 숫자는 포함할 수 없습니다.',
+				title: RAFFLE_DETAIL_UI_TEXT.VALIDATION_EMPTY_TITLE,
+				description: RAFFLE_DETAIL_UI_TEXT.VALIDATION_NUMBER_DESC,
 				variant: 'error',
 				duration: 3000,
 			})
@@ -200,8 +200,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 
 		if (hasSensitiveKeyword) {
 			addToast({
-				title: '입력 오류',
-				description: '개인정보 관련 키워드는 사용할 수 없습니다.',
+				title: RAFFLE_DETAIL_UI_TEXT.VALIDATION_EMPTY_TITLE,
+				description: RAFFLE_DETAIL_UI_TEXT.VALIDATION_KEYWORD_DESC,
 				variant: 'error',
 				duration: 3000,
 			})
@@ -221,8 +221,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 			queryClient.invalidateQueries({ queryKey: ['raffle', id] })
 
 			addToast({
-				title: '참여 완료',
-				description: '추첨 참여가 완료되었습니다!',
+				title: RAFFLE_DETAIL_UI_TEXT.SUCCESS_TITLE,
+				description: RAFFLE_DETAIL_UI_TEXT.SUCCESS_DESC,
 				variant: 'success',
 				duration: 3000,
 			})
@@ -233,8 +233,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 		} catch (error) {
 			console.error('참여 실패:', error)
 			addToast({
-				title: '참여 실패',
-				description: '추첨 참여에 실패했습니다. 다시 시도해주세요.',
+				title: RAFFLE_DETAIL_UI_TEXT.ERROR_PARTICIPATE_TITLE,
+				description: RAFFLE_DETAIL_UI_TEXT.ERROR_PARTICIPATE_DESC,
 				variant: 'error',
 				duration: 4000,
 			})

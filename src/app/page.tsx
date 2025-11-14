@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Metadata } from 'next'
-import { serverApi } from '@/lib/api-server'
+import { serverApiClient } from '@/lib/api-server'
 import { HomePageClient } from '@/components/pages/HomePageClient'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 // 서버 컴포넌트에서 데이터 prefetch
 export default async function HomePage() {
 	// 서버에서 데이터를 미리 가져옴
-	const raffleData = await serverApi.getRaffles()
+	const raffleData = await serverApiClient.getRaffles()
 
 	return (
 		<div className="bg-background min-h-screen">

@@ -11,6 +11,7 @@ import {
 import { Search, Bell, LogOut, User, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useRouter } from 'next/navigation'
+import { loginApi } from '@/lib/api'
 
 interface HeaderProps {
 	onMenuClick: () => void
@@ -19,9 +20,9 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
 	const router = useRouter()
 
-	const handleLogout = () => {
-		// TODO: 로그아웃 로직
-		router.push('/login')
+	const handleLogout = async () => {
+		await loginApi.logout()
+		return router.push('/login')
 	}
 
 	return (

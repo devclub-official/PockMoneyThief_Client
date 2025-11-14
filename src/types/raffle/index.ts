@@ -76,7 +76,7 @@ export interface TierRequest {
 }
 
 // 필터 타입
-export type RaffleFilter = 'all' | 'active' | 'ending-soon'
+export type RaffleFilter = 'all' | 'active' | 'closed'
 
 // 래플 상태 타입
 export type RaffleStatus = 'active' | 'ended' | 'cancelled' | 'pending'
@@ -185,11 +185,13 @@ export interface VerifyBundleResponse {
 
 // 배송 관련 타입들
 export interface ShippingInfoRequest {
+	id?: string
 	name: string
 	phone: string
 	zipcode: string
 	address1: string
 	address2?: string
+	isDefault?: boolean
 }
 
 export interface ShippingInfoResponse {

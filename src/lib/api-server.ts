@@ -1,6 +1,6 @@
 import ky from 'ky'
 import type { RaffleListResponse } from '@/types'
-// import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
+import type { MyRaffle } from '@/types/dashboard'
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
 
@@ -24,14 +24,50 @@ export const serverApiClient = {
 		}
 	},
 
-	// getMyRaffles: async (): Promise<MyRaffle[]> => {
-	// 	try {
-	// 		return await serverApi.get('raffles/my').json<MyRaffle[]>()
-	// 	} catch (error) {
-	// 		console.error('Failed to fetch my raffles:', error)
-	// 		return []
-	// 	}
-	// },
+	/**
+	 * 내가 등록한 추첨 목록 (모의 API 사용)
+	 * 실제 인증 연동 전까지 Bearer/세션 인증은 생략
+	 * GET http://127.0.0.1:3658/m1/1084646-1073890-default/my/raffles/hosted
+	 */
+	getMyHostedRaffles: async (): Promise<MyRaffle[]> => {
+		try {
+			const res = await ky
+				.get('http://127.0.0.1:3658/m1/1084646-1073890-default/my/raffles/hosted', {
+					timeout: 10000,
+				})
+				.json<{
+					raffles: Array<{
+						raffleId: string
+						title: string
+						entryFee: number
+						imageUrl: string
+						status: string
+						deadlineAt: string
+						participantsCount: number
+					}>
+				}>()
+
+			// 모의 응답을 대시보드용 타입으로 매핑
+			return res.raffles.map((r) => ({
+				id: r.raffleId,
+				title: r.title,
+				imageUrl: r.imageUrl,
+				// 알 수 없는 상태 값은 기본 'PUBLISHED'로 처리
+				status:
+					r.status === 'LOCKED' || r.status === 'DRAWN' || r.status === 'CANCELLED'
+						? (r.status as MyRaffle['status'])
+						: ('PUBLISHED' as MyRaffle['status']),
+				type: 'single',
+				currentParticipants: Math.max(0, Number(r.participantsCount) || 0),
+				maxParticipants: Math.max(0, Number(r.participantsCount) || 0),
+				deadlineAt: r.deadlineAt,
+				winners: undefined,
+			}))
+		} catch (error) {
+			console.error('Failed to fetch my hosted raffles (mock):', error)
+			return []
+		}
+	},
 
 	// getParticipatedRaffles: async (): Promise<ParticipatedRaffle[]> => {
 	// 	try {

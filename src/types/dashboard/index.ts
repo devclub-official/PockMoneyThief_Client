@@ -24,7 +24,7 @@ export interface Winner extends ApiWinner {
 export interface MyRaffle {
 	id: string
 	title: string
-	description: string
+	description?: string
 	imageUrl: string
 	status: RaffleStatus
 	type: 'single' | 'multiple'

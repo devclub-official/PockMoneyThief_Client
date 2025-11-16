@@ -5,9 +5,10 @@ import { DashboardPageClient } from '@/components/pages/DashboardPageClient'
 
 export default async function Dashboard() {
 	// 모의 API로 등록/참여 목록을 병렬 prefetch
-	const [myRafflesData, participatedRafflesData] = await Promise.all([
+	const [myRafflesData, participatedRafflesData, myWinsData] = await Promise.all([
 		myApi.getHostedRaffles(),
 		myApi.getParticipatedRaffles(),
+		myApi.getWins(),
 	])
 
 	return (
@@ -16,6 +17,7 @@ export default async function Dashboard() {
 				<DashboardPageClient
 					initialMyRaffles={myRafflesData}
 					initialParticipatedRaffles={participatedRafflesData}
+					initialWins={myWinsData.wins}
 				/>
 			</Suspense>
 		</div>

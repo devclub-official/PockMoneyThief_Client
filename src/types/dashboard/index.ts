@@ -39,6 +39,9 @@ export interface ParticipatedRaffle {
 	title: string
 	imageUrl: string
 	status: RaffleStatus
+	displayName?: string
+	entryFee: number
+	deadlineAt: string
 	isWinner: boolean
 	itemName?: string
 	shippingStatus?: ShippingStatus

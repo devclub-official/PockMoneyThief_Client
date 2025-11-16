@@ -195,6 +195,7 @@ export function DashboardPageClient({
 									raffle={raffle}
 									onViewDetail={(id) => router.push(`/raffle/${id}`)}
 									onViewResult={(id) => router.push(`/raffles/${id}/result`)}
+									onViewMyResult={(id) => router.push(`/my/raffles/${id}/result`)}
 								/>
 							))}
 						</div>

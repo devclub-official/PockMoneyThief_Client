@@ -264,3 +264,38 @@ export interface Participant {
 	displayName: string
 	joinedAt: string
 }
+
+// 내 결과 조회 (GET /my/raffles/{raffleId}/result)
+export interface MyRaffleSelfResultResponse {
+	raffleId: string
+	raffleName: string
+	status: string
+	myParticipation: {
+		participantId: string
+		displayName: string
+		joinedAt: string
+	}
+	isWinner: boolean
+	winInfo: {
+		rank: number
+		prizeName: string
+		prizeImageUrl?: string
+	} | null
+	shippingRequired: boolean
+	shippingSubmitted: boolean
+}
+
+// 내 당첨 목록 (GET /my/raffles/wins)
+export interface MyWinItem {
+	raffleId: string
+	raffleName: string
+	rank: number
+	prizeName: string
+	prizeImageUrl?: string
+	shippingStatus: 'PENDING' | 'SAVED' | 'SHIPPED' | 'DELIVERED'
+	drawnAt: string
+}
+
+export interface MyWinsResponse {
+	wins: MyWinItem[]
+}

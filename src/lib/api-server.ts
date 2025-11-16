@@ -1,5 +1,6 @@
 import ky from 'ky'
 import type { RaffleListResponse } from '@/types'
+import type { MyRaffleSelfResultResponse, MyWinsResponse } from '@/types'
 import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
@@ -25,27 +26,67 @@ export const serverApiClient = {
 	},
 
 	/**
+	 * 특정 추첨의 내 결과 (모의 API 사용)
+	 * GET http://127.0.0.1:3658/m1/1084646-1073890-default/my/raffles/{raffleId}/result
+	 */
+	getMyRaffleSelfResult: async (raffleId: string): Promise<MyRaffleSelfResultResponse> => {
+		try {
+			const res = await serverApi
+				.get(`my/raffles/${raffleId}/result`)
+				.json<MyRaffleSelfResultResponse>()
+			return res
+		} catch (error) {
+			console.error('Failed to fetch my raffle self result (mock):', error)
+			// 실패 시 최소 필드만 채워 반환
+			return {
+				raffleId,
+				raffleName: '',
+				status: 'PUBLISHED',
+				myParticipation: {
+					participantId: '',
+					displayName: '',
+					joinedAt: new Date().toISOString(),
+				},
+				isWinner: false,
+				winInfo: null,
+				shippingRequired: false,
+				shippingSubmitted: false,
+			}
+		}
+	},
+
+	/**
+	 * 내 당첨 목록 (모의 API 사용)
+	 * GET http://127.0.0.1:3658/m1/1084646-1073890-default/my/raffles/wins
+	 */
+	getMyWins: async (): Promise<MyWinsResponse> => {
+		try {
+			const res = await serverApi.get('my/raffles/wins').json<MyWinsResponse>()
+			return res
+		} catch (error) {
+			console.error('Failed to fetch my wins (mock):', error)
+			return { wins: [] }
+		}
+	},
+
+	/**
 	 * 내가 등록한 추첨 목록 (모의 API 사용)
 	 * 실제 인증 연동 전까지 Bearer/세션 인증은 생략
 	 * GET http://127.0.0.1:3658/m1/1084646-1073890-default/my/raffles/hosted
 	 */
 	getMyHostedRaffles: async (): Promise<MyRaffle[]> => {
 		try {
-			const res = await ky
-				.get('http://127.0.0.1:3658/m1/1084646-1073890-default/my/raffles/hosted', {
-					timeout: 10000,
-				})
-				.json<{
-					raffles: Array<{
-						raffleId: string
-						title: string
-						entryFee: number
-						imageUrl: string
-						status: string
-						deadlineAt: string
-						participantsCount: number
-					}>
-				}>()
+			const res = await serverApi.get('my/raffles/hosted').json<{
+				raffles: Array<{
+					raffleId: string
+					title: string
+					entryFee: number
+					imageUrl: string
+					status: string
+					deadlineAt: string
+					participantsCount: number
+				}>
+			}>()
 
 			// 모의 응답을 대시보드용 타입으로 매핑
 			return res.raffles.map((r) => ({
@@ -84,22 +125,18 @@ export const serverApiClient = {
 	 */
 	getMyParticipatedRaffles: async (): Promise<ParticipatedRaffle[]> => {
 		try {
-			const res = await ky
-				.get('http://127.0.0.1:3658/m1/1084646-1073890-default/my/raffles/participated', {
-					timeout: 10000,
-				})
-				.json<{
-					raffles: Array<{
-						raffleId: string
-						title: string
-						entryFee: number
-						imageUrl: string
-						status: string
-						deadlineAt: string
-						myDisplayName: string
-						joinedAt: string
-					}>
-				}>()
+			const res = await serverApi.get('my/raffles/participated').json<{
+				raffles: Array<{
+					raffleId: string
+					title: string
+					entryFee: number
+					imageUrl: string
+					status: string
+					deadlineAt: string
+					myDisplayName: string
+					joinedAt: string
+				}>
+			}>()
 
 			return res.raffles.map((r) => ({
 				id: r.raffleId,
@@ -112,6 +149,9 @@ export const serverApiClient = {
 					r.status === 'CANCELLED'
 						? (r.status as ParticipatedRaffle['status'])
 						: ('PUBLISHED' as ParticipatedRaffle['status']),
+				displayName: r.myDisplayName,
+				entryFee: Number(r.entryFee) || 0,
+				deadlineAt: r.deadlineAt,
 				isWinner: false,
 				itemName: undefined,
 				shippingStatus: undefined,

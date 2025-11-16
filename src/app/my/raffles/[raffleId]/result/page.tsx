@@ -1,4 +1,4 @@
-import { serverApiClient } from '@/lib/api-server'
+import { myApi } from '@/lib/api'
 import type { MyRaffleSelfResultResponse } from '@/types'
 
 interface PageProps {
@@ -12,7 +12,7 @@ export const metadata = {
 
 export default async function MyRaffleSelfResultPage({ params }: PageProps) {
 	const { raffleId } = await params
-	const data: MyRaffleSelfResultResponse = await serverApiClient.getMyRaffleSelfResult(raffleId)
+	const data: MyRaffleSelfResultResponse = await myApi.getSelfResult(raffleId)
 
 	return (
 		<div className="container mx-auto px-4 py-8">

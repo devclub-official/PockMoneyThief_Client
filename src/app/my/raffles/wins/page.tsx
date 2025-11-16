@@ -1,4 +1,4 @@
-import { serverApiClient } from '@/lib/api-server'
+import { myApi } from '@/lib/api'
 import { ShippingStatusBadge } from '@/components/dashboard/ShippingStatusBadge'
 import type { ShippingStatus } from '@/types/dashboard'
 
@@ -8,7 +8,7 @@ export const metadata = {
 }
 
 export default async function MyWinsPage() {
-	const { wins } = await serverApiClient.getMyWins()
+	const { wins } = await myApi.getWins()
 
 	return (
 		<div className="container mx-auto px-4 py-8">

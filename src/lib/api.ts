@@ -19,7 +19,10 @@ import type {
 	ParticipateResponse,
 	ParticipantsResponse,
 	RafflePreviewResponse,
+	MyRaffleSelfResultResponse,
+	MyWinsResponse,
 } from '@/types'
+import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
 
 // Raffle API
 export const raffleApi = {
@@ -69,6 +72,82 @@ export const shippingApi = {
 		api
 			.patch(`raffles/${raffleId}/winners/${participantId}/shipping`, { json: data })
 			.json<ShippingUpdateResponse>(),
+}
+
+// My API (사용자 본인 관련)
+export const myApi = {
+	// 내가 등록한 추첨 목록
+	getHostedRaffles: async (): Promise<MyRaffle[]> => {
+		const res = await api.get('my/raffles/hosted').json<{
+			raffles: Array<{
+				raffleId: string
+				title: string
+				entryFee: number
+				imageUrl: string
+				status: string
+				deadlineAt: string
+				participantsCount: number
+			}>
+		}>()
+
+		return res.raffles.map((r) => ({
+			id: r.raffleId,
+			title: r.title,
+			imageUrl: r.imageUrl,
+			status:
+				r.status === 'LOCKED' || r.status === 'DRAWN' || r.status === 'CANCELLED'
+					? (r.status as MyRaffle['status'])
+					: ('PUBLISHED' as MyRaffle['status']),
+			type: 'single',
+			currentParticipants: Math.max(0, Number(r.participantsCount) || 0),
+			maxParticipants: Math.max(0, Number(r.participantsCount) || 0),
+			deadlineAt: r.deadlineAt,
+			winners: undefined,
+		}))
+	},
+
+	// 내가 참여한 추첨 목록
+	getParticipatedRaffles: async (): Promise<ParticipatedRaffle[]> => {
+		const res = await api.get('my/raffles/participated').json<{
+			raffles: Array<{
+				raffleId: string
+				title: string
+				entryFee: number
+				imageUrl: string
+				status: string
+				deadlineAt: string
+				myDisplayName: string
+				joinedAt: string
+			}>
+		}>()
+
+		return res.raffles.map((r) => ({
+			id: r.raffleId,
+			title: r.title,
+			imageUrl: r.imageUrl,
+			status:
+				r.status === 'PUBLISHED' ||
+				r.status === 'LOCKED' ||
+				r.status === 'DRAWN' ||
+				r.status === 'CANCELLED'
+					? (r.status as ParticipatedRaffle['status'])
+					: ('PUBLISHED' as ParticipatedRaffle['status']),
+			displayName: r.myDisplayName,
+			entryFee: Number(r.entryFee) || 0,
+			deadlineAt: r.deadlineAt,
+			isWinner: false,
+			itemName: undefined,
+			shippingStatus: undefined,
+			participatedAt: r.joinedAt,
+		}))
+	},
+
+	// 특정 래플의 내 결과
+	getSelfResult: (raffleId: string) =>
+		api.get(`my/raffles/${raffleId}/result`).json<MyRaffleSelfResultResponse>(),
+
+	// 내 당첨 목록
+	getWins: () => api.get('my/raffles/wins').json<MyWinsResponse>(),
 }
 
 // 주소록 API

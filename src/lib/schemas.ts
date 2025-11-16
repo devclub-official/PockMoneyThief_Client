@@ -16,6 +16,7 @@ export const tierSchema = z.object({
 })
 
 // 래플 생성 폼 스키마 (deadlineAt은 submit 시 계산되므로 제외)
+// externalSeedDescription: 명세에 없으나 백엔드가 허용할 수 있으므로 optional 유지
 export const createRaffleSchema = z
 	.object({
 		title: z.string().min(1, '추첨명을 입력해주세요').max(100),
@@ -25,7 +26,7 @@ export const createRaffleSchema = z
 		maxParticipants: z.number().int().positive('최대 참여자는 1명 이상이어야 합니다'),
 		duration: z.number().int().min(1, '진행 시간은 1시간 이상이어야 합니다'),
 		imageUrl: z.string().url('올바른 이미지 URL을 입력해주세요').optional().or(z.literal('')),
-		externalSeedDescription: z.string().min(1, '외부 시드 설명을 입력해주세요'),
+		externalSeedDescription: z.string().min(1, '외부 시드 설명을 입력해주세요').optional(),
 		tiers: z.array(tierSchema).min(1, '최소 1개의 경품을 추가해주세요'),
 	})
 	.refine((data) => data.maxParticipants >= data.minParticipants, {

@@ -40,7 +40,10 @@ export const raffleApi = {
 	draw: (id: string, data: DrawRequest) =>
 		api.post(`raffles/${id}/draw`, { json: data }).json<DrawResponse>(),
 	getResult: (id: string) => api.get(`raffles/${id}/result`).json<RaffleResultResponse>(),
-	getPreview: (id: string) => api.get(`raffles/${id}/preview`).json<RafflePreviewResponse>(),
+	getPreview: (id: string, externalSeed: string) =>
+		api
+			.get(`raffles/${id}/preview`, { searchParams: { externalSeed } })
+			.json<RafflePreviewResponse>(),
 	getVerifyBundle: (id: string) =>
 		api.get(`raffles/${id}/verify/bundle`).json<VerifyBundleResponse>(),
 
@@ -236,6 +239,7 @@ export const addressApi = {
 	 * 배송지 삭제
 	 * 실제 API 엔드포인트: DELETE /users/me/addresses/:id
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	delete: (id: string): Promise<void> => {
 		// TODO: 실제 API 연동 시 아래 주석 해제하고 임시 구현 제거
 		// return api.delete(`users/me/addresses/${id}`).json<void>()

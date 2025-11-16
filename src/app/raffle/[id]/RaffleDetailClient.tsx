@@ -22,7 +22,6 @@ import { Clock, Users, CheckCircle, AlertCircle } from 'lucide-react'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import { RAFFLE_DETAIL_UI_TEXT } from '@/lib/constants'
 import { useRaffleDetail } from '@/hooks/useRaffleDetail'
-import { useParticipants } from '@/hooks/useParticipants'
 import { participantApi } from '@/lib/api'
 import { useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/components/ui/Toast'
@@ -71,9 +70,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 	const [currentTime, setCurrentTime] = useState(Date.now())
 	const [hasParticipated, setHasParticipated] = useState(false)
 
-	// 실제 API 호출
+	// 실제 API 호출 - participantDisplayNames는 상세 API에 포함되므로 중복 호출 불필요
 	const { data: raffleData, isLoading, isError } = useRaffleDetail(id)
-	const { data: participantsData } = useParticipants(id)
 
 	// 1초마다 현재 시간 업데이트 (실시간 남은 시간 표시를 위해)
 	useEffect(() => {
@@ -85,17 +83,17 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 	const raffle = useMemo((): RaffleDetail | null => {
 		if (!raffleData) return null
 
-		// 참여자 수는 participantsData.count 우선 사용 (가장 정확)
-		const currentParticipants = participantsData?.count ?? raffleData.participantsCount
+		// 참여자 수는 participantDisplayNames 배열 길이로 계산
+		const currentParticipants = raffleData.participantDisplayNames.length
 
-		// 실제 참여자 목록 사용
-		const participants: Participant[] = participantsData?.participants
-			? participantsData.participants.map((p) => ({
-					id: p.participantId,
-					displayName: p.displayName,
-					joinedAt: new Date(p.joinedAt),
-				}))
-			: []
+		// 참여자 목록은 participantDisplayNames에서 직접 생성
+		const participants: Participant[] = raffleData.participantDisplayNames.map(
+			(displayName, index) => ({
+				id: `participant-${index}`, // 실제 ID는 없으므로 임시 생성
+				displayName,
+				joinedAt: new Date(), // 상세 정보 없으므로 현재 시간 사용
+			}),
+		)
 
 		return {
 			id: raffleData.id,
@@ -118,7 +116,7 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 			participants,
 			externalSeed: raffleData.externalSeed || raffleData.externalSeedDescription,
 		}
-	}, [raffleData, participantsData])
+	}, [raffleData])
 
 	const handleParticipate = async () => {
 		if (!participantName.trim()) {
@@ -216,8 +214,7 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 				displayName: participantName,
 			})
 
-			// 성공 시 참여자 목록 새로고침
-			queryClient.invalidateQueries({ queryKey: ['participants', id] })
+			// 성공 시 래플 상세 새로고침 (participantDisplayNames 포함)
 			queryClient.invalidateQueries({ queryKey: ['raffle', id] })
 
 			addToast({

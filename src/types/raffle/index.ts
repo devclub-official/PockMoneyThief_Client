@@ -14,7 +14,7 @@ export interface RaffleApiResponse {
 	deadlineAt: string
 }
 
-// 래플 상세 응답 타입
+// 래플 상세 응답 타입 (명세: GET /raffles/{raffleId})
 export interface RaffleDetailResponse {
 	id: string
 	title: string
@@ -29,7 +29,7 @@ export interface RaffleDetailResponse {
 	tiers: TierResponse[]
 	status: string
 	createdAt: string
-	participantsCount: number
+	participantDisplayNames: string[] // 명세의 필수 필드
 }
 
 export interface TierResponse {
@@ -39,7 +39,9 @@ export interface TierResponse {
 	quantity: number
 }
 
-// 래플 생성 요청 타입
+// 래플 생성 요청 타입 (명세: POST /raffles)
+// 주의: externalSeedDescription은 명세의 required에 없으나 example에는 존재
+// 백엔드 검증 정책에 따라 optional 처리
 export interface CreateRaffleRequest {
 	title: string
 	entryFee: number
@@ -48,7 +50,7 @@ export interface CreateRaffleRequest {
 	deadlineAt: string
 	imageUrl: string
 	description: string
-	externalSeedDescription: string
+	externalSeedDescription?: string // optional (명세 스키마에 미정의)
 	tiers: TierRequest[]
 }
 
@@ -242,7 +244,7 @@ export interface Winner {
 		address2?: string
 		carrier?: string
 		trackingNo?: string
-		status: string
+		status: 'PENDING' | 'SAVED' | 'SHIPPED' | 'DELIVERED' // 명세 정합성
 		updatedAt?: string
 	}
 }

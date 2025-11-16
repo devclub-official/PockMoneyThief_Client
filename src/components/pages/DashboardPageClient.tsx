@@ -40,9 +40,45 @@ export function DashboardPageClient({
 		formatTimeLeft,
 	} = useDashboard()
 
-	// 서버에서 prefetch된 초기 데이터 사용
-	const displayMyRaffles = initialMyRaffles
-	const displayParticipatedRaffles = initialParticipatedRaffles
+	// 서버에서 prefetch된 초기 데이터를 로컬 상태로 관리 (취소 시 상태만 변경)
+	const [displayMyRaffles, setDisplayMyRaffles] = React.useState(initialMyRaffles)
+	const [displayParticipatedRaffles] = React.useState(initialParticipatedRaffles)
+
+	const handleLockAndMarkLocked = React.useCallback(
+		async (raffleId: string) => {
+			const ok = await handleLockRaffle(raffleId)
+			if (ok) {
+				setDisplayMyRaffles((prev) =>
+					prev.map((r) => (r.id === raffleId ? { ...r, status: 'LOCKED' } : r)),
+				)
+			}
+		},
+		[handleLockRaffle],
+	)
+
+	const handleCancelAndMarkCancelled = React.useCallback(
+		async (raffleId: string) => {
+			const ok = await handleCancelRaffle(raffleId)
+			if (ok) {
+				setDisplayMyRaffles((prev) =>
+					prev.map((r) => (r.id === raffleId ? { ...r, status: 'CANCELLED' } : r)),
+				)
+			}
+		},
+		[handleCancelRaffle],
+	)
+
+	const handleDrawAndMarkDrawn = React.useCallback(
+		async (raffleId: string) => {
+			const ok = await handleDrawRaffle(raffleId)
+			if (ok) {
+				setDisplayMyRaffles((prev) =>
+					prev.map((r) => (r.id === raffleId ? { ...r, status: 'DRAWN' } : r)),
+				)
+			}
+		},
+		[handleDrawRaffle],
+	)
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -111,9 +147,9 @@ export function DashboardPageClient({
 								<RaffleCard
 									key={raffle.id}
 									raffle={raffle}
-									onLock={handleLockRaffle}
-									onCancel={handleCancelRaffle}
-									onDraw={handleDrawRaffle}
+									onLock={handleLockAndMarkLocked}
+									onCancel={handleCancelAndMarkCancelled}
+									onDraw={handleDrawAndMarkDrawn}
 									onTrackingSubmit={handleTrackingSubmit}
 									formatTimeLeft={formatTimeLeft}
 									router={router}

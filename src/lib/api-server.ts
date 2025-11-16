@@ -1,6 +1,6 @@
 import ky from 'ky'
 import type { RaffleListResponse } from '@/types'
-import type { MyRaffle } from '@/types/dashboard'
+import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
 
@@ -77,4 +77,49 @@ export const serverApiClient = {
 	// 		return []
 	// 	}
 	// },
+
+	/**
+	 * 내가 참여한 추첨 목록 (모의 API 사용)
+	 * GET http://127.0.0.1:3658/m1/1084646-1073890-default/my/raffles/participated
+	 */
+	getMyParticipatedRaffles: async (): Promise<ParticipatedRaffle[]> => {
+		try {
+			const res = await ky
+				.get('http://127.0.0.1:3658/m1/1084646-1073890-default/my/raffles/participated', {
+					timeout: 10000,
+				})
+				.json<{
+					raffles: Array<{
+						raffleId: string
+						title: string
+						entryFee: number
+						imageUrl: string
+						status: string
+						deadlineAt: string
+						myDisplayName: string
+						joinedAt: string
+					}>
+				}>()
+
+			return res.raffles.map((r) => ({
+				id: r.raffleId,
+				title: r.title,
+				imageUrl: r.imageUrl,
+				status:
+					r.status === 'PUBLISHED' ||
+					r.status === 'LOCKED' ||
+					r.status === 'DRAWN' ||
+					r.status === 'CANCELLED'
+						? (r.status as ParticipatedRaffle['status'])
+						: ('PUBLISHED' as ParticipatedRaffle['status']),
+				isWinner: false,
+				itemName: undefined,
+				shippingStatus: undefined,
+				participatedAt: r.joinedAt,
+			}))
+		} catch (error) {
+			console.error('Failed to fetch my participated raffles (mock):', error)
+			return []
+		}
+	},
 }

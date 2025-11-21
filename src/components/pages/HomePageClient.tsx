@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -9,7 +9,7 @@ import { ImageWithFallback } from '@/components/common/ImageWithFallback'
 import { LoadingState } from '@/components/common/LoadingState'
 import { ErrorState } from '@/components/common/ErrorState'
 import { EmptyState } from '@/components/common/EmptyState'
-import { Clock, Users, Gift, TrendingUp } from 'lucide-react'
+import { Clock, Gift } from 'lucide-react'
 import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import type { RaffleFilter, RaffleListResponse } from '@/types'
@@ -50,16 +50,17 @@ function StatsCard({
 // 통계 섹션 컴포넌트
 function StatsSection({
 	stats,
-	raffles,
 }: {
-	stats: { totalParticipants: number; avgWinRate: number }
-	raffles: RaffleListResponse['items']
+	stats: {
+		totalLotteries: number
+		activeLotteries: number
+	}
 }) {
 	return (
-		<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+		<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 			<StatsCard
 				title="전체 추첨"
-				value={raffles.length}
+				value={stats.totalLotteries}
 				subtitle="Total lotteries"
 				icon={Gift}
 				iconBg="bg-red-100"
@@ -67,27 +68,11 @@ function StatsSection({
 			/>
 			<StatsCard
 				title="진행중 추첨"
-				value={raffles.length}
+				value={stats.activeLotteries}
 				subtitle="Active lotteries"
 				icon={Clock}
 				iconBg="bg-violet-100"
 				gradientColor="from-violet-500 to-violet-500/20"
-			/>
-			<StatsCard
-				title="총 참여자"
-				value={stats.totalParticipants}
-				subtitle="Total participants"
-				icon={Users}
-				iconBg="bg-orange-100"
-				gradientColor="from-orange-500 to-orange-500/20"
-			/>
-			<StatsCard
-				title="평균 당첨률"
-				value={`${stats.avgWinRate}%`}
-				subtitle="Average win rate"
-				icon={TrendingUp}
-				iconBg="bg-green-100"
-				gradientColor="from-green-500 to-green-500/20"
 			/>
 		</div>
 	)
@@ -96,20 +81,24 @@ function StatsSection({
 // 래플 카드 컴포넌트
 function RaffleCard({
 	raffle,
-	index,
 	currentTime,
 	router,
 }: {
 	raffle: RaffleListResponse['items'][0]
-	index: number
 	currentTime: number | null
 	router: ReturnType<typeof useRouter>
 }) {
-	const deadlineTime = new Date(raffle.deadlineAt)
+	// useMemo로 deadlineTime 메모이제이션
+	const deadlineTime = useMemo(() => new Date(raffle.deadlineAt), [raffle.deadlineAt])
+
+	// isUrgent을 useMemo로 직접 계산 (setState 불필요)
+	const isUrgent = useMemo(() => {
+		if (!currentTime) return false
+		return deadlineTime.getTime() - currentTime < TIME_CONSTANTS.URGENT_THRESHOLD
+	}, [currentTime, deadlineTime])
 
 	return (
 		<div
-			key={`${raffle.id}-${index}`}
 			className="bg-card border-border group cursor-pointer overflow-hidden rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md"
 			onClick={() => router.push(`/raffle/${raffle.id}`)}
 		>
@@ -121,11 +110,18 @@ function RaffleCard({
 				/>
 				<div className="absolute top-3 left-3">
 					<Badge variant="default" className="bg-primary">
-						{raffle.status}
+						{raffle.status === 'PUBLISHED'
+							? '진행중'
+							: raffle.status === 'LOCKED'
+								? '마감'
+								: raffle.status === 'DRAWN'
+									? '추첨완료'
+									: raffle.status === 'CANCELLED'
+										? '취소'
+										: raffle.status}
 					</Badge>
 				</div>
 			</div>
-
 			<div className="space-y-4 p-4">
 				<div>
 					<h3 className="text-foreground line-clamp-1 font-semibold">{raffle.title}</h3>
@@ -144,20 +140,43 @@ function RaffleCard({
 
 				<div className="space-y-2">
 					<div className="flex items-center justify-between text-sm">
-						<span className="text-muted-foreground">마감 시간</span>
-						<span className={'text-foreground font-medium'}>{formatTimeLeft(deadlineTime)}</span>
+						<span className="text-muted-foreground">
+							{raffle.status === 'PUBLISHED' ? '마감 시간' : '상태'}
+						</span>
+						<span
+							className={
+								raffle.status !== 'PUBLISHED'
+									? 'text-muted-foreground font-medium'
+									: isUrgent
+										? 'text-destructive font-medium'
+										: 'text-foreground font-medium'
+							}
+						>
+							{raffle.status === 'PUBLISHED'
+								? formatTimeLeft(deadlineTime)
+								: raffle.status === 'LOCKED'
+									? '참가 마감'
+									: raffle.status === 'DRAWN'
+										? '추첨 완료'
+										: raffle.status === 'CANCELLED'
+											? '취소됨'
+											: raffle.status}
+						</span>
 					</div>
 				</div>
 
 				<Button
 					className="w-full"
 					size="sm"
+					disabled={raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt) <= new Date()}
 					onClick={(e) => {
 						e.stopPropagation()
 						router.push(`/raffle/${raffle.id}`)
 					}}
 				>
-					참여하기
+					{raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt) > new Date()
+						? '참여하기'
+						: '상세보기'}
 				</Button>
 			</div>
 		</div>
@@ -169,8 +188,8 @@ function getEmptyStateMessage(filter: RaffleFilter) {
 	switch (filter) {
 		case 'active':
 			return '현재 진행중인 추첨이 없습니다.'
-		case 'ending-soon':
-			return '마감 임박한 추첨이 없습니다.'
+		case 'closed':
+			return '마감된 추첨이 없습니다.'
 		default:
 			return '등록된 추첨이 없습니다.'
 	}
@@ -183,35 +202,59 @@ interface HomePageClientProps {
 export function HomePageClient({ initialData }: HomePageClientProps) {
 	const router = useRouter()
 	const [filter, setFilter] = useState<RaffleFilter>('all')
-	const [currentTime] = useState<number | null>(() => {
-		// 클라이언트에서만 실행되도록 보장
-		if (typeof window !== 'undefined') {
-			return Date.now()
-		}
-		return null
-	})
+	const [currentTime, setCurrentTime] = useState<number | null>(null)
 
-	// 서버에서 prefetch된 데이터 사용
-	const raffles = initialData.items || []
+	// 클라이언트에서만 시간 설정 (hydration 이슈 방지)
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		setCurrentTime(Date.now())
+	}, [])
+
+	// 서버에서 prefetch된 데이터 사용 (중복 id 제거)
+	const raffles = useMemo(() => {
+		const items = initialData.items || []
+		// Map을 사용하여 중복된 id 제거 (마지막 항목이 유지됨)
+		const uniqueMap = new Map(items.map((item) => [item.id, item]))
+		return Array.from(uniqueMap.values())
+	}, [initialData.items])
 	const isLoading = false
 	const isError = false
 
 	// 통계 계산 (실제 데이터 기반)
-	const stats = {
-		totalLotteries: raffles.length,
-		activeLotteries: raffles.length,
-		totalParticipants: 0, // TODO: 참여자 수 API 추가 필요
-		avgWinRate: 0, // TODO: 당첨률 API 추가 필요
-	}
+	const stats = useMemo(() => {
+		const activeLotteries = currentTime
+			? raffles.filter(
+					(raffle) =>
+						raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime,
+				).length
+			: 0
+
+		return {
+			totalLotteries: raffles.length,
+			activeLotteries,
+		}
+	}, [raffles, currentTime])
 
 	// 필터링 (currentTime이 설정된 후에만 실행)
 	const filteredRaffles = raffles.filter((raffle) => {
-		if (filter === 'active') return true // 모든 항목이 진행중으로 간주
-		if (filter === 'ending-soon' && currentTime) {
-			const deadlineTime = new Date(raffle.deadlineAt).getTime()
-			const timeLeft = deadlineTime - currentTime
-			return timeLeft < TIME_CONSTANTS.ENDING_SOON_THRESHOLD
+		// 전체 - 모든 항목 표시
+		if (filter === 'all') return true
+
+		// 진행중 - PUBLISHED 상태이면서 마감시간이 지나지 않은 항목
+		if (filter === 'active' && currentTime) {
+			return raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime
 		}
+
+		// 마감 - LOCKED, DRAWN, CANCELLED 또는 마감시간이 지난 PUBLISHED 항목
+		if (filter === 'closed' && currentTime) {
+			return (
+				raffle.status === 'LOCKED' ||
+				raffle.status === 'DRAWN' ||
+				raffle.status === 'CANCELLED' ||
+				(raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() <= currentTime)
+			)
+		}
+
 		return true
 	})
 
@@ -236,7 +279,7 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 			</div>
 
 			{/* Stats Cards */}
-			<StatsSection stats={stats} raffles={raffles} />
+			<StatsSection stats={stats} />
 
 			{/* Filters */}
 			<div className="bg-card border-border rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
@@ -245,26 +288,25 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 					<Tabs
 						defaultValue="all"
 						value={filter}
-						onValueChange={(value) => setFilter(value as RaffleFilter)}
+						onValueChange={(value) => {
+							const allowed: RaffleFilter[] = ['all', 'active', 'closed']
+							if (allowed.includes(value as RaffleFilter)) {
+								setFilter(value as RaffleFilter)
+							}
+						}}
 					>
 						<TabsList className="bg-muted">
 							<TabsTrigger value="all">전체</TabsTrigger>
 							<TabsTrigger value="active">진행중</TabsTrigger>
-							<TabsTrigger value="ending-soon">마감임박</TabsTrigger>
+							<TabsTrigger value="closed">마감</TabsTrigger>
 						</TabsList>
 					</Tabs>
 				</div>
 
 				{/* Lottery Grid */}
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{filteredRaffles.map((raffle, index) => (
-						<RaffleCard
-							key={`${raffle.id}-${index}`}
-							raffle={raffle}
-							index={index}
-							currentTime={currentTime}
-							router={router}
-						/>
+					{filteredRaffles.map((raffle) => (
+						<RaffleCard key={raffle.id} raffle={raffle} currentTime={currentTime} router={router} />
 					))}
 				</div>
 

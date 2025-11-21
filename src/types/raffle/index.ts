@@ -201,14 +201,55 @@ export interface AddressItem {
 	phone: string
 	zipcode: string
 	address1: string
-	address2: string
-	label: string
+	address2?: string
+	label?: string
 	isDefault: boolean
 	createdAt: string
+	updatedAt?: string // GET 상세 조회 시 포함
 }
 
 export interface AddressListResponse {
 	addresses: AddressItem[]
+}
+
+// POST /my/addresses 응답
+export interface CreateAddressResponse {
+	addressId: string
+	name: string
+	phone: string
+	zipcode: string
+	address1: string
+	address2?: string
+	label?: string
+	isDefault: boolean
+	createdAt: string
+	updatedAt: string
+}
+
+// PUT /my/addresses/{addressId} 응답
+export interface UpdateAddressResponse {
+	addressId: string
+	name: string
+	phone: string
+	zipcode: string
+	address1: string
+	address2?: string
+	label?: string
+	isDefault: boolean
+	updatedAt: string
+}
+
+// DELETE /my/addresses/{addressId} 응답
+export interface DeleteAddressResponse {
+	message: string
+	deletedAddressId: string
+}
+
+// PATCH /my/addresses/{addressId}/default 응답
+export interface SetDefaultAddressResponse {
+	message: string
+	addressId: string
+	isDefault: boolean
 }
 
 export interface ShippingInfoResponse {

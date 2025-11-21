@@ -1,7 +1,7 @@
 'use client'
 
-import { Suspense, useMemo, useState } from 'react'
-import { CirclePlus, Pencil, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { CirclePlus, Pencil, Trash2, Star } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -20,7 +20,8 @@ import { useSubmitShippingInfo } from '@/hooks/useSubmitShippingInfo'
 import { useCreateAddress } from '@/hooks/useCreateAddress'
 import { useUpdateAddress } from '@/hooks/useUpdateAddress'
 import { useDeleteAddress } from '@/hooks/useDeleteAddress'
-import { ShippingInfoRequest } from '@/types'
+import { useSetDefaultAddress } from '@/hooks/useSetDefaultAddress'
+import { AddressItem } from '@/types'
 import { AsyncBoundary } from '../boundary/AsyncBoundary'
 
 interface ShippingAddressDialogProps {
@@ -36,12 +37,12 @@ export function ShippingAddressDialog({
 }: ShippingAddressDialogProps) {
 	const [isAdding, setIsAdding] = useState(false)
 	const [editingId, setEditingId] = useState<string | null>(null)
-	const submitShippingInfo = useSubmitShippingInfo()
 	const createAddress = useCreateAddress()
 	const updateAddress = useUpdateAddress()
 	const form = useForm<ShippingAddressFormData>({
 		resolver: zodResolver(shippingAddressSchema),
 		defaultValues: {
+			label: '',
 			name: '',
 			phone: '',
 			zipcode: '',
@@ -68,12 +69,18 @@ export function ShippingAddressDialog({
 			)
 		} else {
 			// 새 배송지 추가
-			createAddress.mutate(data, {
-				onSuccess: () => {
-					setIsAdding(false)
-					form.reset()
+			createAddress.mutate(
+				{
+					...data,
+					isDefault: false,
 				},
-			})
+				{
+					onSuccess: () => {
+						setIsAdding(false)
+						form.reset()
+					},
+				},
+			)
 		}
 	})
 
@@ -100,16 +107,40 @@ export function ShippingAddressDialog({
 					<Button
 						variant="outline"
 						size="sm"
-						onClick={() => setIsAdding(true)}
+						onClick={() => {
+							setEditingId(null)
+							setIsAdding(true)
+							form.reset({
+								label: '',
+								name: '',
+								phone: '',
+								zipcode: '',
+								address1: '',
+								address2: '',
+							})
+						}}
 						aria-label="새 배송지 추가"
 					>
 						<CirclePlus className="h-4 w-4" />
 					</Button>
 				</div>
 
-				<div className="h-96 overflow-y-auto pr-1">
+				<div className="h-[480px] overflow-y-auto pr-1">
 					{isAdding || editingId ? (
 						<form className="space-y-4" onSubmit={handleSubmit}>
+							<div className="space-y-2">
+								<Label htmlFor="label">배송지 이름</Label>
+								<Input
+									id="label"
+									placeholder="예: 집, 회사"
+									{...form.register('label')}
+									aria-invalid={!!form.formState.errors.label}
+									className="border-gray-200 focus:border-gray-400 focus-visible:ring-1 focus-visible:ring-gray-300 focus-visible:ring-offset-0"
+								/>
+								{form.formState.errors.label && (
+									<p className="mt-1 text-sm text-red-600">{form.formState.errors.label.message}</p>
+								)}
+							</div>
 							<div className="space-y-2">
 								<Label htmlFor="name">수령인</Label>
 								<Input
@@ -202,8 +233,9 @@ export function ShippingAddressDialog({
 							<AddressList
 								raffleId={raffleId}
 								onEdit={(address) => {
-									setEditingId(address.id!)
+									setEditingId(address.addressId)
 									form.reset({
+										label: address.label,
 										name: address.name,
 										phone: address.phone,
 										zipcode: address.zipcode,
@@ -222,21 +254,23 @@ export function ShippingAddressDialog({
 
 interface AddressListProps {
 	raffleId: string
-	onEdit: (address: ShippingInfoRequest) => void
+	onEdit: (address: AddressItem) => void
 }
 
 function AddressList({ raffleId, onEdit }: AddressListProps) {
 	const { data: addresses } = useShippingAddresses()
 	const submitShippingInfo = useSubmitShippingInfo()
 	const deleteAddress = useDeleteAddress()
+	const setDefaultAddress = useSetDefaultAddress()
 	const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
-	const [selectConfirmAddress, setSelectConfirmAddress] = useState<ShippingInfoRequest | null>(null)
+	const [setDefaultConfirmId, setSetDefaultConfirmId] = useState<string | null>(null)
+	const [selectConfirmAddress, setSelectConfirmAddress] = useState<AddressItem | null>(null)
 
 	const handleConfirmSelect = () => {
 		if (selectConfirmAddress) {
 			submitShippingInfo.mutate({
 				raffleId: raffleId,
-				data: selectConfirmAddress,
+				addressId: selectConfirmAddress.addressId,
 			})
 			setSelectConfirmAddress(null)
 		}
@@ -246,6 +280,14 @@ function AddressList({ raffleId, onEdit }: AddressListProps) {
 		deleteAddress.mutate(id, {
 			onSuccess: () => {
 				setDeleteConfirmId(null)
+			},
+		})
+	}
+
+	const handleSetDefault = (id: string) => {
+		setDefaultAddress.mutate(id, {
+			onSuccess: () => {
+				setSetDefaultConfirmId(null)
 			},
 		})
 	}
@@ -265,13 +307,13 @@ function AddressList({ raffleId, onEdit }: AddressListProps) {
 			<div className="space-y-2">
 				{addresses.map((addr) => (
 					<div
-						key={addr.id}
+						key={addr.addressId}
 						className="relative cursor-pointer rounded-md border p-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
 						onClick={() => setSelectConfirmAddress(addr)}
 					>
 						<div className="mb-2 flex items-start justify-between">
 							<div className="flex items-center gap-2">
-								<p className="font-medium">{addr.name}</p>
+								<p className="font-medium">{addr.label}</p>
 								{addr.isDefault && (
 									<span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
 										기본
@@ -279,6 +321,21 @@ function AddressList({ raffleId, onEdit }: AddressListProps) {
 								)}
 							</div>
 							<div className="flex gap-1">
+								{!addr.isDefault && (
+									<Button
+										type="button"
+										variant="ghost"
+										size="sm"
+										className="h-9 w-9 p-0 text-yellow-600 hover:bg-yellow-50 hover:text-yellow-700 dark:text-yellow-400 dark:hover:bg-yellow-950"
+										onClick={(e) => {
+											e.stopPropagation()
+											setSetDefaultConfirmId(addr.addressId)
+										}}
+										aria-label="기본 배송지로 설정"
+									>
+										<Star className="h-5 w-5" />
+									</Button>
+								)}
 								<Button
 									type="button"
 									variant="ghost"
@@ -299,7 +356,7 @@ function AddressList({ raffleId, onEdit }: AddressListProps) {
 									className="h-9 w-9 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950"
 									onClick={(e) => {
 										e.stopPropagation()
-										setDeleteConfirmId(addr.id!)
+										setDeleteConfirmId(addr.addressId)
 									}}
 									aria-label="배송지 삭제"
 								>
@@ -324,7 +381,7 @@ function AddressList({ raffleId, onEdit }: AddressListProps) {
 					</DialogHeader>
 					{selectConfirmAddress && (
 						<div className="rounded-md border bg-gray-50 p-4 dark:bg-gray-800">
-							<p className="mb-2 font-medium">{selectConfirmAddress.name}</p>
+							<p className="mb-2 font-medium">{selectConfirmAddress.label}</p>
 							<p className="mb-1 text-sm text-gray-600 dark:text-gray-300">
 								{selectConfirmAddress.phone}
 							</p>
@@ -359,6 +416,24 @@ function AddressList({ raffleId, onEdit }: AddressListProps) {
 							onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
 						>
 							삭제
+						</Button>
+					</div>
+				</DialogContent>
+			</Dialog>
+
+			{/* 기본 배송지 설정 확인 다이얼로그 */}
+			<Dialog open={!!setDefaultConfirmId} onOpenChange={() => setSetDefaultConfirmId(null)}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>기본 배송지 설정</DialogTitle>
+						<DialogDescription>이 배송지를 기본 배송지로 설정하시겠습니까?</DialogDescription>
+					</DialogHeader>
+					<div className="flex justify-end gap-2">
+						<Button variant="ghost" onClick={() => setSetDefaultConfirmId(null)}>
+							취소
+						</Button>
+						<Button onClick={() => setDefaultConfirmId && handleSetDefault(setDefaultConfirmId)}>
+							확인
 						</Button>
 					</div>
 				</DialogContent>

@@ -13,15 +13,18 @@ import { useDashboard } from '@/hooks/useDashboard'
 import { DASHBOARD_UI_TEXT } from '@/lib/constants'
 import { Plus, Package, Users } from 'lucide-react'
 import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
+import type { MyWinItem } from '@/types'
 
 interface DashboardPageClientProps {
 	initialMyRaffles: MyRaffle[]
 	initialParticipatedRaffles: ParticipatedRaffle[]
+	initialWins: MyWinItem[]
 }
 
 export function DashboardPageClient({
 	initialMyRaffles,
 	initialParticipatedRaffles,
+	initialWins,
 }: DashboardPageClientProps) {
 	const router = useRouter()
 	const {
@@ -40,9 +43,46 @@ export function DashboardPageClient({
 		formatTimeLeft,
 	} = useDashboard()
 
-	// 서버에서 prefetch된 초기 데이터 사용
-	const displayMyRaffles = initialMyRaffles
-	const displayParticipatedRaffles = initialParticipatedRaffles
+	// 서버에서 prefetch된 초기 데이터를 로컬 상태로 관리 (취소 시 상태만 변경)
+	const [displayMyRaffles, setDisplayMyRaffles] = React.useState(initialMyRaffles)
+	const [displayParticipatedRaffles] = React.useState(initialParticipatedRaffles)
+	const [displayWins] = React.useState(initialWins)
+
+	const handleLockAndMarkLocked = React.useCallback(
+		async (raffleId: string) => {
+			const ok = await handleLockRaffle(raffleId)
+			if (ok) {
+				setDisplayMyRaffles((prev) =>
+					prev.map((r) => (r.id === raffleId ? { ...r, status: 'LOCKED' } : r)),
+				)
+			}
+		},
+		[handleLockRaffle],
+	)
+
+	const handleCancelAndMarkCancelled = React.useCallback(
+		async (raffleId: string) => {
+			const ok = await handleCancelRaffle(raffleId)
+			if (ok) {
+				setDisplayMyRaffles((prev) =>
+					prev.map((r) => (r.id === raffleId ? { ...r, status: 'CANCELLED' } : r)),
+				)
+			}
+		},
+		[handleCancelRaffle],
+	)
+
+	const handleDrawAndMarkDrawn = React.useCallback(
+		async (raffleId: string) => {
+			const ok = await handleDrawRaffle(raffleId)
+			if (ok) {
+				setDisplayMyRaffles((prev) =>
+					prev.map((r) => (r.id === raffleId ? { ...r, status: 'DRAWN' } : r)),
+				)
+			}
+		},
+		[handleDrawRaffle],
+	)
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -52,7 +92,7 @@ export function DashboardPageClient({
 			</div>
 
 			<Tabs defaultValue="my-raffles" className="space-y-6">
-				<TabsList className="grid w-1/2 grid-cols-2" role="tablist">
+				<TabsList className="grid w-full grid-cols-3 md:w-2/3" role="tablist">
 					<TabsTrigger
 						value="my-raffles"
 						className="w-full"
@@ -68,6 +108,14 @@ export function DashboardPageClient({
 						aria-controls="participated-content"
 					>
 						{DASHBOARD_UI_TEXT.PARTICIPATED_TAB}
+					</TabsTrigger>
+					<TabsTrigger
+						value="my-wins"
+						className="w-full"
+						role="tab"
+						aria-controls="my-wins-content"
+					>
+						내 당첨
 					</TabsTrigger>
 				</TabsList>
 
@@ -111,13 +159,77 @@ export function DashboardPageClient({
 								<RaffleCard
 									key={raffle.id}
 									raffle={raffle}
-									onLock={handleLockRaffle}
-									onCancel={handleCancelRaffle}
-									onDraw={handleDrawRaffle}
+									onLock={handleLockAndMarkLocked}
+									onCancel={handleCancelAndMarkCancelled}
+									onDraw={handleDrawAndMarkDrawn}
 									onTrackingSubmit={handleTrackingSubmit}
 									formatTimeLeft={formatTimeLeft}
 									router={router}
 								/>
+							))}
+						</div>
+					)}
+				</TabsContent>
+
+				{/* 내 당첨 목록 */}
+				<TabsContent
+					value="my-wins"
+					className="space-y-6"
+					id="my-wins-content"
+					role="tabpanel"
+					aria-labelledby="my-wins-tab"
+				>
+					<h2 className="text-xl font-semibold" aria-label={`내 당첨 개수 ${displayWins.length}`}>
+						내 당첨 ({displayWins.length})
+					</h2>
+
+					{displayWins.length === 0 ? (
+						<Card className="text-center" aria-label="내 당첨이 없음을 알리는 카드">
+							<CardContent className="py-12">
+								<EmptyState
+									icon={Users}
+									title="당첨 이력이 없습니다"
+									description="추첨에 참여하고 행운의 주인공이 되어보세요."
+									buttonText={DASHBOARD_UI_TEXT.BROWSE_RAFFLES_BUTTON}
+									onButtonClick={() => router.push('/')}
+									ariaLabel="내 당첨이 없음을 알리는 카드"
+								/>
+							</CardContent>
+						</Card>
+					) : (
+						<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+							{displayWins.map((win) => (
+								<Card key={win.raffleId}>
+									<CardContent className="space-y-3 p-4 md:p-6">
+										<div className="flex items-center justify-between">
+											<div className="text-muted-foreground text-sm">{win.raffleName}</div>
+											<div className="text-muted-foreground text-xs">
+												{new Date(win.drawnAt).toLocaleString('ko-KR')}
+											</div>
+										</div>
+										<div className="text-lg font-semibold">
+											#{win.rank} {win.prizeName}
+										</div>
+										<div className="flex gap-2">
+											<Button
+												variant="outline"
+												className="flex-1"
+												onClick={() => router.push(`/raffles/${win.raffleId}/result`)}
+												aria-label={`${win.raffleName} 결과보기`}
+											>
+												결과보기
+											</Button>
+											<Button
+												variant="outline"
+												className="flex-1"
+												onClick={() => router.push(`/my/raffles/${win.raffleId}/result`)}
+												aria-label={`${win.raffleName} 내 결과`}
+											>
+												내 결과
+											</Button>
+										</div>
+									</CardContent>
+								</Card>
 							))}
 						</div>
 					)}
@@ -159,6 +271,7 @@ export function DashboardPageClient({
 									raffle={raffle}
 									onViewDetail={(id) => router.push(`/raffle/${id}`)}
 									onViewResult={(id) => router.push(`/raffles/${id}/result`)}
+									onViewMyResult={(id) => router.push(`/my/raffles/${id}/result`)}
 								/>
 							))}
 						</div>

@@ -12,6 +12,7 @@ import { Plus, X, Gift, Users } from 'lucide-react'
 import { createRaffleSchema, type CreateRaffleFormData } from '@/lib/schemas'
 import { useCreateRaffle } from '@/hooks/useCreateRaffle'
 import { useToast } from '@/components/ui/Toast'
+import type { CreateRaffleRequest } from '@/types'
 
 export default function CreatePage() {
 	const router = useRouter()
@@ -61,33 +62,41 @@ export default function CreatePage() {
 				'https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
 		}))
 
-		createRaffle.mutate(
-			{
-				...data,
-				deadlineAt,
-				imageUrl,
-				tiers,
+		// externalSeedDescription은 명세에 없으나 백엔드가 허용하면 전송
+		// 비어있으면 제외하여 400 에러 방지
+		const requestPayload: CreateRaffleRequest = {
+			title: data.title,
+			description: data.description,
+			entryFee: data.entryFee,
+			minParticipants: data.minParticipants,
+			maxParticipants: data.maxParticipants,
+			deadlineAt,
+			imageUrl,
+			tiers,
+			...(data.externalSeedDescription && {
+				externalSeedDescription: data.externalSeedDescription,
+			}),
+		}
+
+		createRaffle.mutate(requestPayload, {
+			onSuccess: () => {
+				addToast({
+					title: '등록 완료',
+					description: '성공적으로 등록되었습니다',
+					variant: 'success',
+					duration: 3000,
+				})
+				router.push('/')
 			},
-			{
-				onSuccess: () => {
-					addToast({
-						title: '등록 완료',
-						description: '성공적으로 등록되었습니다',
-						variant: 'success',
-						duration: 3000,
-					})
-					router.push('/')
-				},
-				onError: () => {
-					addToast({
-						title: '등록 실패',
-						description: '추첨 등록에 실패했습니다. 다시 시도해주세요.',
-						variant: 'error',
-						duration: 4000,
-					})
-				},
+			onError: () => {
+				addToast({
+					title: '등록 실패',
+					description: '추첨 등록에 실패했습니다. 다시 시도해주세요.',
+					variant: 'error',
+					duration: 4000,
+				})
 			},
-		)
+		})
 	}
 
 	const onInvalid = (errors: Record<string, { message?: string }>) => {

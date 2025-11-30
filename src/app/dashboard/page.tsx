@@ -1,18 +1,15 @@
 import { Suspense } from 'react'
-// import { serverApiClient } from '@/lib/api-server'
+import { myApi } from '@/lib/api'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { DashboardPageClient } from '@/components/pages/DashboardPageClient'
 
 export default async function Dashboard() {
-	// ❌ API 명세에 없는 엔드포인트 (백엔드 확인 필요)
-	// const [myRafflesData, participatedRafflesData] = await Promise.all([
-	// 	serverApiClient.getMyRaffles(),
-	// 	serverApiClient.getParticipatedRaffles(),
-	// ])
-
-	// 임시로 빈 데이터 전달
-	const myRafflesData: never[] = []
-	const participatedRafflesData: never[] = []
+	// 모의 API로 등록/참여 목록을 병렬 prefetch
+	const [myRafflesData, participatedRafflesData, myWinsData] = await Promise.all([
+		myApi.getHostedRaffles(),
+		myApi.getParticipatedRaffles(),
+		myApi.getWins(),
+	])
 
 	return (
 		<div className="bg-background min-h-screen">
@@ -20,6 +17,7 @@ export default async function Dashboard() {
 				<DashboardPageClient
 					initialMyRaffles={myRafflesData}
 					initialParticipatedRaffles={participatedRafflesData}
+					initialWins={myWinsData.wins}
 				/>
 			</Suspense>
 		</div>

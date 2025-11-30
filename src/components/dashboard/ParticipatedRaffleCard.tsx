@@ -14,6 +14,7 @@ interface ParticipatedRaffleCardProps {
 	raffle: ParticipatedRaffle
 	onViewDetail: (id: string) => void
 	onViewResult: (id: string) => void
+	onViewMyResult?: (id: string) => void
 }
 
 export const ParticipatedRaffleCard = memo(
@@ -63,16 +64,30 @@ export const ParticipatedRaffleCard = memo(
 						</div>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						{/* 참여자 수 정보 (참여한 추첨에서는 표시하지 않음) */}
-						{raffle.status === 'PUBLISHED' && (
-							<div className="flex items-center justify-between text-sm">
-								<span className="flex items-center gap-1" aria-label="참여한 시간">
-									<Clock className="h-4 w-4" />
-									참여 시간
+						{/* 참여 시간 */}
+						<div className="flex items-center justify-between text-sm">
+							<span className="flex items-center gap-1" aria-label="참여한 시간">
+								<Clock className="h-4 w-4" />
+								참여 시간
+							</span>
+							<span>{new Date(raffle.participatedAt).toLocaleString('ko-KR')}</span>
+						</div>
+
+						{/* 참여비 / 마감일 */}
+						<div className="grid grid-cols-2 gap-3 text-sm">
+							<div className="flex items-center justify-between">
+								<span className="text-muted-foreground">참여비</span>
+								<span className="font-medium">
+									{(Number(raffle.entryFee) || 0).toLocaleString('ko-KR')}원
 								</span>
-								<span>{new Date(raffle.participatedAt).toLocaleString('ko-KR')}</span>
 							</div>
-						)}
+							<div className="flex items-center justify-between">
+								<span className="text-muted-foreground">마감일</span>
+								<span className="font-medium">
+									{new Date(raffle.deadlineAt).toLocaleString('ko-KR')}
+								</span>
+							</div>
+						</div>
 
 						{/* 당첨 상품 정보 */}
 						{raffle.isWinner && raffle.itemName && (
@@ -104,14 +119,26 @@ export const ParticipatedRaffleCard = memo(
 								상세보기
 							</Button>
 							{raffle.status === 'DRAWN' && (
-								<Button
-									variant="outline"
-									onClick={drawnButtonCallback ?? undefined}
-									className="flex-1"
-									aria-label={`${drawnLabelText} 버튼 ${raffle.title}`}
-								>
-									{drawnLabelText}
-								</Button>
+								<>
+									<Button
+										variant="outline"
+										onClick={drawnButtonCallback ?? undefined}
+										className="flex-1"
+										aria-label={`${drawnLabelText} 버튼 ${raffle.title}`}
+									>
+										{drawnLabelText}
+									</Button>
+									{onViewMyResult && (
+										<Button
+											variant="outline"
+											onClick={() => onViewMyResult?.(raffle.id)}
+											className="flex-1"
+											aria-label={`내 결과 버튼 ${raffle.title}`}
+										>
+											내 결과
+										</Button>
+									)}
+								</>
 							)}
 						</div>
 					</CardContent>

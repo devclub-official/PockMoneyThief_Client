@@ -12,7 +12,7 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useDashboard } from '@/hooks/useDashboard'
 import { useMyRaffles, useParticipatedRaffles, useWins } from '@/hooks/useMyRaffles'
-import { DASHBOARD_UI_TEXT } from '@/lib/constants'
+import { DASHBOARD_UI_TEXT, DASHBOARD_MESSAGES } from '@/lib/constants'
 import { Plus, Package, Users } from 'lucide-react'
 
 export function DashboardPageClient() {
@@ -57,17 +57,30 @@ export function DashboardPageClient() {
 	const isError = isErrorMyRaffles || isErrorParticipated || isErrorWins
 
 	// 로컬 상태로 관리 (취소/잠금 시 상태만 변경)
+	// React Query 데이터를 직접 사용하되, 로컬 상태는 업데이트 시에만 사용
 	const [displayMyRaffles, setDisplayMyRaffles] = React.useState(myRafflesData)
 	const [displayParticipatedRaffles, setDisplayParticipatedRaffles] =
 		React.useState(participatedRafflesData)
 
 	// React Query 데이터가 변경되면 로컬 상태 업데이트
+	// useRef로 이전 값 추적하여 무한 루프 방지
+	const prevMyRafflesRef = React.useRef<string>('')
+	const prevParticipatedRafflesRef = React.useRef<string>('')
+
 	React.useEffect(() => {
-		setDisplayMyRaffles(myRafflesData)
+		const currentKey = JSON.stringify(myRafflesData.map((r) => r.id))
+		if (prevMyRafflesRef.current !== currentKey) {
+			prevMyRafflesRef.current = currentKey
+			setDisplayMyRaffles(myRafflesData)
+		}
 	}, [myRafflesData])
 
 	React.useEffect(() => {
-		setDisplayParticipatedRaffles(participatedRafflesData)
+		const currentKey = JSON.stringify(participatedRafflesData.map((r) => r.id))
+		if (prevParticipatedRafflesRef.current !== currentKey) {
+			prevParticipatedRafflesRef.current = currentKey
+			setDisplayParticipatedRaffles(participatedRafflesData)
+		}
 	}, [participatedRafflesData])
 
 	const handleLockAndMarkLocked = React.useCallback(
@@ -128,7 +141,7 @@ export function DashboardPageClient() {
 					<p className="text-muted-foreground">{DASHBOARD_UI_TEXT.PAGE_DESCRIPTION}</p>
 				</div>
 				<div className="bg-destructive/10 border-destructive/20 text-destructive rounded-lg border px-4 py-3">
-					데이터를 불러오는 중 오류가 발생했습니다. 로그인이 필요할 수 있습니다.
+					{DASHBOARD_MESSAGES.DATA_LOAD_ERROR}
 				</div>
 			</div>
 		)

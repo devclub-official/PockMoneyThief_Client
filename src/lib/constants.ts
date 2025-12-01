@@ -63,6 +63,7 @@ export const DASHBOARD_MESSAGES = {
 	TRACKING_REGISTERED: '송장번호가 등록되었습니다!',
 	TRACKING_REGISTER_FAILED: '송장번호 등록에 실패했습니다.',
 	DATA_LOAD_FAILED: '대시보드 데이터 로드 실패:',
+	DATA_LOAD_ERROR: '데이터를 불러오는 중 오류가 발생했습니다. 로그인이 필요할 수 있습니다.',
 } as const
 
 // 대시보드 UI 텍스트 상수

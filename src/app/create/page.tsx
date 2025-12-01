@@ -12,6 +12,7 @@ import { Plus, X, Gift, Users } from 'lucide-react'
 import { createRaffleSchema, type CreateRaffleFormData } from '@/lib/schemas'
 import { useCreateRaffle } from '@/hooks/useCreateRaffle'
 import { useToast } from '@/components/ui/Toast'
+import { ImageUploadButton } from '@/components/ui/ImageUploadButton'
 import type { CreateRaffleRequest } from '@/types'
 
 export default function CreatePage() {
@@ -19,7 +20,7 @@ export default function CreatePage() {
 	const createRaffle = useCreateRaffle()
 	const { addToast } = useToast()
 
-	const { register, handleSubmit, control, watch } = useForm<CreateRaffleFormData>({
+	const { register, handleSubmit, control, watch, setValue } = useForm<CreateRaffleFormData>({
 		resolver: zodResolver(createRaffleSchema),
 		defaultValues: {
 			title: '',
@@ -35,6 +36,7 @@ export default function CreatePage() {
 	})
 
 	const duration = watch('duration')
+	const imageUrl = watch('imageUrl')
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -165,14 +167,35 @@ export default function CreatePage() {
 						</div>
 
 						<div>
-							<Label htmlFor="imageUrl">이미지 URL</Label>
-							<Input
-								id="imageUrl"
-								{...register('imageUrl')}
-								placeholder="https://example.com/image.jpg"
-							/>
+							<Label htmlFor="imageUrl">추첨 이미지</Label>
+							<ImageUploadButton
+								purpose="raffle"
+								value={imageUrl}
+								onUploadSuccess={(fileUrl) => {
+									setValue('imageUrl', fileUrl)
+									if (fileUrl) {
+										addToast({
+											title: '업로드 완료',
+											description: '이미지가 성공적으로 업로드되었습니다.',
+											variant: 'success',
+											duration: 2000,
+										})
+									}
+								}}
+								onUploadError={(error) => {
+									addToast({
+										title: '업로드 실패',
+										description: error,
+										variant: 'error',
+										duration: 3000,
+									})
+								}}
+								disabled={createRaffle.isPending}
+							>
+								추첨 이미지 업로드
+							</ImageUploadButton>
 							<p className="text-muted-foreground mt-1 text-xs">
-								미입력 시 기본 이미지가 사용됩니다
+								미업로드 시 기본 이미지가 사용됩니다
 							</p>
 						</div>
 					</CardContent>
@@ -280,13 +303,36 @@ export default function CreatePage() {
 										/>
 									</div>
 									<div>
-										<Label htmlFor={`tier-image-${index}`}>이미지 URL</Label>
-										<Input
-											id={`tier-image-${index}`}
-											type="url"
-											{...register(`tiers.${index}.imageUrl`)}
-											placeholder="https://..."
-										/>
+										<Label htmlFor={`tier-image-${index}`}>경품 이미지</Label>
+										<ImageUploadButton
+											purpose="prize"
+											value={watch(`tiers.${index}.imageUrl`)}
+											onUploadSuccess={(fileUrl) => {
+												setValue(`tiers.${index}.imageUrl`, fileUrl)
+												if (fileUrl) {
+													addToast({
+														title: '업로드 완료',
+														description: '경품 이미지가 성공적으로 업로드되었습니다.',
+														variant: 'success',
+														duration: 2000,
+													})
+												}
+											}}
+											onUploadError={(error) => {
+												addToast({
+													title: '업로드 실패',
+													description: error,
+													variant: 'error',
+													duration: 3000,
+												})
+											}}
+											disabled={createRaffle.isPending}
+										>
+											경품 이미지 업로드
+										</ImageUploadButton>
+										<p className="text-muted-foreground mt-1 text-xs">
+											미업로드 시 기본 이미지가 사용됩니다
+										</p>
 									</div>
 								</div>
 								{fields.length > 1 && (
@@ -311,7 +357,7 @@ export default function CreatePage() {
 						type="button"
 						variant="outline"
 						onClick={() => router.push('/')}
-						className="flex-1"
+						className="flex-1 bg-white hover:bg-gray-50"
 						disabled={createRaffle.isPending}
 					>
 						취소

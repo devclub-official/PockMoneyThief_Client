@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { isAllowedImageUrl } from '@/lib/image-validation'
 
 // 경품 스키마
 export const tierSchema = z.object({
@@ -8,9 +9,19 @@ export const tierSchema = z.object({
 	imageUrl: z
 		.string()
 		.trim()
-		.refine((val) => val === '' || z.string().url().safeParse(val).success, {
-			message: '올바른 이미지 URL을 입력해주세요',
-		})
+		.refine(
+			(val) => {
+				if (!val || val === '') return true // 빈 값은 허용 (기본 이미지 사용)
+				// URL 형식 검증
+				if (!z.string().url().safeParse(val).success) return false
+				// 허용된 호스트 검증
+				return isAllowedImageUrl(val)
+			},
+			{
+				message:
+					'허용되지 않은 이미지 호스팅 서비스입니다. S3 또는 허용된 이미지 서비스를 사용해주세요.',
+			},
+		)
 		.optional()
 		.or(z.literal('')),
 })
@@ -25,7 +36,24 @@ export const createRaffleSchema = z
 		minParticipants: z.number().int().positive('최소 참여자는 1명 이상이어야 합니다'),
 		maxParticipants: z.number().int().positive('최대 참여자는 1명 이상이어야 합니다'),
 		duration: z.number().int().min(1, '진행 시간은 1시간 이상이어야 합니다'),
-		imageUrl: z.string().url('올바른 이미지 URL을 입력해주세요').optional().or(z.literal('')),
+		imageUrl: z
+			.string()
+			.trim()
+			.refine(
+				(val) => {
+					if (!val || val === '') return true // 빈 값은 허용 (기본 이미지 사용)
+					// URL 형식 검증
+					if (!z.string().url().safeParse(val).success) return false
+					// 허용된 호스트 검증
+					return isAllowedImageUrl(val)
+				},
+				{
+					message:
+						'허용되지 않은 이미지 호스팅 서비스입니다. S3 또는 허용된 이미지 서비스를 사용해주세요.',
+				},
+			)
+			.optional()
+			.or(z.literal('')),
 		externalSeedDescription: z.string().min(1, '외부 시드 설명을 입력해주세요').optional(),
 		tiers: z.array(tierSchema).min(1, '최소 1개의 경품을 추가해주세요'),
 	})

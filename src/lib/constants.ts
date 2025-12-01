@@ -43,6 +43,13 @@ export const SIDEBAR_BOTTOM_ITEMS = [
 	},
 ] as const
 
+// 이미지 업로드 관련 상수
+export const UPLOAD_CONSTANTS = {
+	S3_BUCKET_URL: 'https://pockmoneythief-images.s3.ap-northeast-2.amazonaws.com',
+	PRESIGNED_URL_EXPIRES_IN: 900,
+	MOCK_RAFFLE_ID_PREFIX: 'mock-raffle-',
+} as const
+
 // 대시보드 관련 메시지 상수
 export const DASHBOARD_MESSAGES = {
 	RAFFLE_LOCKED: '추첨이 잠금되었습니다.',

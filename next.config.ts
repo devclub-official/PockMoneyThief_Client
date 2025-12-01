@@ -3,19 +3,25 @@ import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
 	images: {
-		unoptimized: true, // 이미지 최적화 비활성화 (외부 이미지 에러 방지)
+		// 보안: S3 버킷만 허용 (이미지 업로드만 사용)
 		remotePatterns: [
+			// AWS S3 버킷 (모든 리전)
 			{
 				protocol: 'https',
-				hostname: 'images.unsplash.com',
+				hostname: '*.s3.*.amazonaws.com',
 			},
 			{
 				protocol: 'https',
-				hostname: 'loremflickr.com',
+				hostname: '*.s3.amazonaws.com',
+			},
+			// 프로젝트 S3 버킷
+			{
+				protocol: 'https',
+				hostname: 'pockmoneythief-images.s3.*.amazonaws.com',
 			},
 			{
 				protocol: 'https',
-				hostname: 'images.goodsmile.info',
+				hostname: 'pockmoneythief-images.s3.amazonaws.com',
 			},
 		],
 	},

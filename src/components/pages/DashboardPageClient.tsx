@@ -9,23 +9,13 @@ import { RaffleCard } from '@/components/dashboard/RaffleCard'
 import { ParticipatedRaffleCard } from '@/components/dashboard/ParticipatedRaffleCard'
 import { TrackingDialog } from '@/components/dashboard/TrackingDialog'
 import { EmptyState } from '@/components/common/EmptyState'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useDashboard } from '@/hooks/useDashboard'
+import { useMyRaffles, useParticipatedRaffles, useWins } from '@/hooks/useMyRaffles'
 import { DASHBOARD_UI_TEXT } from '@/lib/constants'
 import { Plus, Package, Users } from 'lucide-react'
-import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
-import type { MyWinItem } from '@/types'
 
-interface DashboardPageClientProps {
-	initialMyRaffles: MyRaffle[]
-	initialParticipatedRaffles: ParticipatedRaffle[]
-	initialWins: MyWinItem[]
-}
-
-export function DashboardPageClient({
-	initialMyRaffles,
-	initialParticipatedRaffles,
-	initialWins,
-}: DashboardPageClientProps) {
+export function DashboardPageClient() {
 	const router = useRouter()
 	const {
 		selectedWinner,
@@ -43,10 +33,42 @@ export function DashboardPageClient({
 		formatTimeLeft,
 	} = useDashboard()
 
-	// 서버에서 prefetch된 초기 데이터를 로컬 상태로 관리 (취소 시 상태만 변경)
-	const [displayMyRaffles, setDisplayMyRaffles] = React.useState(initialMyRaffles)
-	const [displayParticipatedRaffles] = React.useState(initialParticipatedRaffles)
-	const [displayWins] = React.useState(initialWins)
+	// React Query로 클라이언트에서 데이터 fetch (인증 쿠키 자동 포함)
+	const {
+		data: myRafflesData = [],
+		isLoading: isLoadingMyRaffles,
+		isError: isErrorMyRaffles,
+	} = useMyRaffles()
+
+	const {
+		data: participatedRafflesData = [],
+		isLoading: isLoadingParticipated,
+		isError: isErrorParticipated,
+	} = useParticipatedRaffles()
+
+	const { data: winsData, isLoading: isLoadingWins, isError: isErrorWins } = useWins()
+
+	const displayWins = winsData?.wins || []
+
+	// 로딩 상태
+	const isLoading = isLoadingMyRaffles || isLoadingParticipated || isLoadingWins
+
+	// 에러 상태
+	const isError = isErrorMyRaffles || isErrorParticipated || isErrorWins
+
+	// 로컬 상태로 관리 (취소/잠금 시 상태만 변경)
+	const [displayMyRaffles, setDisplayMyRaffles] = React.useState(myRafflesData)
+	const [displayParticipatedRaffles, setDisplayParticipatedRaffles] =
+		React.useState(participatedRafflesData)
+
+	// React Query 데이터가 변경되면 로컬 상태 업데이트
+	React.useEffect(() => {
+		setDisplayMyRaffles(myRafflesData)
+	}, [myRafflesData])
+
+	React.useEffect(() => {
+		setDisplayParticipatedRaffles(participatedRafflesData)
+	}, [participatedRafflesData])
 
 	const handleLockAndMarkLocked = React.useCallback(
 		async (raffleId: string) => {
@@ -83,6 +105,34 @@ export function DashboardPageClient({
 		},
 		[handleDrawRaffle],
 	)
+
+	// 로딩 상태
+	if (isLoading) {
+		return (
+			<div className="container mx-auto px-4 py-8">
+				<div className="mb-8">
+					<h1 className="text-foreground text-2xl font-semibold">{DASHBOARD_UI_TEXT.PAGE_TITLE}</h1>
+					<p className="text-muted-foreground">{DASHBOARD_UI_TEXT.PAGE_DESCRIPTION}</p>
+				</div>
+				<LoadingSpinner />
+			</div>
+		)
+	}
+
+	// 에러 상태 (401 등 인증 에러 포함)
+	if (isError) {
+		return (
+			<div className="container mx-auto px-4 py-8">
+				<div className="mb-8">
+					<h1 className="text-foreground text-2xl font-semibold">{DASHBOARD_UI_TEXT.PAGE_TITLE}</h1>
+					<p className="text-muted-foreground">{DASHBOARD_UI_TEXT.PAGE_DESCRIPTION}</p>
+				</div>
+				<div className="bg-destructive/10 border-destructive/20 text-destructive rounded-lg border px-4 py-3">
+					데이터를 불러오는 중 오류가 발생했습니다. 로그인이 필요할 수 있습니다.
+				</div>
+			</div>
+		)
+	}
 
 	return (
 		<div className="container mx-auto px-4 py-8">

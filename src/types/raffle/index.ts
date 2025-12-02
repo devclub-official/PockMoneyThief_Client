@@ -25,22 +25,27 @@ export interface RaffleApiResponse {
 	deadlineAt: string
 }
 
-// 래플 상세 응답 타입 (명세: GET /raffles/{raffleId})
+// 래플 상세 응답 타입 (명세: GET /raffles/{raffleId} - RaffleResponse)
 export interface RaffleDetailResponse {
-	id: string
-	title: string
-	description: string
-	entryFee: number
-	minParticipants: number
-	maxParticipants: number
-	imageUrl: string
-	deadlineAt: string
-	externalSeedDescription: string
-	externalSeed: string | null
-	tiers: TierResponse[]
-	status: string
-	createdAt: string
-	participantDisplayNames: string[] // 명세의 필수 필드
+	id?: string // 하위 호환성
+	raffleId?: string
+	title?: string
+	description?: string
+	entryFee?: number
+	minParticipants?: number
+	maxParticipants?: number
+	imageUrl?: string
+	deadlineAt?: string
+	externalSeedDescription?: string
+	externalSeed?: string
+	tiers?: TierResponse[]
+	status?: string
+	createdAt?: string
+	lockedAt?: string
+	cancelledAt?: string
+	reason?: string
+	participantsCount?: number
+	participantDisplayNames?: string[]
 }
 
 // 래플 생성 요청 타입 (명세: POST /raffles - RaffleCreateRequest)
@@ -133,18 +138,47 @@ export interface RaffleResult {
 	generatedAt: string
 }
 
-// 래플 관리 API 응답 타입들
+// 래플 관리 API 응답 타입들 (명세: RaffleResponse 반환)
 export interface RaffleLockResponse {
-	raffleId: string
-	status: string
-	lockedAt: string
+	raffleId?: string
+	title?: string
+	description?: string
+	entryFee?: number
+	minParticipants?: number
+	maxParticipants?: number
+	deadlineAt?: string
+	imageUrl?: string
+	externalSeedDescription?: string
+	externalSeed?: string
+	tiers?: TierResponse[]
+	status?: string
+	createdAt?: string
+	lockedAt?: string
+	cancelledAt?: string
+	reason?: string
+	participantsCount?: number
+	participantDisplayNames?: string[]
 }
 
 export interface RaffleCancelResponse {
-	raffleId: string
-	status: string
-	cancelledAt: string
-	reason: string
+	raffleId?: string
+	title?: string
+	description?: string
+	entryFee?: number
+	minParticipants?: number
+	maxParticipants?: number
+	deadlineAt?: string
+	imageUrl?: string
+	externalSeedDescription?: string
+	externalSeed?: string
+	tiers?: TierResponse[]
+	status?: string
+	createdAt?: string
+	lockedAt?: string
+	cancelledAt?: string
+	reason?: string
+	participantsCount?: number
+	participantDisplayNames?: string[]
 }
 
 // 추첨 관련 타입들

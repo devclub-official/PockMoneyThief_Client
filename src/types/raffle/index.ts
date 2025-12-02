@@ -1,10 +1,20 @@
 // 래플 관련 모든 타입들
 
 // API 응답 타입 (실제 API 구조)
-export interface RaffleListResponse {
-	items: RaffleApiResponse[]
+// GET /raffles는 배열을 직접 반환
+export type RaffleListResponse = RaffleSummaryResponse[]
+
+// GET /raffles 응답 타입 (RaffleSummaryResponse)
+export interface RaffleSummaryResponse {
+	raffleId?: string
+	title?: string
+	entryFee?: number
+	status?: string
+	imageUrl?: string
+	deadlineAt?: string
 }
 
+// 하위 호환성을 위한 타입 (기존 코드와의 호환)
 export interface RaffleApiResponse {
 	id: string
 	title: string

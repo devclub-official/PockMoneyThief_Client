@@ -12,7 +12,7 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { Clock, Gift } from 'lucide-react'
 import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
-import type { RaffleFilter, RaffleListResponse } from '@/types'
+import type { RaffleFilter, RaffleListResponse, RaffleSummaryResponse } from '@/types'
 
 // 통계 카드 컴포넌트
 function StatsCard({
@@ -84,12 +84,18 @@ function RaffleCard({
 	currentTime,
 	router,
 }: {
-	raffle: RaffleListResponse['items'][0]
+	raffle: RaffleSummaryResponse
 	currentTime: number | null
 	router: ReturnType<typeof useRouter>
 }) {
+	// id 또는 raffleId 중 하나 사용
+	const raffleId = raffle.id || raffle.raffleId || ''
+
 	// useMemo로 deadlineTime 메모이제이션
-	const deadlineTime = useMemo(() => new Date(raffle.deadlineAt), [raffle.deadlineAt])
+	const deadlineTime = useMemo(() => {
+		if (!raffle.deadlineAt) return new Date()
+		return new Date(raffle.deadlineAt)
+	}, [raffle.deadlineAt])
 
 	// isUrgent을 useMemo로 직접 계산 (setState 불필요)
 	const isUrgent = useMemo(() => {
@@ -100,12 +106,12 @@ function RaffleCard({
 	return (
 		<div
 			className="bg-card border-border group cursor-pointer overflow-hidden rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md"
-			onClick={() => router.push(`/raffle/${raffle.id}`)}
+			onClick={() => router.push(`/raffle/${raffleId}`)}
 		>
 			<div className="relative aspect-video overflow-hidden rounded-t-lg">
 				<ImageWithFallback
-					src={raffle.imageUrl}
-					alt={raffle.title}
+					src={raffle.imageUrl || ''}
+					alt={raffle.title || '추첨'}
 					className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
 				/>
 				<div className="absolute top-3 left-3">
@@ -118,23 +124,25 @@ function RaffleCard({
 									? '추첨완료'
 									: raffle.status === 'CANCELLED'
 										? '취소'
-										: raffle.status}
+										: raffle.status || '알 수 없음'}
 					</Badge>
 				</div>
 			</div>
 			<div className="space-y-4 p-4">
 				<div>
-					<h3 className="text-foreground line-clamp-1 font-semibold">{raffle.title}</h3>
+					<h3 className="text-foreground line-clamp-1 font-semibold">
+						{raffle.title || '제목 없음'}
+					</h3>
 				</div>
 
 				<div className="flex items-center justify-between">
 					<div>
 						<p className="text-muted-foreground text-xs">래플 ID</p>
-						<p className="text-muted-foreground text-sm">#{raffle.id}</p>
+						<p className="text-muted-foreground text-sm">#{raffleId}</p>
 					</div>
 					<div className="text-right">
 						<p className="text-muted-foreground text-xs">참여비</p>
-						<p className="text-primary font-semibold">₩{formatPrice(raffle.entryFee)}</p>
+						<p className="text-primary font-semibold">₩{formatPrice(raffle.entryFee || 0)}</p>
 					</div>
 				</div>
 
@@ -160,7 +168,7 @@ function RaffleCard({
 										? '추첨 완료'
 										: raffle.status === 'CANCELLED'
 											? '취소됨'
-											: raffle.status}
+											: raffle.status || '알 수 없음'}
 						</span>
 					</div>
 				</div>
@@ -168,13 +176,19 @@ function RaffleCard({
 				<Button
 					className="w-full"
 					size="sm"
-					disabled={raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt) <= new Date()}
+					disabled={
+						raffle.status !== 'PUBLISHED' ||
+						!raffle.deadlineAt ||
+						new Date(raffle.deadlineAt) <= new Date()
+					}
 					onClick={(e) => {
 						e.stopPropagation()
-						router.push(`/raffle/${raffle.id}`)
+						router.push(`/raffle/${raffleId}`)
 					}}
 				>
-					{raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt) > new Date()
+					{raffle.status === 'PUBLISHED' &&
+					raffle.deadlineAt &&
+					new Date(raffle.deadlineAt) > new Date()
 						? '참여하기'
 						: '상세보기'}
 				</Button>
@@ -212,11 +226,12 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 
 	// 서버에서 prefetch된 데이터 사용 (중복 id 제거)
 	const raffles = useMemo(() => {
-		const items = initialData.items || []
+		// API 명세: GET /raffles는 배열을 직접 반환
+		const items = Array.isArray(initialData) ? initialData : []
 		// Map을 사용하여 중복된 id 제거 (마지막 항목이 유지됨)
-		const uniqueMap = new Map(items.map((item) => [item.id, item]))
+		const uniqueMap = new Map(items.map((item) => [item.id || item.raffleId || '', item]))
 		return Array.from(uniqueMap.values())
-	}, [initialData.items])
+	}, [initialData])
 	const isLoading = false
 	const isError = false
 
@@ -225,7 +240,9 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 		const activeLotteries = currentTime
 			? raffles.filter(
 					(raffle) =>
-						raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime,
+						raffle.status === 'PUBLISHED' &&
+						raffle.deadlineAt &&
+						new Date(raffle.deadlineAt).getTime() > currentTime,
 				).length
 			: 0
 
@@ -242,7 +259,11 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 
 		// 진행중 - PUBLISHED 상태이면서 마감시간이 지나지 않은 항목
 		if (filter === 'active' && currentTime) {
-			return raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime
+			return (
+				raffle.status === 'PUBLISHED' &&
+				raffle.deadlineAt &&
+				new Date(raffle.deadlineAt).getTime() > currentTime
+			)
 		}
 
 		// 마감 - LOCKED, DRAWN, CANCELLED 또는 마감시간이 지난 PUBLISHED 항목
@@ -251,7 +272,9 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 				raffle.status === 'LOCKED' ||
 				raffle.status === 'DRAWN' ||
 				raffle.status === 'CANCELLED' ||
-				(raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() <= currentTime)
+				(raffle.status === 'PUBLISHED' &&
+					raffle.deadlineAt &&
+					new Date(raffle.deadlineAt).getTime() <= currentTime)
 			)
 		}
 
@@ -306,7 +329,12 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 				{/* Lottery Grid */}
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{filteredRaffles.map((raffle) => (
-						<RaffleCard key={raffle.id} raffle={raffle} currentTime={currentTime} router={router} />
+						<RaffleCard
+							key={raffle.id || raffle.raffleId || ''}
+							raffle={raffle}
+							currentTime={currentTime}
+							router={router}
+						/>
 					))}
 				</div>
 

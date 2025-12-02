@@ -14,12 +14,13 @@ export const serverApiClient = {
 	getRaffles: async (): Promise<RaffleListResponse> => {
 		try {
 			// 백엔드 서버가 없으면 에러가 발생하고 catch로 이동
+			// API 명세: GET /raffles는 배열을 직접 반환
 			const response = await serverApi.get('raffles').json<RaffleListResponse>()
 			return response
 		} catch (error) {
 			console.error('Failed to fetch raffles:', error)
 			// 에러 시 빈 배열 반환
-			return { items: [] }
+			return []
 		}
 	},
 

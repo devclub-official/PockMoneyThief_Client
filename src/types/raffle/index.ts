@@ -6,6 +6,7 @@ export type RaffleListResponse = RaffleSummaryResponse[]
 
 // GET /raffles 응답 타입 (RaffleSummaryResponse)
 export interface RaffleSummaryResponse {
+	id?: string // 하위 호환성
 	raffleId?: string
 	title?: string
 	entryFee?: number
@@ -42,49 +43,55 @@ export interface RaffleDetailResponse {
 	participantDisplayNames: string[] // 명세의 필수 필드
 }
 
-export interface TierResponse {
-	rank: number
-	name: string
-	imageUrl: string
-	quantity: number
-}
-
-// 래플 생성 요청 타입 (명세: POST /raffles)
-// 주의: externalSeedDescription은 명세의 required에 없으나 example에는 존재
-// 백엔드 검증 정책에 따라 optional 처리
+// 래플 생성 요청 타입 (명세: POST /raffles - RaffleCreateRequest)
 export interface CreateRaffleRequest {
-	title: string
-	entryFee: number
-	minParticipants: number
-	maxParticipants: number
-	deadlineAt: string
-	imageUrl: string
-	description: string
-	externalSeedDescription?: string // optional (명세 스키마에 미정의)
-	tiers: TierRequest[]
+	title?: string
+	description?: string
+	entryFee?: number
+	minParticipants?: number
+	maxParticipants?: number
+	imageUrl?: string
+	deadlineAt?: string
+	externalSeedDescription?: string
+	tiers?: TierRequest[]
 }
 
-// 래플 생성 응답 타입 (API 명세서에 맞게 수정)
-export interface CreateRaffleResponse {
-	id: string
-	title: string
-	description: string
-	entryFee: number
-	minParticipants: number
-	maxParticipants: number
-	deadlineAt: string
-	imageUrl: string
-	externalSeedDescription: string
-	tiers: TierResponse[]
-	status: string
-	createdAt: string
-}
-
+// 경품 요청 타입 (PrizeRequest)
 export interface TierRequest {
-	rank: number
-	name: string
-	quantity: number
-	imageUrl: string
+	rank?: number
+	name?: string
+	quantity?: number
+	imageUrl?: string
+}
+
+// 래플 생성 응답 타입 (명세: RaffleResponse)
+export interface CreateRaffleResponse {
+	raffleId?: string
+	title?: string
+	description?: string
+	entryFee?: number
+	minParticipants?: number
+	maxParticipants?: number
+	deadlineAt?: string
+	imageUrl?: string
+	externalSeedDescription?: string
+	externalSeed?: string
+	tiers?: TierResponse[]
+	status?: string
+	createdAt?: string
+	lockedAt?: string
+	cancelledAt?: string
+	reason?: string
+	participantsCount?: number
+	participantDisplayNames?: string[]
+}
+
+// 경품 응답 타입 (PrizeResponse)
+export interface TierResponse {
+	rank?: number
+	name?: string
+	imageUrl?: string
+	quantity?: number
 }
 
 // 필터 타입

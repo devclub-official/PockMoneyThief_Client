@@ -1,6 +1,6 @@
 import { api } from '@/lib/api-client'
 import type {
-	RaffleListResponse,
+	GetRafflesResponse,
 	RaffleDetailResponse,
 	CreateRaffleRequest,
 	CreateRaffleResponse,
@@ -27,7 +27,7 @@ import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
 // Raffle API
 export const raffleApi = {
 	// 기본 CRUD
-	getList: () => api.get('raffles').json<RaffleListResponse>(),
+	getList: () => api.get('raffles').json<GetRafflesResponse>(),
 	getById: (id: string) => api.get(`raffles/${id}`).json<RaffleDetailResponse>(),
 	create: (data: CreateRaffleRequest) =>
 		api.post('raffles', { json: data }).json<CreateRaffleResponse>(),

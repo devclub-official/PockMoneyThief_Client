@@ -12,7 +12,7 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { Clock, Gift } from 'lucide-react'
 import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
-import type { RaffleFilter, RaffleListResponse } from '@/types'
+import type { RaffleFilter, GetRafflesResponse, RaffleSummaryResponse } from '@/types'
 
 // 통계 카드 컴포넌트
 function StatsCard({
@@ -84,12 +84,12 @@ function RaffleCard({
 	currentTime,
 	router,
 }: {
-	raffle: RaffleListResponse['items'][0]
+	raffle: RaffleSummaryResponse
 	currentTime: number | null
 	router: ReturnType<typeof useRouter>
 }) {
 	// useMemo로 deadlineTime 메모이제이션
-	const deadlineTime = useMemo(() => new Date(raffle.deadlineAt), [raffle.deadlineAt])
+	const deadlineTime = useMemo(() => new Date(raffle.deadlineAt || ''), [raffle.deadlineAt])
 
 	// isUrgent을 useMemo로 직접 계산 (setState 불필요)
 	const isUrgent = useMemo(() => {
@@ -100,7 +100,7 @@ function RaffleCard({
 	return (
 		<div
 			className="bg-card border-border group cursor-pointer overflow-hidden rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md"
-			onClick={() => router.push(`/raffle/${raffle.id}`)}
+			onClick={() => router.push(`/raffle/${raffle.raffleId}`)}
 		>
 			<div className="relative aspect-video overflow-hidden rounded-t-lg">
 				<ImageWithFallback
@@ -130,11 +130,11 @@ function RaffleCard({
 				<div className="flex items-center justify-between">
 					<div>
 						<p className="text-muted-foreground text-xs">래플 ID</p>
-						<p className="text-muted-foreground text-sm">#{raffle.id}</p>
+						<p className="text-muted-foreground text-sm">#{raffle.raffleId}</p>
 					</div>
 					<div className="text-right">
 						<p className="text-muted-foreground text-xs">참여비</p>
-						<p className="text-primary font-semibold">₩{formatPrice(raffle.entryFee)}</p>
+						<p className="text-primary font-semibold">₩{formatPrice(raffle.entryFee || 0)}</p>
 					</div>
 				</div>
 
@@ -168,13 +168,15 @@ function RaffleCard({
 				<Button
 					className="w-full"
 					size="sm"
-					disabled={raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt) <= new Date()}
+					disabled={
+						raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt || '') <= new Date()
+					}
 					onClick={(e) => {
 						e.stopPropagation()
-						router.push(`/raffle/${raffle.id}`)
+						router.push(`/raffle/${raffle.raffleId}`)
 					}}
 				>
-					{raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt) > new Date()
+					{raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt || '') > new Date()
 						? '참여하기'
 						: '상세보기'}
 				</Button>
@@ -196,7 +198,7 @@ function getEmptyStateMessage(filter: RaffleFilter) {
 }
 
 interface HomePageClientProps {
-	initialData: RaffleListResponse
+	initialData: GetRafflesResponse
 }
 
 export function HomePageClient({ initialData }: HomePageClientProps) {
@@ -210,13 +212,13 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 		setCurrentTime(Date.now())
 	}, [])
 
-	// 서버에서 prefetch된 데이터 사용 (중복 id 제거)
+	// 서버에서 prefetch된 데이터 사용 (중복 raffleId 제거)
 	const raffles = useMemo(() => {
-		const items = initialData.items || []
-		// Map을 사용하여 중복된 id 제거 (마지막 항목이 유지됨)
-		const uniqueMap = new Map(items.map((item) => [item.id, item]))
+		const items = initialData || []
+		// Map을 사용하여 중복된 raffleId 제거 (마지막 항목이 유지됨)
+		const uniqueMap = new Map(items.map((item) => [item.raffleId, item]))
 		return Array.from(uniqueMap.values())
-	}, [initialData.items])
+	}, [initialData])
 	const isLoading = false
 	const isError = false
 
@@ -306,7 +308,12 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 				{/* Lottery Grid */}
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{filteredRaffles.map((raffle) => (
-						<RaffleCard key={raffle.id} raffle={raffle} currentTime={currentTime} router={router} />
+						<RaffleCard
+							key={raffle.raffleId}
+							raffle={raffle}
+							currentTime={currentTime}
+							router={router}
+						/>
 					))}
 				</div>
 

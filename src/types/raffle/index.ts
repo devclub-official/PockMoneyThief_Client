@@ -1,62 +1,64 @@
-// 래플 관련 모든 타입들
+// 래플 관련 타입 정의
 
-// API 응답 타입 (실제 API 구조)
-export interface RaffleListResponse {
-	items: RaffleApiResponse[]
-}
-
-export interface RaffleApiResponse {
-	id: string
+// GET /raffles 응답 (개별 항목)
+export interface RaffleSummaryResponse {
+	raffleId: string
 	title: string
 	entryFee: number
-	imageUrl: string
 	status: string
+	imageUrl: string
 	deadlineAt: string
 }
 
-// 래플 상세 응답 타입 (명세: GET /raffles/{raffleId})
+// GET /raffles 응답 (배열)
+export type GetRafflesResponse = RaffleSummaryResponse[]
+
+// GET /raffles/{raffleId} 응답
 export interface RaffleDetailResponse {
-	id: string
+	raffleId: string
 	title: string
 	description: string
 	entryFee: number
 	minParticipants: number
 	maxParticipants: number
-	imageUrl: string
 	deadlineAt: string
+	imageUrl: string
 	externalSeedDescription: string
-	externalSeed: string | null
-	tiers: TierResponse[]
+	externalSeed?: string
+	tiers: PrizeResponse[]
 	status: string
 	createdAt: string
-	participantDisplayNames: string[] // 명세의 필수 필드
+	lockedAt?: string
+	cancelledAt?: string
+	reason?: string
+	participantsCount: number
+	participantDisplayNames?: string[]
 }
 
-export interface TierResponse {
-	rank: number
-	name: string
-	imageUrl: string
-	quantity: number
-}
-
-// 래플 생성 요청 타입 (명세: POST /raffles)
-// 주의: externalSeedDescription은 명세의 required에 없으나 example에는 존재
-// 백엔드 검증 정책에 따라 optional 처리
+// POST /raffles 요청
 export interface CreateRaffleRequest {
 	title: string
+	description: string
 	entryFee: number
 	minParticipants: number
 	maxParticipants: number
-	deadlineAt: string
 	imageUrl: string
-	description: string
-	externalSeedDescription?: string // optional (명세 스키마에 미정의)
-	tiers: TierRequest[]
+	deadlineAt: string
+	externalSeedDescription?: string
+	tiers: PrizeRequest[]
 }
 
-// 래플 생성 응답 타입 (API 명세서에 맞게 수정)
+// 경품 정보 (요청)
+export interface PrizeRequest {
+	rank: number
+	name: string
+	quantity: number
+	imageUrl: string
+}
+
+// POST /raffles 응답
 export interface CreateRaffleResponse {
-	id: string
+	raffleId: string
 	title: string
 	description: string
 	entryFee: number
@@ -65,16 +67,23 @@ export interface CreateRaffleResponse {
 	deadlineAt: string
 	imageUrl: string
 	externalSeedDescription: string
-	tiers: TierResponse[]
+	externalSeed?: string
+	tiers: PrizeResponse[]
 	status: string
 	createdAt: string
+	lockedAt?: string
+	cancelledAt?: string
+	reason?: string
+	participantsCount: number
+	participantDisplayNames?: string[]
 }
 
-export interface TierRequest {
+// 경품 정보 (응답)
+export interface PrizeResponse {
 	rank: number
 	name: string
-	quantity: number
 	imageUrl: string
+	quantity: number
 }
 
 // 필터 타입
@@ -92,12 +101,12 @@ export interface RaffleParticipation {
 	ipAddress: string
 }
 
-// 래플 참여 요청 타입
+// POST /raffles/{raffleId}/participants 요청
 export interface ParticipateRequest {
 	displayName: string
 }
 
-// 래플 참여 응답 타입
+// POST /raffles/{raffleId}/participants 응답
 export interface ParticipateResponse {
 	participantId: string
 	raffleId: string
@@ -116,18 +125,33 @@ export interface RaffleResult {
 	generatedAt: string
 }
 
-// 래플 관리 API 응답 타입들
+// POST /raffles/{raffleId}/lock 응답
 export interface RaffleLockResponse {
 	raffleId: string
 	status: string
 	lockedAt: string
 }
 
+// POST /raffles/{raffleId}/cancel 응답
 export interface RaffleCancelResponse {
 	raffleId: string
+	title: string
+	description: string
+	entryFee: number
+	minParticipants: number
+	maxParticipants: number
+	deadlineAt: string
+	imageUrl: string
+	externalSeedDescription: string
+	externalSeed?: string
+	tiers: PrizeResponse[]
 	status: string
-	cancelledAt: string
-	reason: string
+	createdAt: string
+	lockedAt?: string
+	cancelledAt?: string
+	reason?: string
+	participantsCount: number
+	participantDisplayNames?: string[]
 }
 
 // 추첨 관련 타입들
@@ -312,13 +336,14 @@ export interface WinnersResponse {
 	winners: Winner[]
 }
 
-// 참여자 목록 조회 응답 타입
+// GET /raffles/{raffleId}/participants 응답
 export interface ParticipantsResponse {
 	raffleId: string
 	participants: Participant[]
 	count: number
 }
 
+// 참여자 정보
 export interface Participant {
 	participantId: string
 	displayName: string

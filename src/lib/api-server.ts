@@ -1,5 +1,5 @@
 import ky from 'ky'
-import type { RaffleListResponse } from '@/types'
+import type { GetRafflesResponse } from '@/types'
 import { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || ''
 const serverApi = ky.create({
@@ -11,15 +11,15 @@ const serverApi = ky.create({
 
 export const serverApiClient = {
 	// 추첨 목록 조회 (서버에서 prefetch)
-	getRaffles: async (): Promise<RaffleListResponse> => {
+	getRaffles: async (): Promise<GetRafflesResponse> => {
 		try {
 			// 백엔드 서버가 없으면 에러가 발생하고 catch로 이동
-			const response = await serverApi.get('raffles').json<RaffleListResponse>()
+			const response = await serverApi.get('raffles').json<GetRafflesResponse>()
 			return response
 		} catch (error) {
 			console.error('Failed to fetch raffles:', error)
-			// 에러 시 빈 배열 반환
-			return { items: [] }
+			// 에러 시 빈 배열 반환 (명세: 배열을 직접 반환)
+			return []
 		}
 	},
 

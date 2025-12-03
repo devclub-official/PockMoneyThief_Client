@@ -8,7 +8,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu'
-import { Search, Bell, LogOut, User, Menu } from 'lucide-react'
+import { Search, LogOut, User, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useRouter } from 'next/navigation'
 import { loginApi } from '@/lib/api'
@@ -54,12 +54,6 @@ export function Header({ onMenuClick }: HeaderProps) {
 
 			{/* Right Section */}
 			<div className="flex items-center gap-2 lg:gap-4">
-				{/* Notifications */}
-				<button className="hover:bg-accent relative flex h-10 w-10 items-center justify-center rounded-lg transition-colors">
-					<Bell className="text-muted-foreground h-5 w-5" />
-					<span className="bg-destructive absolute top-1 right-1 h-2 w-2 rounded-full"></span>
-				</button>
-
 				{/* User Profile */}
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>

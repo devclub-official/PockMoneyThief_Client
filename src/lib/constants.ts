@@ -1,4 +1,4 @@
-import { Home, Plus, User, BarChart3, Settings, HelpCircle } from 'lucide-react'
+import { Home, Plus, User } from 'lucide-react'
 
 // 시간 관련 상수
 export const TIME_CONSTANTS = {
@@ -23,25 +23,9 @@ export const SIDEBAR_MENU_ITEMS = [
 		href: '/dashboard',
 		icon: User,
 	},
-	{
-		title: '통계',
-		href: '/stats',
-		icon: BarChart3,
-	},
 ] as const
 
-export const SIDEBAR_BOTTOM_ITEMS = [
-	{
-		title: '설정',
-		href: '/settings',
-		icon: Settings,
-	},
-	{
-		title: '도움말',
-		href: '/help',
-		icon: HelpCircle,
-	},
-] as const
+export const SIDEBAR_BOTTOM_ITEMS = [] as const
 
 // 대시보드 관련 메시지 상수
 export const DASHBOARD_MESSAGES = {

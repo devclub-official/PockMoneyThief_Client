@@ -292,7 +292,7 @@ function AddressList({ raffleId, onEdit }: AddressListProps) {
 		})
 	}
 
-	const hasAddresses = addresses && addresses?.length > 0
+	const hasAddresses = addresses && Array.isArray(addresses) && addresses.length > 0
 
 	if (!hasAddresses) {
 		return (

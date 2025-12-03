@@ -185,7 +185,7 @@ export function RaffleResult({ raffleDetail, raffleResultVideoSrc }: RaffleResul
 
 	// 래플 상세 정보
 	const {
-		id: raffleId,
+		raffleId,
 		title,
 		description,
 		imageUrl,
@@ -270,7 +270,7 @@ export function RaffleResult({ raffleDetail, raffleResultVideoSrc }: RaffleResul
 						participants={participants}
 						winnerIndex={winnerIndex}
 						externalSeedDescription={externalSeedDescription}
-						externalSeed={externalSeed}
+						externalSeed={externalSeed || null}
 						participantsCount={participantsCount}
 					/>
 					<button

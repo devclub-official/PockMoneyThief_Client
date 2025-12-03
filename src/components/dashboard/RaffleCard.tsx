@@ -125,44 +125,56 @@ export const RaffleCard = memo(
 	}: RaffleCardProps) => {
 		return (
 			<Card key={raffle.id}>
-				<CardHeader>
+				<CardHeader className="pb-4">
 					<div className="flex items-start gap-4">
-						<div className="relative h-12 w-12 overflow-hidden rounded-lg">
+						<div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl shadow-sm">
 							<ImageWithFallback
 								src={raffle.imageUrl}
 								alt={raffle.title}
 								className="h-full w-full object-cover"
 							/>
 						</div>
-						<div className="flex-1">
-							<div className="mb-1 flex items-center gap-2">
-								<CardTitle className="text-lg">{raffle.title}</CardTitle>
+						<div className="min-w-0 flex-1">
+							<div className="mb-2 flex items-start gap-2">
+								<CardTitle className="line-clamp-1 flex-1 text-lg font-semibold">
+									{raffle.title}
+								</CardTitle>
 								<StatusBadge status={raffle.status} />
 							</div>
-							<CardDescription className="line-clamp-2">{raffle.description}</CardDescription>
+							<CardDescription className="line-clamp-2 text-sm">
+								{raffle.description}
+							</CardDescription>
 						</div>
 					</div>
 				</CardHeader>
-				<CardContent className="space-y-4">
-					<div className="flex items-center justify-between text-sm">
-						<span className="flex items-center gap-1" aria-label="참여자 수">
-							<Users className="h-4 w-4" />
-							참여자
-						</span>
-						<span>
-							{raffle.currentParticipants}/{raffle.maxParticipants}
-						</span>
-					</div>
-
-					{raffle.status === 'PUBLISHED' && (
+				<CardContent className="space-y-3 pt-0">
+					<div className="space-y-2 rounded-lg p-3">
 						<div className="flex items-center justify-between text-sm">
-							<span className="flex items-center gap-1" aria-label="남은 시간">
-								<Clock className="h-4 w-4" />
-								남은 시간
+							<span
+								className="text-muted-foreground flex items-center gap-1.5"
+								aria-label="참여자 수"
+							>
+								<Users className="h-3.5 w-3.5" />
+								참여자
 							</span>
-							<span>{formatTimeLeft(raffle.deadlineAt)}</span>
+							<span className="font-medium">
+								{raffle.currentParticipants}/{raffle.maxParticipants}
+							</span>
 						</div>
-					)}
+
+						{raffle.status === 'PUBLISHED' && (
+							<div className="flex items-center justify-between text-sm">
+								<span
+									className="text-muted-foreground flex items-center gap-1.5"
+									aria-label="남은 시간"
+								>
+									<Clock className="h-3.5 w-3.5" />
+									남은 시간
+								</span>
+								<span className="font-medium">{formatTimeLeft(raffle.deadlineAt)}</span>
+							</div>
+						)}
+					</div>
 
 					{/* 관리 버튼들 */}
 					{renderManagementButtons(raffle, onLock, onCancel, onDraw)}
@@ -171,23 +183,25 @@ export const RaffleCard = memo(
 						<WinnerManagementSection winners={raffle.winners} onTrackingSubmit={onTrackingSubmit} />
 					)}
 
-					<div className="flex gap-2">
-						<Button
-							variant="outline"
-							onClick={() => router.push(`/raffle/${raffle.id}`)}
-							className="flex-1 cursor-pointer"
-							aria-label={`${raffle.title} 상세보기`}
-						>
-							상세보기
-						</Button>
-						{raffle.status === 'DRAWN' && (
+					{/* 하단 액션 버튼 */}
+					<div className="flex gap-2 pt-1">
+						{raffle.status === 'DRAWN' ? (
 							<Button
-								variant="outline"
+								variant="default"
 								onClick={() => router.push(`/raffles/${raffle.id}/result`)}
-								className="flex-1 cursor-pointer"
+								className="w-full cursor-pointer"
 								aria-label={`${raffle.title} 결과보기`}
 							>
-								결과보기
+								결과 보기
+							</Button>
+						) : (
+							<Button
+								variant="outline"
+								onClick={() => router.push(`/raffle/${raffle.id}`)}
+								className="w-full cursor-pointer"
+								aria-label={`${raffle.title} 상세보기`}
+							>
+								상세 보기
 							</Button>
 						)}
 					</div>

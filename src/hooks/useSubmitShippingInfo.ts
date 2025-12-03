@@ -11,7 +11,8 @@ export function useSubmitShippingInfo() {
 	const queryClient = useQueryClient()
 
 	return useMutation<ShippingInfoResponse, unknown, SubmitShippingInfoVariables>({
-		mutationFn: ({ raffleId, addressId }) => shippingApi.submitShippingInfo(raffleId, addressId),
+		mutationFn: ({ raffleId, addressId }) =>
+			shippingApi.submitShippingInfoByAddressId(raffleId, addressId),
 		onSuccess: (_data, variables) => {
 			// 후속 데이터 무효화 (필요 시 조정)
 			queryClient.invalidateQueries({ queryKey: ['participatedRaffles'] })

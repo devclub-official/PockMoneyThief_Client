@@ -1,5 +1,5 @@
 import { RaffleResult } from '@/components/raffles/RaffleResult'
-import { raffleApi } from '@/lib/api'
+import type { RaffleDetailResponse } from '@/types'
 
 interface PageProps {
 	params: Promise<{ raffleId: string }>
@@ -15,8 +15,8 @@ export default async function RaffleResultPage({ params }: PageProps) {
 
 	// 래플 상세 정보 조회
 	// const raffleDetail = await raffleApi.getById(raffleId)
-	const raffleDetail = {
-		id: raffleId,
+	const raffleDetail: RaffleDetailResponse = {
+		raffleId: raffleId,
 		title: '피카츄 넌드로이드 #1',
 		description: '3만원 상당의 피카츄 넌드로이드를 5천원에!',
 		imageUrl: '/gacha.svg',

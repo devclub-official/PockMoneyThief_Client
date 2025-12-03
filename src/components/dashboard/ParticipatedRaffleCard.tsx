@@ -18,7 +18,7 @@ interface ParticipatedRaffleCardProps {
 }
 
 export const ParticipatedRaffleCard = memo(
-	({ raffle, onViewDetail, onViewResult }: ParticipatedRaffleCardProps) => {
+	({ raffle, onViewDetail, onViewResult, onViewMyResult }: ParticipatedRaffleCardProps) => {
 		const [showAddressDialog, setShowAddressDialog] = useState(false)
 		let drawnLabelText = ''
 		let drawnButtonCallback = null

@@ -11,6 +11,9 @@ export const metadata = {
 	description: '해당 래플에서 나의 당첨 여부와 정보를 확인하세요.',
 }
 
+// 사용자별 동적 데이터이므로 빌드 타임에 prerendering하지 않음
+export const dynamic = 'force-dynamic'
+
 export default async function MyRaffleSelfResultPage({ params }: PageProps) {
 	const { raffleId } = await params
 	const data: MyRaffleSelfResultResponse = await myApi.getSelfResult(raffleId)

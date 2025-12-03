@@ -10,6 +10,9 @@ export const metadata = {
 	description: '투명하고 공정한 추첨 결과를 확인하세요.',
 }
 
+// 동적 파라미터에 따라 다른 결과를 보여주므로 dynamic rendering 필요
+export const dynamic = 'force-dynamic'
+
 export default async function RaffleResultPage({ params }: PageProps) {
 	const { raffleId } = await params
 

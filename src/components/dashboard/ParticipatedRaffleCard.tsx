@@ -18,7 +18,7 @@ interface ParticipatedRaffleCardProps {
 }
 
 export const ParticipatedRaffleCard = memo(
-	({ raffle, onViewDetail, onViewResult }: ParticipatedRaffleCardProps) => {
+	({ raffle, onViewDetail, onViewResult, onViewMyResult }: ParticipatedRaffleCardProps) => {
 		const [showAddressDialog, setShowAddressDialog] = useState(false)
 		let drawnLabelText = ''
 		let drawnButtonCallback = null
@@ -113,7 +113,7 @@ export const ParticipatedRaffleCard = memo(
 							<Button
 								variant="outline"
 								onClick={() => onViewDetail(raffle.id)}
-								className="flex-1"
+								className="flex-1 cursor-pointer"
 								aria-label={`상세보기 버튼 ${raffle.title}`}
 							>
 								상세보기
@@ -123,7 +123,7 @@ export const ParticipatedRaffleCard = memo(
 									<Button
 										variant="outline"
 										onClick={drawnButtonCallback ?? undefined}
-										className="flex-1"
+										className="flex-1 cursor-pointer"
 										aria-label={`${drawnLabelText} 버튼 ${raffle.title}`}
 									>
 										{drawnLabelText}
@@ -132,7 +132,7 @@ export const ParticipatedRaffleCard = memo(
 										<Button
 											variant="outline"
 											onClick={() => onViewMyResult?.(raffle.id)}
-											className="flex-1"
+											className="flex-1 cursor-pointer"
 											aria-label={`내 결과 버튼 ${raffle.title}`}
 										>
 											내 결과

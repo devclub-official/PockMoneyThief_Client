@@ -1,6 +1,6 @@
 import { api } from '@/lib/api-client'
 import type {
-	RaffleListResponse,
+	GetRafflesResponse,
 	RaffleDetailResponse,
 	CreateRaffleRequest,
 	CreateRaffleResponse,
@@ -21,13 +21,14 @@ import type {
 	RafflePreviewResponse,
 	MyRaffleSelfResultResponse,
 	MyWinsResponse,
+	AddressItem,
 } from '@/types'
 import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
 
 // Raffle API
 export const raffleApi = {
 	// 기본 CRUD
-	getList: () => api.get('raffles').json<RaffleListResponse>(),
+	getList: () => api.get('raffles').json<GetRafflesResponse>(),
 	getById: (id: string) => api.get(`raffles/${id}`).json<RaffleDetailResponse>(),
 	create: (data: CreateRaffleRequest) =>
 		api.post('raffles', { json: data }).json<CreateRaffleResponse>(),
@@ -163,7 +164,7 @@ export const addressApi = {
 	 * 배송지 목록 조회
 	 * 실제 API 엔드포인트: GET /my/addresses
 	 */
-	getList: async (): Promise<ShippingInfoRequest[]> => {
+	getList: async (): Promise<AddressItem[]> => {
 		const response = await api.get('my/addresses').json<{
 			addresses: Array<{
 				id: string
@@ -173,16 +174,20 @@ export const addressApi = {
 				address1: string
 				address2?: string
 				isDefault?: boolean
+				label?: string
+				createdAt: string
 			}>
 		}>()
 		return response.addresses.map((addr) => ({
-			id: addr.id,
+			addressId: addr.id,
 			name: addr.name,
 			phone: addr.phone,
 			zipcode: addr.zipcode,
 			address1: addr.address1,
 			address2: addr.address2,
-			isDefault: addr.isDefault,
+			label: addr.label,
+			isDefault: addr.isDefault || false,
+			createdAt: addr.createdAt,
 		}))
 	},
 

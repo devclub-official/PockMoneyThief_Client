@@ -84,10 +84,10 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 		if (!raffleData) return null
 
 		// 참여자 수는 participantDisplayNames 배열 길이로 계산
-		const currentParticipants = raffleData.participantDisplayNames.length
+		const currentParticipants = raffleData.participantDisplayNames?.length || 0
 
 		// 참여자 목록은 participantDisplayNames에서 직접 생성
-		const participants: Participant[] = raffleData.participantDisplayNames.map(
+		const participants: Participant[] = (raffleData.participantDisplayNames || []).map(
 			(displayName, index) => ({
 				id: `participant-${index}`, // 실제 ID는 없으므로 임시 생성
 				displayName,
@@ -96,7 +96,7 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 		)
 
 		return {
-			id: raffleData.id,
+			id: raffleData.raffleId,
 			title: raffleData.title,
 			description: raffleData.description,
 			imageUrl: raffleData.imageUrl,

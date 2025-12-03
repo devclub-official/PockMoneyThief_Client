@@ -139,7 +139,12 @@ export default function CreatePage() {
 					<CardContent className="space-y-4">
 						<div>
 							<Label htmlFor="title">추첨명 *</Label>
-							<Input id="title" {...register('title')} placeholder="예: 피카츄 넨도로이드 #1355" />
+							<Input
+								id="title"
+								{...register('title')}
+								placeholder="예: 피카츄 넨도로이드 #1355"
+								className="mt-1.5"
+							/>
 						</div>
 
 						<div>
@@ -149,6 +154,7 @@ export default function CreatePage() {
 								{...register('description')}
 								placeholder="추첨에 대한 자세한 설명을 입력해주세요"
 								rows={3}
+								className="mt-1.5"
 							/>
 						</div>
 
@@ -158,6 +164,7 @@ export default function CreatePage() {
 								id="externalSeedDescription"
 								{...register('externalSeedDescription')}
 								placeholder="예: samsung-stock-2025-10-18-close-last-digit"
+								className="mt-1.5"
 							/>
 							<p className="text-muted-foreground mt-1 text-xs">
 								공정한 추첨을 위한 외부 데이터 원천 (예: 주식 종가, 날씨 데이터 등)
@@ -170,6 +177,7 @@ export default function CreatePage() {
 								id="imageUrl"
 								{...register('imageUrl')}
 								placeholder="https://example.com/image.jpg"
+								className="mt-1.5"
 							/>
 							<p className="text-muted-foreground mt-1 text-xs">
 								미입력 시 기본 이미지가 사용됩니다
@@ -194,6 +202,7 @@ export default function CreatePage() {
 								type="number"
 								{...register('entryFee', { valueAsNumber: true })}
 								placeholder="5000"
+								className="mt-1.5"
 							/>
 						</div>
 
@@ -205,6 +214,7 @@ export default function CreatePage() {
 									type="number"
 									{...register('minParticipants', { valueAsNumber: true })}
 									placeholder="3"
+									className="mt-1.5"
 								/>
 							</div>
 							<div>
@@ -214,6 +224,7 @@ export default function CreatePage() {
 									type="number"
 									{...register('maxParticipants', { valueAsNumber: true })}
 									placeholder="10"
+									className="mt-1.5"
 								/>
 							</div>
 						</div>
@@ -226,6 +237,7 @@ export default function CreatePage() {
 								{...register('duration', { valueAsNumber: true })}
 								placeholder="24"
 								min={1}
+								className="mt-1.5"
 							/>
 							<p className="text-muted-foreground mt-1 text-xs">{duration}시간 후 자동 마감</p>
 						</div>
@@ -247,6 +259,7 @@ export default function CreatePage() {
 								onClick={() =>
 									append({ rank: fields.length + 1, name: '', quantity: 1, imageUrl: '' })
 								}
+								className="cursor-pointer"
 							>
 								<Plus className="mr-1 h-4 w-4" />
 								경품 추가
@@ -266,6 +279,7 @@ export default function CreatePage() {
 											id={`tier-name-${index}`}
 											{...register(`tiers.${index}.name`)}
 											placeholder="예: 리자몽 피규어"
+											className="mt-1.5"
 										/>
 									</div>
 									<div>
@@ -277,6 +291,7 @@ export default function CreatePage() {
 												valueAsNumber: true,
 											})}
 											min={1}
+											className="mt-1.5"
 										/>
 									</div>
 									<div>
@@ -286,6 +301,7 @@ export default function CreatePage() {
 											type="url"
 											{...register(`tiers.${index}.imageUrl`)}
 											placeholder="https://..."
+											className="mt-1.5"
 										/>
 									</div>
 								</div>
@@ -295,7 +311,7 @@ export default function CreatePage() {
 										variant="ghost"
 										size="sm"
 										onClick={() => remove(index)}
-										className="mt-8"
+										className="mt-8 cursor-pointer"
 									>
 										<X className="h-4 w-4" />
 									</Button>
@@ -311,12 +327,12 @@ export default function CreatePage() {
 						type="button"
 						variant="outline"
 						onClick={() => router.push('/')}
-						className="flex-1"
+						className="flex-1 cursor-pointer"
 						disabled={createRaffle.isPending}
 					>
 						취소
 					</Button>
-					<Button type="submit" disabled={createRaffle.isPending} className="flex-1">
+					<Button type="submit" disabled={createRaffle.isPending} className="flex-1 cursor-pointer">
 						{createRaffle.isPending ? '등록 중...' : '추첨 등록하기'}
 					</Button>
 				</div>

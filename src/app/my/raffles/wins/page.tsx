@@ -7,6 +7,9 @@ export const metadata = {
 	description: '내가 당첨된 모든 추첨을 확인하세요.',
 }
 
+// 사용자별 동적 데이터이므로 빌드 타임에 prerendering하지 않음
+export const dynamic = 'force-dynamic'
+
 export default async function MyWinsPage() {
 	const { wins } = await myApi.getWins()
 

@@ -21,7 +21,7 @@ function renderManagementButtons(
 					variant="outline"
 					size="sm"
 					onClick={() => onLock(raffle.id)}
-					className="flex-1"
+					className="flex-1 cursor-pointer"
 					aria-label={`${raffle.title} 래플 잠금`}
 				>
 					<Lock className="mr-2 h-4 w-4" />
@@ -31,7 +31,7 @@ function renderManagementButtons(
 					variant="outline"
 					size="sm"
 					onClick={() => onCancel(raffle.id)}
-					className="flex-1"
+					className="flex-1 cursor-pointer"
 					aria-label={`${raffle.title} 래플 취소`}
 				>
 					<X className="mr-2 h-4 w-4" />
@@ -47,7 +47,7 @@ function renderManagementButtons(
 				variant="default"
 				size="sm"
 				onClick={() => onDraw(raffle.id)}
-				className="w-full"
+				className="w-full cursor-pointer"
 				aria-label={`${raffle.title} 추첨 실행`}
 			>
 				<Play className="mr-2 h-4 w-4" />
@@ -94,6 +94,7 @@ function WinnerManagementSection({
 							variant="outline"
 							onClick={() => onTrackingSubmit(winner)}
 							aria-label={`${winner.displayName} 송장번호 입력`}
+							className="cursor-pointer"
 						>
 							<Truck className="mr-2 h-4 w-4" />
 							송장번호 입력
@@ -174,7 +175,7 @@ export const RaffleCard = memo(
 						<Button
 							variant="outline"
 							onClick={() => router.push(`/raffle/${raffle.id}`)}
-							className="flex-1"
+							className="flex-1 cursor-pointer"
 							aria-label={`${raffle.title} 상세보기`}
 						>
 							상세보기
@@ -183,7 +184,7 @@ export const RaffleCard = memo(
 							<Button
 								variant="outline"
 								onClick={() => router.push(`/raffles/${raffle.id}/result`)}
-								className="flex-1"
+								className="flex-1 cursor-pointer"
 								aria-label={`${raffle.title} 결과보기`}
 							>
 								결과보기

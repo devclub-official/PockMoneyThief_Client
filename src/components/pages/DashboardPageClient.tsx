@@ -85,7 +85,7 @@ export function DashboardPageClient({
 	)
 
 	return (
-		<div className="container mx-auto px-4 py-8">
+		<div className="container">
 			<div className="mb-8">
 				<h1 className="text-foreground text-2xl font-semibold">{DASHBOARD_UI_TEXT.PAGE_TITLE}</h1>
 				<p className="text-muted-foreground">{DASHBOARD_UI_TEXT.PAGE_DESCRIPTION}</p>
@@ -95,7 +95,7 @@ export function DashboardPageClient({
 				<TabsList className="grid w-full grid-cols-3 md:w-2/3" role="tablist">
 					<TabsTrigger
 						value="my-raffles"
-						className="w-full"
+						className="w-full cursor-pointer"
 						role="tab"
 						aria-controls="my-raffles-content"
 					>
@@ -103,7 +103,7 @@ export function DashboardPageClient({
 					</TabsTrigger>
 					<TabsTrigger
 						value="participated"
-						className="w-full"
+						className="w-full cursor-pointer"
 						role="tab"
 						aria-controls="participated-content"
 					>
@@ -111,7 +111,7 @@ export function DashboardPageClient({
 					</TabsTrigger>
 					<TabsTrigger
 						value="my-wins"
-						className="w-full"
+						className="w-full cursor-pointer"
 						role="tab"
 						aria-controls="my-wins-content"
 					>
@@ -134,7 +134,11 @@ export function DashboardPageClient({
 						>
 							{DASHBOARD_UI_TEXT.MY_RAFFLES_HEADER} ({displayMyRaffles.length})
 						</h2>
-						<Button onClick={() => router.push('/create')} aria-label="새로운 추첨 등록하기">
+						<Button
+							onClick={() => router.push('/create')}
+							aria-label="새로운 추첨 등록하기"
+							className="cursor-pointer"
+						>
 							<Plus className="mr-2 h-4 w-4" />
 							{DASHBOARD_UI_TEXT.CREATE_RAFFLE_BUTTON}
 						</Button>
@@ -213,7 +217,7 @@ export function DashboardPageClient({
 										<div className="flex gap-2">
 											<Button
 												variant="outline"
-												className="flex-1"
+												className="flex-1 cursor-pointer"
 												onClick={() => router.push(`/raffles/${win.raffleId}/result`)}
 												aria-label={`${win.raffleName} 결과보기`}
 											>
@@ -221,7 +225,7 @@ export function DashboardPageClient({
 											</Button>
 											<Button
 												variant="outline"
-												className="flex-1"
+												className="flex-1 cursor-pointer"
 												onClick={() => router.push(`/my/raffles/${win.raffleId}/result`)}
 												aria-label={`${win.raffleName} 내 결과`}
 											>

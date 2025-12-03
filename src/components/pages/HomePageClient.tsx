@@ -166,7 +166,7 @@ function RaffleCard({
 				</div>
 
 				<Button
-					className="w-full"
+					className="w-full cursor-pointer"
 					size="sm"
 					disabled={
 						raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt || '') <= new Date()
@@ -298,9 +298,15 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 						}}
 					>
 						<TabsList className="bg-muted">
-							<TabsTrigger value="all">전체</TabsTrigger>
-							<TabsTrigger value="active">진행중</TabsTrigger>
-							<TabsTrigger value="closed">마감</TabsTrigger>
+							<TabsTrigger value="all" className="cursor-pointer">
+								전체
+							</TabsTrigger>
+							<TabsTrigger value="active" className="cursor-pointer">
+								진행중
+							</TabsTrigger>
+							<TabsTrigger value="closed" className="cursor-pointer">
+								마감
+							</TabsTrigger>
 						</TabsList>
 					</Tabs>
 				</div>

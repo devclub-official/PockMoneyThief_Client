@@ -13,6 +13,7 @@ import { Clock, Gift } from 'lucide-react'
 import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import type { RaffleFilter, GetRafflesResponse, RaffleSummaryResponse } from '@/types'
+import { useRaffles } from '@/hooks/useRaffles'
 
 // 통계 카드 컴포넌트
 function StatsCard({
@@ -201,7 +202,7 @@ interface HomePageClientProps {
 	initialData: GetRafflesResponse
 }
 
-export function HomePageClient({ initialData }: HomePageClientProps) {
+export function HomePageClient() {
 	const router = useRouter()
 	const [filter, setFilter] = useState<RaffleFilter>('all')
 	const [currentTime, setCurrentTime] = useState<number | null>(null)
@@ -211,6 +212,8 @@ export function HomePageClient({ initialData }: HomePageClientProps) {
 		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setCurrentTime(Date.now())
 	}, [])
+
+	const { data: initialData } = useRaffles()
 
 	// 서버에서 prefetch된 데이터 사용 (중복 raffleId 제거)
 	const raffles = useMemo(() => {

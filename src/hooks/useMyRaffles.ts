@@ -15,7 +15,7 @@ export const useMyRaffles = () => {
 				},
 				{
 					queryKey: ['my-wins'],
-					queryFn: () => myApi.getWins(),
+					queryFn: () => myApi.getWins().then((res) => res.wins),
 				},
 			],
 		})

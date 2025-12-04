@@ -12,20 +12,9 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { useDashboard } from '@/hooks/useDashboard'
 import { DASHBOARD_UI_TEXT } from '@/lib/constants'
 import { Plus, Package, Users } from 'lucide-react'
-import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
-import type { MyWinItem } from '@/types'
+import { useMyRaffles } from '@/hooks/useMyRaffles'
 
-interface DashboardPageClientProps {
-	initialMyRaffles: MyRaffle[]
-	initialParticipatedRaffles: ParticipatedRaffle[]
-	initialWins: MyWinItem[]
-}
-
-export function DashboardPageClient({
-	initialMyRaffles,
-	initialParticipatedRaffles,
-	initialWins,
-}: DashboardPageClientProps) {
+export function DashboardPageClient() {
 	const router = useRouter()
 	const {
 		selectedWinner,
@@ -43,10 +32,12 @@ export function DashboardPageClient({
 		formatTimeLeft,
 	} = useDashboard()
 
+	const { hostedRaffles, participatedRaffles, winRaffles } = useMyRaffles()
+
 	// 서버에서 prefetch된 초기 데이터를 로컬 상태로 관리 (취소 시 상태만 변경)
-	const [displayMyRaffles, setDisplayMyRaffles] = React.useState(initialMyRaffles)
-	const [displayParticipatedRaffles] = React.useState(initialParticipatedRaffles)
-	const [displayWins] = React.useState(initialWins)
+	const [displayMyRaffles, setDisplayMyRaffles] = React.useState(hostedRaffles)
+	const [displayParticipatedRaffles] = React.useState(participatedRaffles)
+	const [displayWins] = React.useState(winRaffles)
 
 	const handleLockAndMarkLocked = React.useCallback(
 		async (raffleId: string) => {

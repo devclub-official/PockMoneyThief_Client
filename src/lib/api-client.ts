@@ -11,6 +11,7 @@ export const api = ky.create({
 		afterResponse: [
 			(request, options, response) => {
 				if (response.status === 401) {
+					console.log('[API] 401 Unauthorized')
 					if (typeof window !== 'undefined') {
 						window.location.href = '/login'
 						return

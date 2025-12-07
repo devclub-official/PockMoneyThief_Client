@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Textarea } from '@/components/ui/Textarea'
+import { ImageUpload } from '@/components/ui/ImageUpload'
 import { Plus, X, Gift, Users } from 'lucide-react'
 import { createRaffleSchema, type CreateRaffleFormData } from '@/lib/schemas'
 import { useCreateRaffle } from '@/hooks/useCreateRaffle'
@@ -19,7 +20,7 @@ export default function CreatePage() {
 	const createRaffle = useCreateRaffle()
 	const { addToast } = useToast()
 
-	const { register, handleSubmit, control, watch } = useForm<CreateRaffleFormData>({
+	const { register, handleSubmit, control, watch, setValue } = useForm<CreateRaffleFormData>({
 		resolver: zodResolver(createRaffleSchema),
 		defaultValues: {
 			title: '',
@@ -35,6 +36,7 @@ export default function CreatePage() {
 	})
 
 	const duration = watch('duration')
+	const imageUrl = watch('imageUrl')
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -172,12 +174,12 @@ export default function CreatePage() {
 						</div>
 
 						<div>
-							<Label htmlFor="imageUrl">이미지 URL</Label>
-							<Input
-								id="imageUrl"
-								{...register('imageUrl')}
-								placeholder="https://example.com/image.jpg"
-								className="mt-1.5"
+							<ImageUpload
+								value={imageUrl}
+								onChange={(url) => setValue('imageUrl', url)}
+								purpose="raffle"
+								label="이미지"
+								disabled={createRaffle.isPending}
 							/>
 							<p className="text-muted-foreground mt-1 text-xs">
 								미입력 시 기본 이미지가 사용됩니다
@@ -295,13 +297,12 @@ export default function CreatePage() {
 										/>
 									</div>
 									<div>
-										<Label htmlFor={`tier-image-${index}`}>이미지 URL</Label>
-										<Input
-											id={`tier-image-${index}`}
-											type="url"
-											{...register(`tiers.${index}.imageUrl`)}
-											placeholder="https://..."
-											className="mt-1.5"
+										<ImageUpload
+											value={watch(`tiers.${index}.imageUrl`)}
+											onChange={(url) => setValue(`tiers.${index}.imageUrl`, url)}
+											purpose="prize"
+											label="이미지 URL"
+											disabled={createRaffle.isPending}
 										/>
 									</div>
 								</div>

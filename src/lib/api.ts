@@ -22,6 +22,8 @@ import type {
 	MyRaffleSelfResultResponse,
 	MyWinsResponse,
 	AddressItem,
+	PresignedUrlRequest,
+	PresignedUrlResponse,
 } from '@/types'
 import type { MyRaffle, ParticipatedRaffle } from '@/types/dashboard'
 
@@ -241,4 +243,34 @@ export const loginApi = {
 	// checkOnboardingStatus: () => api.get('users/onboarding-status').json<boolean>(),
 	checkOnboardingStatus: () => new Promise((resolve) => setTimeout(() => resolve(true), 2000)),
 	logout: () => api.post('logout').json<void>(),
+}
+
+// Upload API (이미지 업로드)
+export const uploadApi = {
+	/**
+	 * Presigned URL 요청
+	 * 실제 API 엔드포인트: POST /upload/presigned-url
+	 */
+	getPresignedUrl: (data: PresignedUrlRequest): Promise<PresignedUrlResponse> => {
+		return api.post('upload/presigned-url', { json: data }).json<PresignedUrlResponse>()
+	},
+
+	/**
+	 * S3에 직접 이미지 업로드
+	 * @param uploadUrl - Presigned URL
+	 * @param file - 업로드할 파일
+	 */
+	uploadToS3: async (uploadUrl: string, file: File): Promise<void> => {
+		const response = await fetch(uploadUrl, {
+			method: 'PUT',
+			body: file,
+			headers: {
+				'Content-Type': file.type,
+			},
+		})
+
+		if (!response.ok) {
+			throw new Error(`S3 업로드 실패: ${response.statusText}`)
+		}
+	},
 }

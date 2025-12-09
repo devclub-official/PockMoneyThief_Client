@@ -1,11 +1,11 @@
 import { RaffleDetailClient } from './RaffleDetailClient'
 
 interface RaffleDetailPageProps {
-	params: Promise<{ id: string }>
+	params: { id: string }
 }
 
 export default async function RaffleDetailPage({ params }: RaffleDetailPageProps) {
-	const { id } = await params
+	const { id } = params
 
 	return <RaffleDetailClient id={id} />
 }

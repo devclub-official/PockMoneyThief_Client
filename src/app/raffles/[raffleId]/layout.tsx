@@ -2,7 +2,7 @@
 import React from 'react'
 
 interface LayoutProps extends React.PropsWithChildren {
-	params: Promise<{ raffleId: string }>
+	params: { raffleId: string }
 }
 
 export default async function layout({ children }: LayoutProps) {

@@ -2,7 +2,7 @@ import { RaffleResult } from '@/components/raffles/RaffleResult'
 import type { RaffleDetailResponse } from '@/types'
 
 interface PageProps {
-	params: Promise<{ raffleId: string }>
+	params: { raffleId: string }
 }
 
 export const metadata = {
@@ -14,7 +14,7 @@ export const metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function RaffleResultPage({ params }: PageProps) {
-	const { raffleId } = await params
+	const { raffleId } = params
 
 	// 래플 상세 정보 조회
 	// const raffleDetail = await raffleApi.getById(raffleId)

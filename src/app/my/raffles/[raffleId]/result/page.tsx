@@ -3,7 +3,7 @@ import type { MyRaffleSelfResultResponse } from '@/types'
 import Image from 'next/image'
 
 interface PageProps {
-	params: Promise<{ raffleId: string }>
+	params: { raffleId: string }
 }
 
 export const metadata = {
@@ -15,13 +15,13 @@ export const metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function MyRaffleSelfResultPage({ params }: PageProps) {
-	const { raffleId } = await params
+	const { raffleId } = params
 	const data: MyRaffleSelfResultResponse = await myApi.getSelfResult(raffleId)
 
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="mb-6 flex items-center justify-between">
-				<h1 className="text-foreground text-2xl font-semibold">내 결과</h1>
+				<h1 className="text-2xl font-semibold text-foreground">내 결과</h1>
 				<span
 					className={`rounded-full px-3 py-1 text-xs ${
 						data.status === 'DRAWN'
@@ -35,25 +35,25 @@ export default async function MyRaffleSelfResultPage({ params }: PageProps) {
 
 			<div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 				{/* 좌: 래플/참여 정보 */}
-				<div className="bg-card rounded-xl border p-6 lg:col-span-2">
+				<div className="rounded-xl border bg-card p-6 lg:col-span-2">
 					<div className="mb-4">
-						<div className="text-muted-foreground text-sm">래플</div>
+						<div className="text-sm text-muted-foreground">래플</div>
 						<div className="truncate text-lg font-semibold">{data.raffleName || data.raffleId}</div>
 					</div>
 
 					<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 						<div>
-							<div className="text-muted-foreground text-sm">내 표시 이름</div>
+							<div className="text-sm text-muted-foreground">내 표시 이름</div>
 							<div className="font-medium">{data.myParticipation.displayName || '-'}</div>
 						</div>
 						<div>
-							<div className="text-muted-foreground text-sm">참여 시간</div>
+							<div className="text-sm text-muted-foreground">참여 시간</div>
 							<div className="font-medium">
 								{new Date(data.myParticipation.joinedAt).toLocaleString('ko-KR')}
 							</div>
 						</div>
 						<div>
-							<div className="text-muted-foreground text-sm">당첨 여부</div>
+							<div className="text-sm text-muted-foreground">당첨 여부</div>
 							<div
 								className={`font-semibold ${data.isWinner ? 'text-emerald-600' : 'text-gray-600'}`}
 							>
@@ -62,11 +62,11 @@ export default async function MyRaffleSelfResultPage({ params }: PageProps) {
 						</div>
 						<div className="flex items-center gap-6">
 							<div>
-								<div className="text-muted-foreground text-sm">배송 필요</div>
+								<div className="text-sm text-muted-foreground">배송 필요</div>
 								<div className="font-medium">{data.shippingRequired ? '예' : '아니오'}</div>
 							</div>
 							<div>
-								<div className="text-muted-foreground text-sm">배송 정보 제출</div>
+								<div className="text-sm text-muted-foreground">배송 정보 제출</div>
 								<div className="font-medium">{data.shippingSubmitted ? '완료' : '미제출'}</div>
 							</div>
 						</div>
@@ -74,9 +74,9 @@ export default async function MyRaffleSelfResultPage({ params }: PageProps) {
 				</div>
 
 				{/* 우: 당첨 정보+이미지 */}
-				<div className="bg-card rounded-xl border p-6">
+				<div className="rounded-xl border bg-card p-6">
 					<div className="mb-4 flex items-center justify-between">
-						<div className="text-muted-foreground text-sm">당첨 정보</div>
+						<div className="text-sm text-muted-foreground">당첨 정보</div>
 						{data.winInfo ? (
 							<span className="rounded-full bg-amber-50 px-3 py-1 text-xs text-amber-700 ring-1 ring-amber-200">
 								WIN #{data.winInfo.rank}
@@ -91,7 +91,7 @@ export default async function MyRaffleSelfResultPage({ params }: PageProps) {
 					{data.winInfo ? (
 						<>
 							<div className="mb-3 text-lg font-semibold">{data.winInfo.prizeName}</div>
-							<div className="bg-muted relative aspect-square w-full overflow-hidden rounded-lg border">
+							<div className="relative aspect-square w-full overflow-hidden rounded-lg border bg-muted">
 								{data.winInfo.prizeImageUrl ? (
 									<Image
 										src={data.winInfo.prizeImageUrl}
@@ -101,14 +101,14 @@ export default async function MyRaffleSelfResultPage({ params }: PageProps) {
 										className="object-cover"
 									/>
 								) : (
-									<div className="text-muted-foreground flex h-full w-full items-center justify-center text-sm">
+									<div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
 										이미지 없음
 									</div>
 								)}
 							</div>
 						</>
 					) : (
-						<div className="text-muted-foreground text-sm">
+						<div className="text-sm text-muted-foreground">
 							아직 당첨 정보가 없습니다. 추첨 결과 공개 후 다시 확인해 주세요.
 						</div>
 					)}

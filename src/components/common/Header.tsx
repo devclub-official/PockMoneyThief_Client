@@ -26,7 +26,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 	}
 
 	return (
-		<header className="border-border bg-card flex h-16 items-center justify-between border-b px-4 lg:px-6">
+		<header className="flex h-16 items-center justify-between border-b border-border bg-card px-4 lg:px-6">
 			{/* Mobile menu button */}
 			<Button variant="ghost" size="sm" className="lg:hidden" onClick={onMenuClick}>
 				<Menu className="h-5 w-5" />
@@ -34,20 +34,20 @@ export function Header({ onMenuClick }: HeaderProps) {
 
 			{/* Logo (모바일) */}
 			<div className="flex items-center gap-3 lg:hidden">
-				<div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
-					<Search className="text-primary-foreground h-4 w-4" />
+				<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+					<Search className="h-4 w-4 text-primary-foreground" />
 				</div>
-				<span className="text-foreground text-lg font-semibold">가차추첨</span>
+				<span className="text-lg font-semibold text-foreground">가차추첨</span>
 			</div>
 
 			{/* Search Bar (데스크탑) */}
 			<div className="hidden max-w-md flex-1 items-center gap-4 lg:flex">
 				<div className="relative flex flex-1 items-center">
-					<Search className="text-muted-foreground pointer-events-none absolute left-3 h-4 w-4" />
+					<Search className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground" />
 					<input
 						type="text"
 						placeholder="원하시는 상품을 검색해보세요"
-						className="bg-muted/50 border-border focus:ring-ring/20 w-full rounded-lg border py-2 pr-4 pl-10 text-sm transition-all focus:ring-2 focus:outline-none"
+						className="bg-muted/50 focus:ring-ring/20 w-full rounded-lg border border-border py-2 pl-10 pr-4 text-sm transition-all focus:outline-none focus:ring-2"
 					/>
 				</div>
 			</div>
@@ -57,15 +57,15 @@ export function Header({ onMenuClick }: HeaderProps) {
 				{/* User Profile */}
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<button className="hover:bg-accent flex items-center gap-3 rounded-lg p-2 transition-colors">
-							<Avatar className="ring-background h-8 w-8 rounded-full shadow-sm ring-2">
-								<AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
+						<button className="flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent">
+							<Avatar className="h-8 w-8 rounded-full shadow-sm ring-2 ring-background">
+								<AvatarFallback className="bg-primary text-sm font-medium text-primary-foreground">
 									U
 								</AvatarFallback>
 							</Avatar>
 							<div className="hidden text-left lg:block">
 								<p className="text-sm font-medium">사용자</p>
-								<p className="text-muted-foreground text-xs">가차 수집가</p>
+								<p className="text-xs text-muted-foreground">가차 수집가</p>
 							</div>
 						</button>
 					</DropdownMenuTrigger>
@@ -76,7 +76,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 							</Avatar>
 							<div className="flex flex-col space-y-1 leading-none">
 								<p className="font-medium">사용자</p>
-								<p className="text-muted-foreground text-xs">가차 수집가</p>
+								<p className="text-xs text-muted-foreground">가차 수집가</p>
 							</div>
 						</div>
 						<DropdownMenuSeparator />

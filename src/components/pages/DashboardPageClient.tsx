@@ -13,6 +13,7 @@ import { useDashboard } from '@/hooks/useDashboard'
 import { DASHBOARD_UI_TEXT } from '@/lib/constants'
 import { Plus, Package, Users } from 'lucide-react'
 import { useMyRaffles } from '@/hooks/useMyRaffles'
+import { EventCard } from '@/components/dashboard/EventCard'
 
 export function DashboardPageClient() {
 	const router = useRouter()
@@ -78,8 +79,13 @@ export function DashboardPageClient() {
 	return (
 		<div className="container">
 			<div className="mb-8">
-				<h1 className="text-foreground text-2xl font-semibold">{DASHBOARD_UI_TEXT.PAGE_TITLE}</h1>
+				<h1 className="text-2xl font-semibold text-foreground">{DASHBOARD_UI_TEXT.PAGE_TITLE}</h1>
 				<p className="text-muted-foreground">{DASHBOARD_UI_TEXT.PAGE_DESCRIPTION}</p>
+			</div>
+
+			{/* 사탕뽑기 이벤트 카드 */}
+			<div className="BBOP mb-8">
+				<EventCard eventId="candy-event-2025" />
 			</div>
 
 			<Tabs defaultValue="my-raffles" className="space-y-6">
@@ -197,8 +203,8 @@ export function DashboardPageClient() {
 								<Card key={win.raffleId}>
 									<CardContent className="space-y-3 p-4 md:p-6">
 										<div className="flex items-center justify-between">
-											<div className="text-muted-foreground text-sm">{win.raffleName}</div>
-											<div className="text-muted-foreground text-xs">
+											<div className="text-sm text-muted-foreground">{win.raffleName}</div>
+											<div className="text-xs text-muted-foreground">
 												{new Date(win.drawnAt).toLocaleString('ko-KR')}
 											</div>
 										</div>

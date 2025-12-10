@@ -22,6 +22,7 @@ export function LoginCard() {
 			window.location.href = '/'
 			return
 		}
+		console.log('handle Login')
 		window.location.href = `${base}${OAUTH_ENDPOINTS.KAKAO}?returnTo=${encodeURIComponent(returnTo)}`
 	}
 
@@ -29,10 +30,10 @@ export function LoginCard() {
 		<div className="relative flex min-h-[calc(100vh-112px)] items-center justify-center px-4 py-10 sm:px-6">
 			{/* 배경 블러 원들 */}
 			<div className="pointer-events-none absolute inset-0 -z-10">
-				<div className="absolute top-24 left-10 h-56 w-56 rounded-full bg-purple-400/25 blur-3xl dark:bg-purple-500/25" />
+				<div className="absolute left-10 top-24 h-56 w-56 rounded-full bg-purple-400/25 blur-3xl dark:bg-purple-500/25" />
 				<div className="absolute bottom-16 left-20 h-40 w-40 rotate-12 rounded-2xl bg-indigo-300/20 blur-2xl dark:bg-indigo-400/20" />
-				<div className="absolute top-16 right-16 h-48 w-48 rounded-full bg-fuchsia-300/25 blur-3xl dark:bg-fuchsia-400/25" />
-				<div className="absolute right-24 bottom-20 h-56 w-56 -rotate-6 rounded-3xl bg-sky-300/20 blur-2xl dark:bg-sky-400/20" />
+				<div className="absolute right-16 top-16 h-48 w-48 rounded-full bg-fuchsia-300/25 blur-3xl dark:bg-fuchsia-400/25" />
+				<div className="absolute bottom-20 right-24 h-56 w-56 -rotate-6 rounded-3xl bg-sky-300/20 blur-2xl dark:bg-sky-400/20" />
 			</div>
 
 			{/* 카드 */}
@@ -46,7 +47,7 @@ export function LoginCard() {
 					<h1 className="mb-2 text-3xl font-extrabold tracking-tight text-purple-600 dark:text-purple-300">
 						가차추첨
 					</h1>
-					<p className="mb-12 text-[15px] font-medium text-balance whitespace-pre-line text-gray-400 dark:text-gray-300">
+					<p className="mb-12 whitespace-pre-line text-balance text-[15px] font-medium text-gray-400 dark:text-gray-300">
 						{`공정하고 투명한 가차 추첨 플랫폼에\n오신 것을 환영합니다`}
 					</p>
 
@@ -98,7 +99,7 @@ export function LoginCard() {
 							로또 시드 기반 공정한 추첨 시스템
 						</span>
 					</div>
-					<p className="text-center text-xs leading-relaxed font-medium text-pretty whitespace-pre-line text-gray-400 dark:text-gray-300">
+					<p className="whitespace-pre-line text-pretty text-center text-xs font-medium leading-relaxed text-gray-400 dark:text-gray-300">
 						{`로그인 시 서비스 이용약관 및 개인정보처리방침에 동의합니다.\n카카오 ID와 닉네임만 수집되며, 개인정보는 안전하게 보호됩니다.`}
 					</p>
 				</div>

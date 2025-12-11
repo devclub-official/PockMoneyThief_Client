@@ -9,6 +9,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/Dialog'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
+import type { V2ParticipantResponse } from '@/types'
 
 interface EventFlowProps {
 	eventId: string
@@ -27,7 +28,7 @@ type FlowStep = 'detail' | 'waiting' | 'result'
 export function EventFlow({ eventId, initialOpen = false, onClose }: EventFlowProps) {
 	const [currentStep, setCurrentStep] = useState<FlowStep>(initialOpen ? 'detail' : 'detail')
 	const [showDetailModal, setShowDetailModal] = useState(initialOpen)
-	const [participantId, setParticipantId] = useState<string | null>(null)
+	const [participantInfo, setParticipantInfo] = useState<V2ParticipantResponse | null>(null)
 
 	const {
 		data: resultData,
@@ -35,8 +36,8 @@ export function EventFlow({ eventId, initialOpen = false, onClose }: EventFlowPr
 		refetch: refetchResult,
 	} = useEventResult(eventId, currentStep === 'result')
 
-	const handleParticipateSuccess = (newParticipantId: string) => {
-		setParticipantId(newParticipantId)
+	const handleParticipateSuccess = (info: V2ParticipantResponse) => {
+		setParticipantInfo(info)
 		setShowDetailModal(false)
 		setCurrentStep('waiting')
 	}
@@ -49,7 +50,7 @@ export function EventFlow({ eventId, initialOpen = false, onClose }: EventFlowPr
 	const handleCloseFlow = () => {
 		setShowDetailModal(false)
 		setCurrentStep('detail')
-		setParticipantId(null)
+		setParticipantInfo(null)
 		onClose?.()
 	}
 
@@ -82,7 +83,7 @@ export function EventFlow({ eventId, initialOpen = false, onClose }: EventFlowPr
 					</VisuallyHidden.Root>
 
 					{/* Step 2: 대기 상태 */}
-					{currentStep === 'waiting' && participantId && (
+					{currentStep === 'waiting' && participantInfo && (
 						<div className="min-h-[400px]">
 							<EventWaitingState raffleId={eventId} onCheckResult={handleCheckResult} />
 						</div>
@@ -96,7 +97,11 @@ export function EventFlow({ eventId, initialOpen = false, onClose }: EventFlowPr
 									<LoadingSpinner />
 								</div>
 							) : resultData ? (
-								<EventResultDisplay result={resultData} onClose={handleCloseFlow} />
+								<EventResultDisplay
+									result={resultData}
+									participantInfo={participantInfo}
+									onClose={handleCloseFlow}
+								/>
 							) : (
 								<div className="py-20 text-center">
 									<p className="text-muted-foreground">결과를 불러올 수 없습니다.</p>

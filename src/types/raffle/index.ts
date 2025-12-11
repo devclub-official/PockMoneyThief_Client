@@ -385,52 +385,53 @@ export interface MyWinsResponse {
 	wins: MyWinItem[]
 }
 
-// 츄파춥스 이벤트 관련 타입
+// 츄파춥스 이벤트 관련 타입 (OpenAPI v2 Spec)
 
-// 선물 코드 정보
-export interface GiftCodeInfo {
-	giftCode: string // 선물코드 (예: "QSMT6GSJE8")
-	giftName: string // 선물명 (예: "농심)츄파춥스")
-	expiryDate: string // 코드등록 유효기간 (예: "2025.12.08")
-	registrationMethod: string // 코드등록 방법
-	registrationUrl: string // 등록 URL (예: "https://kko.to/N8y6vRZ8w2")
+// 기프트콘 정보
+export interface V2GiftconInfo {
+	code: string
+	expiresAt: string
+	registrationUrl: string
+	howToUse?: string
+}
+
+// 당첨 상품 정보
+export interface V2PrizeInfo {
+	rank: number
+	name: string
+	imageUrl?: string
+	giftcon?: V2GiftconInfo
 }
 
 // POST /v2/raffles/{raffleId}/participants 요청
 export interface ParticipateV2Request {
-	displayName: string
+	displayName?: string
 }
 
 // POST /v2/raffles/{raffleId}/participants 응답
-export interface ParticipateV2Response {
+export interface V2ParticipantResponse {
 	participantId: string
 	raffleId: string
 	displayName: string
 	joinedAt: string
 }
 
-// GET /raffles/{raffleId}/winners/present 응답 (폴링)
-export interface WinnersPresentResponse {
-	isDrawn: boolean // 추첨 완료 여부
+// GET /v2/raffles/{raffleId}/drawn 응답 (폴링)
+export interface V2DrawnStatusResponse {
+	raffleId: string
+	isDrawn: boolean
+	drawnAt?: string
 }
 
 // GET /v2/my/raffles/{raffleId}/result 응답
-export interface MyRaffleResultV2Response {
+export interface V2MyRaffleResultResponse {
 	raffleId: string
 	raffleName: string
-	status: string
-	myParticipation: {
-		participantId: string
-		displayName: string
-		joinedAt: string
-	}
-	isWinner: boolean
-	winInfo: {
-		rank: number
-		prizeName: string
-		prizeImageUrl?: string
-		giftCodeInfo?: GiftCodeInfo // 선물 코드 정보 (당첨 시)
-	} | null
-	shippingRequired: boolean
-	shippingSubmitted: boolean
+	isWinner: boolean | null // true: 당첨, false: 낙첨, null: 미발표
+	prize: V2PrizeInfo | null
+	message?: string
 }
+// Legacy alias for compatibility during refactor (optional, or just remove usages)
+export type MyRaffleResultV2Response = V2MyRaffleResultResponse
+export type ParticipateV2Response = V2ParticipantResponse
+export type WinnersPresentResponse = V2DrawnStatusResponse

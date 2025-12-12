@@ -12,6 +12,8 @@ import { Search, LogOut, User, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useRouter } from 'next/navigation'
 import { loginApi } from '@/lib/api'
+import { useAtom } from 'jotai'
+import { searchQueryAtom } from '@/lib/atoms/searchAtom'
 
 interface HeaderProps {
 	onMenuClick: () => void
@@ -19,6 +21,7 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
 	const router = useRouter()
+	const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom)
 
 	const handleLogout = async () => {
 		await loginApi.logout()
@@ -47,6 +50,8 @@ export function Header({ onMenuClick }: HeaderProps) {
 					<input
 						type="text"
 						placeholder="원하시는 상품을 검색해보세요"
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
 						className="bg-muted/50 focus:ring-ring/20 w-full rounded-lg border border-border py-2 pl-10 pr-4 text-sm transition-all focus:outline-none focus:ring-2"
 					/>
 				</div>

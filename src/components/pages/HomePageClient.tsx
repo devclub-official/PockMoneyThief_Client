@@ -14,7 +14,7 @@ import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import type { RaffleFilter, RaffleSummaryResponse } from '@/types'
 import { useRaffles } from '@/hooks/useRaffles'
-import { EventCard } from '@/components/dashboard/EventCard'
+// import { EventCard } from '@/components/dashboard/EventCard'
 import { useAtom } from 'jotai'
 import { searchQueryAtom } from '@/lib/atoms/searchAtom'
 
@@ -251,7 +251,7 @@ export function HomePageClient() {
 			}
 
 			// Event 타입 래플은 목록에서 제외 (EventCard로 별도 표시)
-			if (raffle.type === 'EVENT') return false
+			// if (raffle.raffleType === 'GIFTCON') return false
 
 			// 상태 필터링
 			// 전체 - 모든 항목 표시
@@ -297,9 +297,9 @@ export function HomePageClient() {
 			</div>
 
 			{/* Event Card */}
-			<div className="mb-6">
+			{/* <div className="mb-6">
 				<EventCard eventId="candy-event-2025" />
-			</div>
+			</div> */}
 
 			{/* Stats Cards */}
 			<StatsSection stats={stats} />

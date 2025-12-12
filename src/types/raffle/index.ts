@@ -8,6 +8,7 @@ export interface RaffleSummaryResponse {
 	status: string
 	imageUrl: string
 	deadlineAt: string
+	raffleType?: 'GIFTCON' | 'GENERAL'
 }
 
 // GET /raffles 응답 (배열)

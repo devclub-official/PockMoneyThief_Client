@@ -214,12 +214,18 @@ export function HomePageClient() {
 
 	const { data: initialData } = useRaffles()
 
-	// 서버에서 prefetch된 데이터 사용 (중복 raffleId 제거)
+	// 서버에서 prefetch된 데이터 사용 (중복 raffleId 제거 및 최신순 정렬)
 	const raffles = useMemo(() => {
 		const items = initialData || []
 		// Map을 사용하여 중복된 raffleId 제거 (마지막 항목이 유지됨)
 		const uniqueMap = new Map(items.map((item) => [item.raffleId, item]))
-		return Array.from(uniqueMap.values())
+		const uniqueItems = Array.from(uniqueMap.values())
+		// 최신순 정렬 (deadlineAt 기준 내림차순)
+		return uniqueItems.sort((a, b) => {
+			const dateA = new Date(a.deadlineAt).getTime()
+			const dateB = new Date(b.deadlineAt).getTime()
+			return dateB - dateA // 내림차순 (최신이 위로)
+		})
 	}, [initialData])
 	const isLoading = false
 	const isError = false

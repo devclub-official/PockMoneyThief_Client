@@ -11,6 +11,7 @@ import {
 import { Search, LogOut, User, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { loginApi } from '@/lib/api'
 import { useAtom } from 'jotai'
 import { searchQueryAtom } from '@/lib/atoms/searchAtom'
@@ -36,12 +37,15 @@ export function Header({ onMenuClick }: HeaderProps) {
 			</Button>
 
 			{/* Logo (모바일) */}
-			<div className="flex items-center gap-3 lg:hidden">
+			<Link
+				href="/"
+				className="flex items-center gap-3 transition-opacity hover:opacity-80 lg:hidden"
+			>
 				<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
 					<Search className="h-4 w-4 text-primary-foreground" />
 				</div>
 				<span className="text-lg font-semibold text-foreground">가차추첨</span>
-			</div>
+			</Link>
 
 			{/* Search Bar (데스크탑) */}
 			<div className="hidden max-w-md flex-1 items-center gap-4 lg:flex">

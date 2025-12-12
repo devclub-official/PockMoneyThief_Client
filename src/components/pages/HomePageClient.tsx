@@ -104,8 +104,19 @@ function RaffleCard({
 		return deadlineTime.getTime() - currentTime < TIME_CONSTANTS.URGENT_THRESHOLD
 	}, [currentTime, deadlineTime])
 
+	// 마감 여부 계산
+	const isClosed = useMemo(
+		() => raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt || '') <= new Date(),
+		[raffle.status, raffle.deadlineAt],
+	)
+
 	const handleCardClick = () => {
-		if (isGiftcon) {
+		// 마감된 GIFTCON 이벤트는 아무 동작도 하지 않음
+		if (isGiftcon && isClosed) {
+			return
+		}
+
+		if (isGiftcon && !isClosed) {
 			setShowEventFlow(true)
 		} else {
 			router.push(`/raffle/${raffle.raffleId}`)
@@ -114,7 +125,13 @@ function RaffleCard({
 
 	const handleButtonClick = (e: React.MouseEvent) => {
 		e.stopPropagation()
-		if (isGiftcon) {
+
+		// 마감된 GIFTCON 이벤트는 아무 동작도 하지 않음
+		if (isGiftcon && isClosed) {
+			return
+		}
+
+		if (isGiftcon && !isClosed) {
 			setShowEventFlow(true)
 		} else {
 			router.push(`/raffle/${raffle.raffleId}`)
@@ -124,7 +141,9 @@ function RaffleCard({
 	return (
 		<>
 			<div
-				className="group cursor-pointer overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md"
+				className={`group overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md ${
+					isGiftcon && isClosed ? 'cursor-not-allowed' : 'cursor-pointer'
+				}`}
 				onClick={handleCardClick}
 			>
 				<div className="relative aspect-video overflow-hidden rounded-t-lg">
@@ -196,11 +215,9 @@ function RaffleCard({
 					</div>
 
 					<Button
-						className="w-full cursor-pointer"
+						className={`w-full ${isGiftcon && isClosed ? 'cursor-not-allowed' : 'cursor-pointer'}`}
 						size="sm"
-						disabled={
-							raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt || '') <= new Date()
-						}
+						disabled={isClosed}
 						onClick={handleButtonClick}
 					>
 						{raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt || '') > new Date()
@@ -214,6 +231,7 @@ function RaffleCard({
 			{showEventFlow && isGiftcon && (
 				<EventFlow
 					eventId={raffle.raffleId}
+					raffleInfo={raffle}
 					initialOpen={true}
 					onClose={() => setShowEventFlow(false)}
 				/>

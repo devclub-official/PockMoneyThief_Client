@@ -151,6 +151,11 @@ export const myApi = {
 			}>
 		}>()
 
+		// SSR 중 401 에러로 빈 배열이 반환될 수 있으므로 체크
+		if (!res.raffles) {
+			return []
+		}
+
 		return res.raffles.map((r) => ({
 			id: r.raffleId,
 			title: r.title,
@@ -182,7 +187,14 @@ export const myApi = {
 	},
 
 	// 내 당첨 목록
-	getWins: () => api.get('my/raffles/wins').json<MyWinsResponse>(),
+	getWins: async (): Promise<MyWinsResponse> => {
+		const res = await api.get('my/raffles/wins').json<MyWinsResponse>()
+		// SSR 중 401 에러로 빈 배열이 반환될 수 있으므로 체크
+		if (!res.wins) {
+			return { wins: [] }
+		}
+		return res
+	},
 }
 
 // 주소록 API

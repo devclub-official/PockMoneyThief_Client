@@ -13,7 +13,6 @@ import { useDashboard } from '@/hooks/useDashboard'
 import { DASHBOARD_UI_TEXT } from '@/lib/constants'
 import { Plus, Package, Users } from 'lucide-react'
 import { useMyRaffles } from '@/hooks/useMyRaffles'
-import { EventCard } from '@/components/dashboard/EventCard'
 
 export function DashboardPageClient() {
 	const router = useRouter()
@@ -84,9 +83,9 @@ export function DashboardPageClient() {
 			</div>
 
 			{/* 사탕뽑기 이벤트 카드 */}
-			<div className="BBOP mb-8">
+			{/* <div className="BBOP mb-8">
 				<EventCard eventId="candy-event-2025" />
-			</div>
+			</div> */}
 
 			<Tabs defaultValue="my-raffles" className="space-y-6">
 				<TabsList className="grid w-full grid-cols-3 md:w-2/3" role="tablist">

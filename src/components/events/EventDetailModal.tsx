@@ -4,14 +4,16 @@ import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { ImageWithFallback } from '@/components/common/ImageWithFallback'
 import { useEventParticipate } from '@/hooks/useEventParticipate'
 import { Gift } from 'lucide-react'
-import type { V2ParticipantResponse } from '@/types'
+import type { V2ParticipantResponse, RaffleSummaryResponse } from '@/types'
 
 interface EventDetailModalProps {
 	open: boolean
 	onOpenChange: (open: boolean) => void
 	eventId: string
+	raffleInfo?: RaffleSummaryResponse
 	onParticipateSuccess: (participant: V2ParticipantResponse) => void
 }
 
@@ -19,6 +21,7 @@ export function EventDetailModal({
 	open,
 	onOpenChange,
 	eventId,
+	raffleInfo,
 	onParticipateSuccess,
 }: EventDetailModalProps) {
 	const [displayName, setDisplayName] = useState('')
@@ -43,13 +46,21 @@ export function EventDetailModal({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="max-w-md">
 				<DialogHeader>
-					<DialogTitle>🍭 사탕뽑기 이벤트</DialogTitle>
+					<DialogTitle>{raffleInfo?.title || '🍭 사탕뽑기 이벤트'}</DialogTitle>
 				</DialogHeader>
 
 				<div className="space-y-6">
 					{/* 이벤트 이미지 */}
 					<div className="relative aspect-square w-full overflow-hidden rounded-lg border bg-gradient-to-br from-pink-100 to-purple-100">
-						<div className="flex h-full items-center justify-center text-8xl">🍬</div>
+						{raffleInfo?.imageUrl ? (
+							<ImageWithFallback
+								src={raffleInfo.imageUrl}
+								alt={raffleInfo.title || '사탕뽑기 이벤트'}
+								className="h-full w-full object-cover"
+							/>
+						) : (
+							<div className="flex h-full items-center justify-center text-8xl">🍬</div>
+						)}
 					</div>
 
 					{/* 이벤트 설명 */}

@@ -58,9 +58,6 @@ interface RaffleDetailClientProps {
 	id: string
 }
 
-const FALLBACK_IMAGE =
-	'https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080'
-
 export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 	const queryClient = useQueryClient()
 	const { addToast } = useToast()
@@ -95,6 +92,28 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 			}),
 		)
 
+		// 같은 등수의 상품을 그룹화하여 중복 제거
+		const uniquePrizes = raffleData.tiers.reduce(
+			(acc, tier) => {
+				const existing = acc.find((p) => p.rank === tier.rank)
+				if (!existing) {
+					acc.push({
+						rank: tier.rank,
+						name: tier.name,
+						quantity: tier.quantity,
+						imageUrl: tier.imageUrl,
+					})
+				}
+				return acc
+			},
+			[] as Array<{
+				rank: number
+				name: string
+				quantity: number
+				imageUrl?: string
+			}>,
+		)
+
 		return {
 			id: raffleData.raffleId,
 			title: raffleData.title,
@@ -107,12 +126,7 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 			endTime: new Date(raffleData.deadlineAt),
 			status: raffleData.status,
 			createdAt: new Date(raffleData.createdAt),
-			prizes: raffleData.tiers.map((tier) => ({
-				rank: tier.rank,
-				name: tier.name,
-				quantity: tier.quantity,
-				imageUrl: tier.imageUrl,
-			})),
+			prizes: uniquePrizes,
 			participants,
 			externalSeed: raffleData.externalSeed || raffleData.externalSeedDescription,
 		}
@@ -294,17 +308,13 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 							<CardTitle>상품 정보</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-4">
-							{raffle.prizes.map((prize) => (
-								<div key={prize.rank} className="flex items-start gap-3">
+							{raffle.prizes.map((prize, index) => (
+								<div key={`prize-${prize.rank}-${index}`} className="flex items-start gap-3">
 									<div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border bg-muted">
-										{/* eslint-disable-next-line @next/next/no-img-element */}
-										<img
-											src={prize.imageUrl || FALLBACK_IMAGE}
+										<ImageWithFallback
+											src={prize.imageUrl}
 											alt={prize.name}
 											className="h-full w-full object-cover"
-											onError={(e) => {
-												e.currentTarget.src = FALLBACK_IMAGE
-											}}
 										/>
 									</div>
 									<div className="min-w-0 flex-1">

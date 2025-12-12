@@ -148,6 +148,7 @@ export const myApi = {
 				deadlineAt: string
 				myDisplayName: string
 				joinedAt: string
+				raffleType?: 'GIFTCON' | 'GENERAL'
 			}>
 		}>()
 
@@ -174,6 +175,7 @@ export const myApi = {
 			itemName: undefined,
 			shippingStatus: undefined,
 			participatedAt: r.joinedAt,
+			raffleType: r.raffleType,
 		}))
 	},
 

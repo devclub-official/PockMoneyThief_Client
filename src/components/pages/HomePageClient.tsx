@@ -14,7 +14,7 @@ import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import type { RaffleFilter, RaffleSummaryResponse } from '@/types'
 import { useRaffles } from '@/hooks/useRaffles'
-import { EventCard } from '@/components/dashboard/EventCard'
+// import { EventCard } from '@/components/dashboard/EventCard'
 import { useAtom } from 'jotai'
 import { searchQueryAtom } from '@/lib/atoms/searchAtom'
 
@@ -214,18 +214,12 @@ export function HomePageClient() {
 
 	const { data: initialData } = useRaffles()
 
-	// 서버에서 prefetch된 데이터 사용 (중복 raffleId 제거 및 최신순 정렬)
+	// 서버에서 prefetch된 데이터 사용 (중복 raffleId 제거)
 	const raffles = useMemo(() => {
 		const items = initialData || []
 		// Map을 사용하여 중복된 raffleId 제거 (마지막 항목이 유지됨)
 		const uniqueMap = new Map(items.map((item) => [item.raffleId, item]))
-		const uniqueItems = Array.from(uniqueMap.values())
-		// 최신순 정렬 (deadlineAt 기준 내림차순)
-		return uniqueItems.sort((a, b) => {
-			const dateA = new Date(a.deadlineAt).getTime()
-			const dateB = new Date(b.deadlineAt).getTime()
-			return dateB - dateA // 내림차순 (최신이 위로)
-		})
+		return Array.from(uniqueMap.values())
 	}, [initialData])
 	const isLoading = false
 	const isError = false
@@ -255,6 +249,9 @@ export function HomePageClient() {
 					return false
 				}
 			}
+
+			// Event 타입 래플은 목록에서 제외 (EventCard로 별도 표시)
+			// if (raffle.raffleType === 'GIFTCON') return false
 
 			// 상태 필터링
 			// 전체 - 모든 항목 표시
@@ -300,9 +297,9 @@ export function HomePageClient() {
 			</div>
 
 			{/* Event Card */}
-			<div className="mb-6">
+			{/* <div className="mb-6">
 				<EventCard eventId="candy-event-2025" />
-			</div>
+			</div> */}
 
 			{/* Stats Cards */}
 			<StatsSection stats={stats} />

@@ -12,6 +12,7 @@ interface EventCardProps {
 	title?: string
 	description?: string
 	imageUrl?: string
+	status?: string
 }
 
 export function EventCard({
@@ -19,8 +20,8 @@ export function EventCard({
 	title = '🍭 사탕뽑기 이벤트',
 	description = '지금 참여하고 맛있는 사탕을 받아가세요!',
 	imageUrl,
+	status = '진행중',
 }: EventCardProps) {
-	// alert('HIHIHI') removed
 	const [showEventFlow, setShowEventFlow] = useState(false)
 
 	return (
@@ -39,7 +40,7 @@ export function EventCard({
 							)}
 						</div>
 						<div className="absolute left-4 top-4 rounded-full bg-pink-500 px-3 py-1 text-xs font-semibold text-white">
-							진행중
+							{status}
 						</div>
 					</div>
 

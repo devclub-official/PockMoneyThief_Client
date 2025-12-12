@@ -58,14 +58,8 @@ export const raffleApi = {
 	getWinners: (id: string) => api.get(`raffles/${id}/winners`).json<WinnersResponse>(),
 
 	// 추첨 완료 여부 확인 (폴링)
-	checkWinnersPresent: async (_id: string): Promise<WinnersPresentResponse> => {
-		// TODO: 백엔드 구현 전까지 Mock 데이터 사용
-		// return api.get(`raffles/${id}/winners/present`).json<WinnersPresentResponse>()
-		await new Promise((resolve) => setTimeout(resolve, 100))
-		console.log(_id)
-		// Mock: 10초 후 추첨 완료로 시뮬레이션
-		const mockIsDrawn = Date.now() % 20000 > 10000
-		return { isDrawn: mockIsDrawn }
+	checkWinnersPresent: async (raffleId: string): Promise<WinnersPresentResponse> => {
+		return api.get(`v2/raffles/${raffleId}/drawn`).json<WinnersPresentResponse>()
 	},
 }
 
@@ -76,19 +70,10 @@ export const participantApi = {
 		api.post(`raffles/${raffleId}/participants`, { json: data }).json<ParticipateResponse>(),
 
 	// 래플 참여 (v2 - 츄파춥스 이벤트용)
-	participateV2: async (
-		raffleId: string,
-		data: ParticipateV2Request,
-	): Promise<ParticipateV2Response> => {
-		// TODO: 백엔드 구현 전까지 Mock 데이터 사용
-		// return api.post(`v2/raffles/${raffleId}/participants`, { json: data }).json<ParticipateV2Response>()
-		await new Promise((resolve) => setTimeout(resolve, 500))
-		return {
-			participantId: `participant-${Date.now()}`,
-			raffleId,
-			displayName: data.displayName,
-			joinedAt: new Date().toISOString(),
-		}
+	participateV2: (raffleId: string, data: ParticipateV2Request): Promise<ParticipateV2Response> => {
+		return api
+			.post(`v2/raffles/${raffleId}/participants`, { json: data })
+			.json<ParticipateV2Response>()
 	},
 
 	// 참여자 목록 조회
@@ -192,41 +177,8 @@ export const myApi = {
 		api.get(`my/raffles/${raffleId}/result`).json<MyRaffleSelfResultResponse>(),
 
 	// 특정 래플의 내 결과 (v2 - 선물 코드 정보 포함)
-	getSelfResultV2: async (raffleId: string): Promise<MyRaffleResultV2Response> => {
-		// TODO: 백엔드 구현 전까지 Mock 데이터 사용
-		// return api.get(`v2/my/raffles/${raffleId}/result`).json<MyRaffleResultV2Response>()
-		await new Promise((resolve) => setTimeout(resolve, 500))
-
-		// Mock: 랜덤으로 당첨/미당첨 시뮬레이션
-		const isWinner = Math.random() > 0.5
-
-		return {
-			raffleId,
-			raffleName: '🍭 사탕뽑기 이벤트',
-			status: 'DRAWN',
-			myParticipation: {
-				participantId: `participant-${Date.now()}`,
-				displayName: '참여자' + Math.floor(Math.random() * 1000),
-				joinedAt: new Date().toISOString(),
-			},
-			isWinner,
-			winInfo: isWinner
-				? {
-						rank: 1,
-						prizeName: '🍬 달콤한 사탕 세트',
-						prizeImageUrl: '',
-						giftCodeInfo: {
-							giftCode: 'CANDY' + Math.random().toString(36).substring(2, 12).toUpperCase(),
-							giftName: '🍬 달콤한 사탕 세트',
-							expiryDate: '2025.12.31',
-							registrationMethod: '카카오톡 > 선물하기 > 선물함 > 선물코드 등록',
-							registrationUrl: 'https://gift.kakao.com',
-						},
-					}
-				: null,
-			shippingRequired: false,
-			shippingSubmitted: false,
-		}
+	getSelfResultV2: (raffleId: string): Promise<MyRaffleResultV2Response> => {
+		return api.get(`v2/my/raffles/${raffleId}/result`).json<MyRaffleResultV2Response>()
 	},
 
 	// 내 당첨 목록
@@ -314,7 +266,7 @@ export const addressApi = {
 // Login API (로그인 기능)
 export const loginApi = {
 	// checkOnboardingStatus: () => api.get('users/onboarding-status').json<boolean>(),
-	checkOnboardingStatus: () => new Promise((resolve) => setTimeout(() => resolve(true), 2000)),
+	checkOnboardingStatus: () => new Promise((resolve) => setTimeout(() => resolve(true), 100)),
 	logout: () => api.post('logout').json<void>(),
 }
 

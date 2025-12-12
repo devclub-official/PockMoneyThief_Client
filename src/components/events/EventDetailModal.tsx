@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useEventParticipate } from '@/hooks/useEventParticipate'
 import { Gift } from 'lucide-react'
+import type { V2ParticipantResponse } from '@/types'
 
 interface EventDetailModalProps {
 	open: boolean
 	onOpenChange: (open: boolean) => void
 	eventId: string
-	onParticipateSuccess: (participantId: string) => void
+	onParticipateSuccess: (participant: V2ParticipantResponse) => void
 }
 
 export function EventDetailModal({
@@ -31,7 +32,7 @@ export function EventDetailModal({
 
 		try {
 			const response = await participate(eventId, { displayName: displayName.trim() })
-			onParticipateSuccess(response.participantId)
+			onParticipateSuccess(response)
 		} catch (error) {
 			console.error('참여 실패:', error)
 			alert('참여에 실패했습니다. 다시 시도해주세요.')

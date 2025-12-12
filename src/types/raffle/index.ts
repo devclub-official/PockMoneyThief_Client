@@ -384,3 +384,53 @@ export interface MyWinItem {
 export interface MyWinsResponse {
 	wins: MyWinItem[]
 }
+
+// 츄파춥스 이벤트 관련 타입
+
+// 선물 코드 정보
+export interface GiftCodeInfo {
+	giftCode: string // 선물코드 (예: "QSMT6GSJE8")
+	giftName: string // 선물명 (예: "농심)츄파춥스")
+	expiryDate: string // 코드등록 유효기간 (예: "2025.12.08")
+	registrationMethod: string // 코드등록 방법
+	registrationUrl: string // 등록 URL (예: "https://kko.to/N8y6vRZ8w2")
+}
+
+// POST /v2/raffles/{raffleId}/participants 요청
+export interface ParticipateV2Request {
+	displayName: string
+}
+
+// POST /v2/raffles/{raffleId}/participants 응답
+export interface ParticipateV2Response {
+	participantId: string
+	raffleId: string
+	displayName: string
+	joinedAt: string
+}
+
+// GET /raffles/{raffleId}/winners/present 응답 (폴링)
+export interface WinnersPresentResponse {
+	isDrawn: boolean // 추첨 완료 여부
+}
+
+// GET /v2/my/raffles/{raffleId}/result 응답
+export interface MyRaffleResultV2Response {
+	raffleId: string
+	raffleName: string
+	status: string
+	myParticipation: {
+		participantId: string
+		displayName: string
+		joinedAt: string
+	}
+	isWinner: boolean
+	winInfo: {
+		rank: number
+		prizeName: string
+		prizeImageUrl?: string
+		giftCodeInfo?: GiftCodeInfo // 선물 코드 정보 (당첨 시)
+	} | null
+	shippingRequired: boolean
+	shippingSubmitted: boolean
+}

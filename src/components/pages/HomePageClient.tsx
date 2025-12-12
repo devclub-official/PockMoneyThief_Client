@@ -12,8 +12,9 @@ import { EmptyState } from '@/components/common/EmptyState'
 import { Clock, Gift } from 'lucide-react'
 import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
-import type { RaffleFilter, GetRafflesResponse, RaffleSummaryResponse } from '@/types'
+import type { RaffleFilter, RaffleSummaryResponse } from '@/types'
 import { useRaffles } from '@/hooks/useRaffles'
+import { EventCard } from '@/components/dashboard/EventCard'
 
 // 통계 카드 컴포넌트
 function StatsCard({
@@ -32,13 +33,13 @@ function StatsCard({
 	gradientColor: string
 }) {
 	return (
-		<div className="bg-card border-border relative overflow-hidden rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
-			<div className={`absolute top-0 right-0 left-0 h-1 bg-gradient-to-r ${gradientColor}`}></div>
+		<div className="relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-sm transition-all duration-200 hover:shadow-md">
+			<div className={`absolute left-0 right-0 top-0 h-1 bg-gradient-to-r ${gradientColor}`}></div>
 			<div className="flex items-center justify-between">
 				<div>
-					<p className="text-muted-foreground text-sm font-medium">{title}</p>
-					<p className="text-foreground text-2xl font-semibold">{value}</p>
-					<p className="text-muted-foreground mt-1 text-xs">{subtitle}</p>
+					<p className="text-sm font-medium text-muted-foreground">{title}</p>
+					<p className="text-2xl font-semibold text-foreground">{value}</p>
+					<p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
 				</div>
 				<div className={`flex h-12 w-12 items-center justify-center rounded-full ${iconBg}`}>
 					<Icon className="h-6 w-6" />
@@ -100,7 +101,7 @@ function RaffleCard({
 
 	return (
 		<div
-			className="bg-card border-border group cursor-pointer overflow-hidden rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md"
+			className="group cursor-pointer overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md"
 			onClick={() => router.push(`/raffle/${raffle.raffleId}`)}
 		>
 			<div className="relative aspect-video overflow-hidden rounded-t-lg">
@@ -109,7 +110,7 @@ function RaffleCard({
 					alt={raffle.title}
 					className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
 				/>
-				<div className="absolute top-3 left-3">
+				<div className="absolute left-3 top-3">
 					<Badge variant="default" className="bg-primary">
 						{raffle.status === 'PUBLISHED'
 							? '진행중'
@@ -125,17 +126,17 @@ function RaffleCard({
 			</div>
 			<div className="space-y-4 p-4">
 				<div>
-					<h3 className="text-foreground line-clamp-1 font-semibold">{raffle.title}</h3>
+					<h3 className="line-clamp-1 font-semibold text-foreground">{raffle.title}</h3>
 				</div>
 
 				<div className="flex items-center justify-between">
 					<div>
-						<p className="text-muted-foreground text-xs">래플 ID</p>
-						<p className="text-muted-foreground text-sm">#{raffle.raffleId}</p>
+						<p className="text-xs text-muted-foreground">래플 ID</p>
+						<p className="text-sm text-muted-foreground">#{raffle.raffleId}</p>
 					</div>
 					<div className="text-right">
-						<p className="text-muted-foreground text-xs">참여비</p>
-						<p className="text-primary font-semibold">₩{formatPrice(raffle.entryFee || 0)}</p>
+						<p className="text-xs text-muted-foreground">참여비</p>
+						<p className="font-semibold text-primary">₩{formatPrice(raffle.entryFee || 0)}</p>
 					</div>
 				</div>
 
@@ -147,10 +148,10 @@ function RaffleCard({
 						<span
 							className={
 								raffle.status !== 'PUBLISHED'
-									? 'text-muted-foreground font-medium'
+									? 'font-medium text-muted-foreground'
 									: isUrgent
-										? 'text-destructive font-medium'
-										: 'text-foreground font-medium'
+										? 'font-medium text-destructive'
+										: 'font-medium text-foreground'
 							}
 						>
 							{raffle.status === 'PUBLISHED'
@@ -198,15 +199,10 @@ function getEmptyStateMessage(filter: RaffleFilter) {
 	}
 }
 
-interface HomePageClientProps {
-	initialData: GetRafflesResponse
-}
-
 export function HomePageClient() {
 	const router = useRouter()
 	const [filter, setFilter] = useState<RaffleFilter>('all')
 	const [currentTime, setCurrentTime] = useState<number | null>(null)
-
 	// 클라이언트에서만 시간 설정 (hydration 이슈 방지)
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/set-state-in-effect
@@ -279,17 +275,22 @@ export function HomePageClient() {
 		<div className="space-y-6">
 			{/* Header */}
 			<div>
-				<h1 className="text-foreground text-2xl font-semibold">대시보드</h1>
+				<h1 className="text-2xl font-semibold text-foreground">대시보드</h1>
 				<p className="text-muted-foreground">가차 추첨 플랫폼의 현황을 한눈에 확인하세요</p>
+			</div>
+
+			{/* Event Card */}
+			<div className="mb-6">
+				<EventCard eventId="candy-event-2025" />
 			</div>
 
 			{/* Stats Cards */}
 			<StatsSection stats={stats} />
 
 			{/* Filters */}
-			<div className="bg-card border-border rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md">
+			<div className="rounded-xl border border-border bg-card p-6 shadow-sm transition-all duration-200 hover:shadow-md">
 				<div className="mb-4 flex items-center justify-between">
-					<h2 className="text-foreground text-lg font-semibold">추첨 목록</h2>
+					<h2 className="text-lg font-semibold text-foreground">추첨 목록</h2>
 					<Tabs
 						defaultValue="all"
 						value={filter}

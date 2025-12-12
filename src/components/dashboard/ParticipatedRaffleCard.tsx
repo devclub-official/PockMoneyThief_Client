@@ -9,6 +9,7 @@ import { CheckCircle, Clock } from 'lucide-react'
 import type { ParticipatedRaffle } from '@/types/dashboard'
 import { SHIPPING_STATUS } from '@/lib/constants'
 import { ShippingAddressDialog } from '@/components/dashboard/ShippingAddressDialog'
+import { EventFlow } from '@/components/events/EventFlow'
 
 interface ParticipatedRaffleCardProps {
 	raffle: ParticipatedRaffle
@@ -20,6 +21,11 @@ interface ParticipatedRaffleCardProps {
 export const ParticipatedRaffleCard = memo(
 	({ raffle, onViewDetail, onViewResult, onViewMyResult }: ParticipatedRaffleCardProps) => {
 		const [showAddressDialog, setShowAddressDialog] = useState(false)
+		const [showEventFlow, setShowEventFlow] = useState(false)
+		const isGiftcon = raffle.raffleType === 'GIFTCON'
+		const isClosed =
+			raffle.status === 'LOCKED' || raffle.status === 'DRAWN' || raffle.status === 'CANCELLED'
+
 		let drawnLabelText = ''
 		let drawnButtonCallback = null
 
@@ -30,6 +36,14 @@ export const ParticipatedRaffleCard = memo(
 			} else {
 				drawnLabelText = '결과보기'
 				drawnButtonCallback = () => onViewResult(raffle.id)
+			}
+		}
+
+		const handleDetailClick = () => {
+			if (isGiftcon) {
+				setShowEventFlow(true)
+			} else {
+				onViewDetail(raffle.id)
 			}
 		}
 
@@ -48,6 +62,14 @@ export const ParticipatedRaffleCard = memo(
 							<div className="flex-1">
 								<div className="mb-1 flex items-center gap-2">
 									<CardTitle className="text-lg">{raffle.title}</CardTitle>
+									{isGiftcon && (
+										<Badge
+											variant="default"
+											className="bg-gradient-to-r from-pink-500 to-purple-500"
+										>
+											🎉 EVENT
+										</Badge>
+									)}
 									<StatusBadge status={raffle.status} />
 									{raffle.isWinner && (
 										<Badge variant="default" className="bg-yellow-500" aria-label="당첨자 배지">
@@ -112,7 +134,8 @@ export const ParticipatedRaffleCard = memo(
 						<div className="flex gap-2">
 							<Button
 								variant="outline"
-								onClick={() => onViewDetail(raffle.id)}
+								onClick={handleDetailClick}
+								disabled={isClosed && isGiftcon}
 								className="flex-1 cursor-pointer"
 								aria-label={`상세보기 버튼 ${raffle.title}`}
 							>
@@ -148,6 +171,13 @@ export const ParticipatedRaffleCard = memo(
 					open={showAddressDialog}
 					onOpenChange={setShowAddressDialog}
 				/>
+				{showEventFlow && isGiftcon && (
+					<EventFlow
+						eventId={raffle.id}
+						initialOpen={true}
+						onClose={() => setShowEventFlow(false)}
+					/>
+				)}
 			</>
 		)
 	},

@@ -14,7 +14,7 @@ import { TIME_CONSTANTS } from '@/lib/constants'
 import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import type { RaffleFilter, RaffleSummaryResponse } from '@/types'
 import { useRaffles } from '@/hooks/useRaffles'
-// import { EventCard } from '@/components/dashboard/EventCard'
+import { EventFlow } from '@/components/events/EventFlow'
 import { useAtom } from 'jotai'
 import { searchQueryAtom } from '@/lib/atoms/searchAtom'
 
@@ -92,6 +92,9 @@ function RaffleCard({
 	currentTime: number | null
 	router: ReturnType<typeof useRouter>
 }) {
+	const [showEventFlow, setShowEventFlow] = useState(false)
+	const isGiftcon = raffle.raffleType === 'GIFTCON'
+
 	// useMemo로 deadlineTime 메모이제이션
 	const deadlineTime = useMemo(() => new Date(raffle.deadlineAt || ''), [raffle.deadlineAt])
 
@@ -101,91 +104,121 @@ function RaffleCard({
 		return deadlineTime.getTime() - currentTime < TIME_CONSTANTS.URGENT_THRESHOLD
 	}, [currentTime, deadlineTime])
 
+	const handleCardClick = () => {
+		if (isGiftcon) {
+			setShowEventFlow(true)
+		} else {
+			router.push(`/raffle/${raffle.raffleId}`)
+		}
+	}
+
+	const handleButtonClick = (e: React.MouseEvent) => {
+		e.stopPropagation()
+		if (isGiftcon) {
+			setShowEventFlow(true)
+		} else {
+			router.push(`/raffle/${raffle.raffleId}`)
+		}
+	}
+
 	return (
-		<div
-			className="group cursor-pointer overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md"
-			onClick={() => router.push(`/raffle/${raffle.raffleId}`)}
-		>
-			<div className="relative aspect-video overflow-hidden rounded-t-lg">
-				<ImageWithFallback
-					src={raffle.imageUrl}
-					alt={raffle.title}
-					className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-				/>
-				<div className="absolute left-3 top-3">
-					<Badge variant="default" className="bg-primary">
-						{raffle.status === 'PUBLISHED'
-							? '진행중'
-							: raffle.status === 'LOCKED'
-								? '마감'
-								: raffle.status === 'DRAWN'
-									? '추첨완료'
-									: raffle.status === 'CANCELLED'
-										? '취소'
-										: raffle.status}
-					</Badge>
-				</div>
-			</div>
-			<div className="space-y-4 p-4">
-				<div>
-					<h3 className="line-clamp-1 font-semibold text-foreground">{raffle.title}</h3>
-				</div>
-
-				<div className="flex items-center justify-between">
-					<div>
-						<p className="text-xs text-muted-foreground">래플 ID</p>
-						<p className="text-sm text-muted-foreground">#{raffle.raffleId}</p>
-					</div>
-					<div className="text-right">
-						<p className="text-xs text-muted-foreground">참여비</p>
-						<p className="font-semibold text-primary">₩{formatPrice(raffle.entryFee || 0)}</p>
-					</div>
-				</div>
-
-				<div className="space-y-2">
-					<div className="flex items-center justify-between text-sm">
-						<span className="text-muted-foreground">
-							{raffle.status === 'PUBLISHED' ? '마감 시간' : '상태'}
-						</span>
-						<span
-							className={
-								raffle.status !== 'PUBLISHED'
-									? 'font-medium text-muted-foreground'
-									: isUrgent
-										? 'font-medium text-destructive'
-										: 'font-medium text-foreground'
-							}
-						>
+		<>
+			<div
+				className="group cursor-pointer overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all duration-200 hover:shadow-md"
+				onClick={handleCardClick}
+			>
+				<div className="relative aspect-video overflow-hidden rounded-t-lg">
+					<ImageWithFallback
+						src={raffle.imageUrl}
+						alt={raffle.title}
+						className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+					/>
+					<div className="absolute left-3 top-3 flex gap-2">
+						{isGiftcon && (
+							<Badge variant="default" className="bg-gradient-to-r from-pink-500 to-purple-500">
+								🎉 EVENT
+							</Badge>
+						)}
+						<Badge variant="default" className="bg-primary">
 							{raffle.status === 'PUBLISHED'
-								? formatTimeLeft(deadlineTime)
+								? '진행중'
 								: raffle.status === 'LOCKED'
-									? '참가 마감'
+									? '마감'
 									: raffle.status === 'DRAWN'
-										? '추첨 완료'
+										? '추첨완료'
 										: raffle.status === 'CANCELLED'
-											? '취소됨'
+											? '취소'
 											: raffle.status}
-						</span>
+						</Badge>
 					</div>
 				</div>
+				<div className="space-y-4 p-4">
+					<div>
+						<h3 className="line-clamp-1 font-semibold text-foreground">{raffle.title}</h3>
+					</div>
 
-				<Button
-					className="w-full cursor-pointer"
-					size="sm"
-					disabled={
-						raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt || '') <= new Date()
-					}
-					onClick={(e) => {
-						e.stopPropagation()
-						router.push(`/raffle/${raffle.raffleId}`)
-					}}
-				>
-					{raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt || '') > new Date()
-						? '참여하기'
-						: '상세보기'}
-				</Button>
+					<div className="flex items-center justify-between">
+						<div>
+							<p className="text-xs text-muted-foreground">래플 ID</p>
+							<p className="text-sm text-muted-foreground">#{raffle.raffleId}</p>
+						</div>
+						<div className="text-right">
+							<p className="text-xs text-muted-foreground">참여비</p>
+							<p className="font-semibold text-primary">₩{formatPrice(raffle.entryFee || 0)}</p>
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<div className="flex items-center justify-between text-sm">
+							<span className="text-muted-foreground">
+								{raffle.status === 'PUBLISHED' ? '마감 시간' : '상태'}
+							</span>
+							<span
+								className={
+									raffle.status !== 'PUBLISHED'
+										? 'font-medium text-muted-foreground'
+										: isUrgent
+											? 'font-medium text-destructive'
+											: 'font-medium text-foreground'
+								}
+							>
+								{raffle.status === 'PUBLISHED'
+									? formatTimeLeft(deadlineTime)
+									: raffle.status === 'LOCKED'
+										? '참가 마감'
+										: raffle.status === 'DRAWN'
+											? '추첨 완료'
+											: raffle.status === 'CANCELLED'
+												? '취소됨'
+												: raffle.status}
+							</span>
+						</div>
+					</div>
+
+					<Button
+						className="w-full cursor-pointer"
+						size="sm"
+						disabled={
+							raffle.status !== 'PUBLISHED' || new Date(raffle.deadlineAt || '') <= new Date()
+						}
+						onClick={handleButtonClick}
+					>
+						{raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt || '') > new Date()
+							? '참여하기'
+							: '상세보기'}
+					</Button>
+				</div>
 			</div>
-		</div>
+
+			{/* EventFlow 모달 */}
+			{showEventFlow && isGiftcon && (
+				<EventFlow
+					eventId={raffle.raffleId}
+					initialOpen={true}
+					onClose={() => setShowEventFlow(false)}
+				/>
+			)}
+		</>
 	)
 }
 

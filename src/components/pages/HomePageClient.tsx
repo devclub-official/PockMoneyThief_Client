@@ -15,6 +15,8 @@ import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import type { RaffleFilter, RaffleSummaryResponse } from '@/types'
 import { useRaffles } from '@/hooks/useRaffles'
 import { EventCard } from '@/components/dashboard/EventCard'
+import { useAtom } from 'jotai'
+import { searchQueryAtom } from '@/lib/atoms/searchAtom'
 
 // 통계 카드 컴포넌트
 function StatsCard({
@@ -201,6 +203,7 @@ function getEmptyStateMessage(filter: RaffleFilter) {
 
 export function HomePageClient() {
 	const router = useRouter()
+	const [searchQuery] = useAtom(searchQueryAtom)
 	const [filter, setFilter] = useState<RaffleFilter>('all')
 	const [currentTime, setCurrentTime] = useState<number | null>(null)
 	// 클라이언트에서만 시간 설정 (hydration 이슈 방지)
@@ -218,11 +221,6 @@ export function HomePageClient() {
 		const uniqueMap = new Map(items.map((item) => [item.raffleId, item]))
 		return Array.from(uniqueMap.values())
 	}, [initialData])
-
-	// Event 타입 래플 찾기 (첫 번째 것만)
-	const eventRaffle = useMemo(() => {
-		return raffles.find((raffle) => raffle.type === 'EVENT')
-	}, [raffles])
 	const isLoading = false
 	const isError = false
 
@@ -241,31 +239,42 @@ export function HomePageClient() {
 		}
 	}, [raffles, currentTime])
 
-	// 필터링 (currentTime이 설정된 후에만 실행)
-	const filteredRaffles = raffles.filter((raffle) => {
-		// Event 타입 래플은 목록에서 제외 (EventCard로 별도 표시)
-		if (raffle.type === 'EVENT') return false
+	// 필터링 및 검색 (currentTime이 설정된 후에만 실행)
+	const filteredRaffles = useMemo(() => {
+		return raffles.filter((raffle) => {
+			// 검색어 필터링 (제목으로 검색)
+			if (searchQuery.trim()) {
+				const query = searchQuery.trim().toLowerCase()
+				if (!raffle.title.toLowerCase().includes(query)) {
+					return false
+				}
+			}
 
-		// 전체 - 모든 항목 표시
-		if (filter === 'all') return true
+			// Event 타입 래플은 목록에서 제외 (EventCard로 별도 표시)
+			if (raffle.type === 'EVENT') return false
 
-		// 진행중 - PUBLISHED 상태이면서 마감시간이 지나지 않은 항목
-		if (filter === 'active' && currentTime) {
-			return raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime
-		}
+			// 상태 필터링
+			// 전체 - 모든 항목 표시
+			if (filter === 'all') return true
 
-		// 마감 - LOCKED, DRAWN, CANCELLED 또는 마감시간이 지난 PUBLISHED 항목
-		if (filter === 'closed' && currentTime) {
-			return (
-				raffle.status === 'LOCKED' ||
-				raffle.status === 'DRAWN' ||
-				raffle.status === 'CANCELLED' ||
-				(raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() <= currentTime)
-			)
-		}
+			// 진행중 - PUBLISHED 상태이면서 마감시간이 지나지 않은 항목
+			if (filter === 'active' && currentTime) {
+				return raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime
+			}
 
-		return true
-	})
+			// 마감 - LOCKED, DRAWN, CANCELLED 또는 마감시간이 지난 PUBLISHED 항목
+			if (filter === 'closed' && currentTime) {
+				return (
+					raffle.status === 'LOCKED' ||
+					raffle.status === 'DRAWN' ||
+					raffle.status === 'CANCELLED' ||
+					(raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() <= currentTime)
+				)
+			}
+
+			return true
+		})
+	}, [raffles, searchQuery, filter, currentTime])
 
 	// 로딩 상태
 	if (isLoading) {
@@ -288,26 +297,9 @@ export function HomePageClient() {
 			</div>
 
 			{/* Event Card */}
-			{eventRaffle && (
-				<div className="mb-6">
-					<EventCard
-						eventId={eventRaffle.raffleId}
-						title={eventRaffle.title}
-						imageUrl={eventRaffle.imageUrl}
-						status={
-							eventRaffle.status === 'PUBLISHED'
-								? '진행중'
-								: eventRaffle.status === 'LOCKED'
-									? '마감'
-									: eventRaffle.status === 'DRAWN'
-										? '추첨완료'
-										: eventRaffle.status === 'CANCELLED'
-											? '취소'
-											: eventRaffle.status
-						}
-					/>
-				</div>
-			)}
+			<div className="mb-6">
+				<EventCard eventId="candy-event-2025" />
+			</div>
 
 			{/* Stats Cards */}
 			<StatsSection stats={stats} />

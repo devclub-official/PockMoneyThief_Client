@@ -284,7 +284,7 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 							alt={raffle.title}
 							className="h-full w-full object-cover"
 						/>
-						<div className="absolute top-4 left-4">
+						<div className="absolute left-4 top-4">
 							<Badge variant="default">{raffle.status}</Badge>
 						</div>
 					</div>
@@ -296,7 +296,7 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 						<CardContent className="space-y-4">
 							{raffle.prizes.map((prize) => (
 								<div key={prize.rank} className="flex items-start gap-3">
-									<div className="bg-muted relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border">
+									<div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border bg-muted">
 										{/* eslint-disable-next-line @next/next/no-img-element */}
 										<img
 											src={prize.imageUrl || FALLBACK_IMAGE}
@@ -315,8 +315,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 												</Badge>
 											)}
 											<div className="min-w-0 flex-1">
-												<p className="text-sm leading-snug font-medium">{prize.name}</p>
-												<p className="text-muted-foreground mt-1 text-xs">
+												<p className="text-sm font-medium leading-snug">{prize.name}</p>
+												<p className="mt-1 text-xs text-muted-foreground">
 													수량: {prize.quantity}개
 												</p>
 											</div>
@@ -332,10 +332,10 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 				<div className="space-y-6">
 					<div>
 						<h1 className="mb-3 text-2xl font-bold lg:text-3xl">{raffle.title}</h1>
-						<p className="text-muted-foreground mb-4 text-base leading-relaxed">
+						<p className="mb-4 text-base leading-relaxed text-muted-foreground">
 							{raffle.description}
 						</p>
-						<div className="bg-muted text-muted-foreground inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs">
+						<div className="inline-flex items-center gap-1.5 rounded-md bg-muted px-2.5 py-1 text-xs text-muted-foreground">
 							<Clock className="h-3 w-3" />
 							<span>등록일</span>
 							<span className="font-medium">{raffle.createdAt.toLocaleDateString('ko-KR')}</span>
@@ -348,8 +348,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 						</CardHeader>
 						<CardContent>
 							<div className="flex items-center justify-between py-2">
-								<span className="text-muted-foreground text-sm">참여비</span>
-								<span className="text-primary text-xl font-bold">
+								<span className="text-sm text-muted-foreground">참여비</span>
+								<span className="text-xl font-bold text-primary">
 									₩{formatPrice(raffle.entryFee)}
 								</span>
 							</div>
@@ -404,9 +404,9 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 								</span>
 							</div>
 
-							<div className="bg-muted rounded-lg p-3">
+							<div className="rounded-lg bg-muted p-3">
 								<div className="flex items-center gap-2 text-sm">
-									<AlertCircle className="text-muted-foreground h-4 w-4" />
+									<AlertCircle className="h-4 w-4 text-muted-foreground" />
 									<span className="text-muted-foreground">외부 시드: {raffle.externalSeed}</span>
 								</div>
 							</div>
@@ -444,14 +444,14 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 												placeholder="추첨에 사용될 이름"
 												maxLength={20}
 											/>
-											<p className="text-muted-foreground mt-1 text-xs">
+											<p className="mt-1 text-xs text-muted-foreground">
 												* 개인정보가 포함되지 않도록 주의해주세요
 											</p>
 										</div>
 
-										<div className="bg-muted rounded-lg p-3">
+										<div className="rounded-lg bg-muted p-3">
 											<h4 className="mb-2 font-medium">참여 안내</h4>
-											<ul className="text-muted-foreground space-y-1 text-xs">
+											<ul className="space-y-1 text-xs text-muted-foreground">
 												<li>• 참여비: ₩{formatPrice(raffle.entryFee)}</li>
 												<li>• 참여 후 취소 불가</li>
 												<li>• 외부 시드를 통한 공정한 추첨</li>
@@ -508,8 +508,8 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 						{raffle.participants.length > 0 ? (
 							<div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
 								{raffle.participants.map((participant, index) => (
-									<div key={index} className="bg-muted flex items-center gap-2 rounded p-2">
-										<div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-full text-xs">
+									<div key={index} className="flex items-center gap-2 rounded bg-muted p-2">
+										<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
 											{index + 1}
 										</div>
 										<span className="text-sm font-medium">{participant.displayName}</span>
@@ -517,7 +517,7 @@ export function RaffleDetailClient({ id }: RaffleDetailClientProps) {
 								))}
 							</div>
 						) : (
-							<p className="text-muted-foreground text-center text-sm">아직 참여자가 없습니다</p>
+							<p className="text-center text-sm text-muted-foreground">아직 참여자가 없습니다</p>
 						)}
 					</CardContent>
 				</Card>

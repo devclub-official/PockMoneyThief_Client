@@ -218,6 +218,11 @@ export function HomePageClient() {
 		const uniqueMap = new Map(items.map((item) => [item.raffleId, item]))
 		return Array.from(uniqueMap.values())
 	}, [initialData])
+
+	// Event 타입 래플 찾기 (첫 번째 것만)
+	const eventRaffle = useMemo(() => {
+		return raffles.find((raffle) => raffle.type === 'EVENT')
+	}, [raffles])
 	const isLoading = false
 	const isError = false
 
@@ -238,6 +243,9 @@ export function HomePageClient() {
 
 	// 필터링 (currentTime이 설정된 후에만 실행)
 	const filteredRaffles = raffles.filter((raffle) => {
+		// Event 타입 래플은 목록에서 제외 (EventCard로 별도 표시)
+		if (raffle.type === 'EVENT') return false
+
 		// 전체 - 모든 항목 표시
 		if (filter === 'all') return true
 
@@ -280,9 +288,26 @@ export function HomePageClient() {
 			</div>
 
 			{/* Event Card */}
-			<div className="mb-6">
-				<EventCard eventId="candy-event-2025" />
-			</div>
+			{eventRaffle && (
+				<div className="mb-6">
+					<EventCard
+						eventId={eventRaffle.raffleId}
+						title={eventRaffle.title}
+						imageUrl={eventRaffle.imageUrl}
+						status={
+							eventRaffle.status === 'PUBLISHED'
+								? '진행중'
+								: eventRaffle.status === 'LOCKED'
+									? '마감'
+									: eventRaffle.status === 'DRAWN'
+										? '추첨완료'
+										: eventRaffle.status === 'CANCELLED'
+											? '취소'
+											: eventRaffle.status
+						}
+					/>
+				</div>
+			)}
 
 			{/* Stats Cards */}
 			<StatsSection stats={stats} />

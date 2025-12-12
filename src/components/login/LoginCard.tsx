@@ -27,7 +27,7 @@ export function LoginCard() {
 	}
 
 	return (
-		<div className="relative flex min-h-[calc(100vh-112px)] items-center justify-center px-4 py-10 sm:px-6">
+		<div className="relative flex min-h-screen items-center justify-center px-4 py-10 sm:px-6">
 			{/* 배경 블러 원들 */}
 			<div className="pointer-events-none absolute inset-0 -z-10">
 				<div className="absolute left-10 top-24 h-56 w-56 rounded-full bg-purple-400/25 blur-3xl dark:bg-purple-500/25" />

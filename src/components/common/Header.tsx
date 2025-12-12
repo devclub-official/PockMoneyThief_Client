@@ -11,7 +11,10 @@ import {
 import { Search, LogOut, User, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { loginApi } from '@/lib/api'
+import { useAtom } from 'jotai'
+import { searchQueryAtom } from '@/lib/atoms/searchAtom'
 
 interface HeaderProps {
 	onMenuClick: () => void
@@ -19,6 +22,7 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
 	const router = useRouter()
+	const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom)
 
 	const handleLogout = async () => {
 		await loginApi.logout()
@@ -33,12 +37,15 @@ export function Header({ onMenuClick }: HeaderProps) {
 			</Button>
 
 			{/* Logo (모바일) */}
-			<div className="flex items-center gap-3 lg:hidden">
+			<Link
+				href="/"
+				className="flex items-center gap-3 transition-opacity hover:opacity-80 lg:hidden"
+			>
 				<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
 					<Search className="h-4 w-4 text-primary-foreground" />
 				</div>
 				<span className="text-lg font-semibold text-foreground">가차추첨</span>
-			</div>
+			</Link>
 
 			{/* Search Bar (데스크탑) */}
 			<div className="hidden max-w-md flex-1 items-center gap-4 lg:flex">
@@ -47,6 +54,8 @@ export function Header({ onMenuClick }: HeaderProps) {
 					<input
 						type="text"
 						placeholder="원하시는 상품을 검색해보세요"
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
 						className="bg-muted/50 focus:ring-ring/20 w-full rounded-lg border border-border py-2 pl-10 pr-4 text-sm transition-all focus:outline-none focus:ring-2"
 					/>
 				</div>

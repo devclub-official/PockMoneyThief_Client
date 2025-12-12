@@ -28,7 +28,7 @@ function renderNavigationItems(
 					'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
 					isActive
 						? 'bg-primary text-primary-foreground shadow-sm'
-						: 'text-muted-foreground hover:text-foreground hover:bg-accent',
+						: 'text-muted-foreground hover:bg-accent hover:text-foreground',
 				)}
 			>
 				<item.icon className="h-5 w-5" />
@@ -46,7 +46,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 			{/* 오버레이 (모바일) */}
 			<div
 				className={cn(
-					'fixed inset-0 z-[30] bg-black/50 transition-opacity duration-300 lg:hidden',
+					'fixed inset-0 z-[40] bg-black/50 transition-opacity duration-300 lg:hidden',
 					isOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
 				)}
 				onClick={onClose}
@@ -55,28 +55,28 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 			{/* Sidebar */}
 			<div
 				className={cn(
-					'bg-card border-border flex h-full w-64 flex-col border-r',
+					'flex h-full w-64 flex-col border-r border-border bg-card',
 					// 모바일: fixed, 슬라이드
-					'fixed top-0 left-0 z-[20] h-screen shadow-2xl transition-transform duration-300 ease-out lg:relative lg:translate-x-0 lg:shadow-none',
+					'fixed left-0 top-0 z-[50] h-screen shadow-2xl transition-transform duration-300 ease-out lg:relative lg:translate-x-0 lg:shadow-none',
 					isOpen ? 'translate-x-0' : '-translate-x-full',
 				)}
 			>
 				{/* Logo */}
-				<div className="border-border flex h-16 items-center justify-between border-b px-6">
+				<div className="flex h-16 items-center justify-between border-b border-border px-6">
 					<Link
 						href="/"
 						onClick={onClose}
 						className="flex items-center gap-3 transition-opacity hover:opacity-80"
 					>
-						<div className="bg-primary flex h-8 w-8 items-center justify-center rounded-lg">
-							<Gift className="text-primary-foreground h-5 w-5" />
+						<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+							<Gift className="h-5 w-5 text-primary-foreground" />
 						</div>
-						<span className="text-foreground text-lg font-semibold">가차추첨</span>
+						<span className="text-lg font-semibold text-foreground">가차추첨</span>
 					</Link>
 					{/* 모바일 닫기 버튼 */}
 					<button
 						onClick={onClose}
-						className="hover:bg-accent rounded-lg p-2 transition-colors lg:hidden"
+						className="rounded-lg p-2 transition-colors hover:bg-accent lg:hidden"
 					>
 						<X className="h-5 w-5" />
 					</button>
@@ -90,7 +90,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 				</nav>
 
 				{/* Bottom Navigation */}
-				<div className="border-border absolute right-0 bottom-0 left-0 border-t p-4">
+				<div className="absolute bottom-0 left-0 right-0 border-t border-border p-4">
 					<div className="space-y-1">
 						{renderNavigationItems(SIDEBAR_BOTTOM_ITEMS, pathname, onClose)}
 					</div>

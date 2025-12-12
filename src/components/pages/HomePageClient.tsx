@@ -15,6 +15,8 @@ import { formatTimeLeft, formatPrice } from '@/lib/utils'
 import type { RaffleFilter, RaffleSummaryResponse } from '@/types'
 import { useRaffles } from '@/hooks/useRaffles'
 import { EventCard } from '@/components/dashboard/EventCard'
+import { useAtom } from 'jotai'
+import { searchQueryAtom } from '@/lib/atoms/searchAtom'
 
 // 통계 카드 컴포넌트
 function StatsCard({
@@ -201,6 +203,7 @@ function getEmptyStateMessage(filter: RaffleFilter) {
 
 export function HomePageClient() {
 	const router = useRouter()
+	const [searchQuery] = useAtom(searchQueryAtom)
 	const [filter, setFilter] = useState<RaffleFilter>('all')
 	const [currentTime, setCurrentTime] = useState<number | null>(null)
 	// 클라이언트에서만 시간 설정 (hydration 이슈 방지)
@@ -211,12 +214,18 @@ export function HomePageClient() {
 
 	const { data: initialData } = useRaffles()
 
-	// 서버에서 prefetch된 데이터 사용 (중복 raffleId 제거)
+	// 서버에서 prefetch된 데이터 사용 (중복 raffleId 제거 및 최신순 정렬)
 	const raffles = useMemo(() => {
 		const items = initialData || []
 		// Map을 사용하여 중복된 raffleId 제거 (마지막 항목이 유지됨)
 		const uniqueMap = new Map(items.map((item) => [item.raffleId, item]))
-		return Array.from(uniqueMap.values())
+		const uniqueItems = Array.from(uniqueMap.values())
+		// 최신순 정렬 (deadlineAt 기준 내림차순)
+		return uniqueItems.sort((a, b) => {
+			const dateA = new Date(a.deadlineAt).getTime()
+			const dateB = new Date(b.deadlineAt).getTime()
+			return dateB - dateA // 내림차순 (최신이 위로)
+		})
 	}, [initialData])
 	const isLoading = false
 	const isError = false
@@ -236,28 +245,39 @@ export function HomePageClient() {
 		}
 	}, [raffles, currentTime])
 
-	// 필터링 (currentTime이 설정된 후에만 실행)
-	const filteredRaffles = raffles.filter((raffle) => {
-		// 전체 - 모든 항목 표시
-		if (filter === 'all') return true
+	// 필터링 및 검색 (currentTime이 설정된 후에만 실행)
+	const filteredRaffles = useMemo(() => {
+		return raffles.filter((raffle) => {
+			// 검색어 필터링 (제목으로 검색)
+			if (searchQuery.trim()) {
+				const query = searchQuery.trim().toLowerCase()
+				if (!raffle.title.toLowerCase().includes(query)) {
+					return false
+				}
+			}
 
-		// 진행중 - PUBLISHED 상태이면서 마감시간이 지나지 않은 항목
-		if (filter === 'active' && currentTime) {
-			return raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime
-		}
+			// 상태 필터링
+			// 전체 - 모든 항목 표시
+			if (filter === 'all') return true
 
-		// 마감 - LOCKED, DRAWN, CANCELLED 또는 마감시간이 지난 PUBLISHED 항목
-		if (filter === 'closed' && currentTime) {
-			return (
-				raffle.status === 'LOCKED' ||
-				raffle.status === 'DRAWN' ||
-				raffle.status === 'CANCELLED' ||
-				(raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() <= currentTime)
-			)
-		}
+			// 진행중 - PUBLISHED 상태이면서 마감시간이 지나지 않은 항목
+			if (filter === 'active' && currentTime) {
+				return raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() > currentTime
+			}
 
-		return true
-	})
+			// 마감 - LOCKED, DRAWN, CANCELLED 또는 마감시간이 지난 PUBLISHED 항목
+			if (filter === 'closed' && currentTime) {
+				return (
+					raffle.status === 'LOCKED' ||
+					raffle.status === 'DRAWN' ||
+					raffle.status === 'CANCELLED' ||
+					(raffle.status === 'PUBLISHED' && new Date(raffle.deadlineAt).getTime() <= currentTime)
+				)
+			}
+
+			return true
+		})
+	}, [raffles, searchQuery, filter, currentTime])
 
 	// 로딩 상태
 	if (isLoading) {

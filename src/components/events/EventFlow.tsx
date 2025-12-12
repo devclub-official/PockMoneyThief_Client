@@ -9,10 +9,11 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/Dialog'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
-import type { V2ParticipantResponse } from '@/types'
+import type { V2ParticipantResponse, RaffleSummaryResponse } from '@/types'
 
 interface EventFlowProps {
 	eventId: string
+	raffleInfo?: RaffleSummaryResponse
 	initialOpen?: boolean
 	onClose?: () => void
 }
@@ -25,7 +26,7 @@ type FlowStep = 'detail' | 'waiting' | 'result'
  * 2. 대기 상태 (폴링)
  * 3. 결과 화면
  */
-export function EventFlow({ eventId, initialOpen = false, onClose }: EventFlowProps) {
+export function EventFlow({ eventId, raffleInfo, initialOpen = false, onClose }: EventFlowProps) {
 	const [currentStep, setCurrentStep] = useState<FlowStep>(initialOpen ? 'detail' : 'detail')
 	const [showDetailModal, setShowDetailModal] = useState(initialOpen)
 	const [participantInfo, setParticipantInfo] = useState<V2ParticipantResponse | null>(null)
@@ -66,6 +67,7 @@ export function EventFlow({ eventId, initialOpen = false, onClose }: EventFlowPr
 					}
 				}}
 				eventId={eventId}
+				raffleInfo={raffleInfo}
 				onParticipateSuccess={handleParticipateSuccess}
 			/>
 

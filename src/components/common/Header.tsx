@@ -11,6 +11,7 @@ import {
 import { Search, LogOut, User, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import { loginApi } from '@/lib/api'
 
 interface HeaderProps {
@@ -19,10 +20,24 @@ interface HeaderProps {
 
 export function Header({ onMenuClick }: HeaderProps) {
 	const router = useRouter()
+	const queryClient = useQueryClient()
 
 	const handleLogout = async () => {
-		await loginApi.logout()
-		return router.push('/login')
+		try {
+			// 1. 서버에 로그아웃 요청
+			await loginApi.logout()
+
+			// 2. React Query 캐시 무효화
+			queryClient.clear()
+
+			// 3. 하드 리다이렉트로 완전히 새로고침 (쿠키 초기화 보장)
+			window.location.href = '/login'
+		} catch (error) {
+			console.error('로그아웃 실패:', error)
+			// 실패해도 캐시 초기화 후 로그인 페이지로 이동
+			queryClient.clear()
+			window.location.href = '/login'
+		}
 	}
 
 	return (

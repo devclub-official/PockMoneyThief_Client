@@ -46,6 +46,7 @@ export interface ParticipatedRaffle {
 	itemName?: string
 	shippingStatus?: ShippingStatus
 	participatedAt: string
+	raffleType?: 'GIFTCON' | 'GENERAL'
 }
 
 export interface RaffleCardProps {

@@ -35,10 +35,19 @@ export function DashboardPageClient() {
 
 	const { hostedRaffles, participatedRaffles, winRaffles } = useMyRaffles()
 
-	// 서버에서 prefetch된 초기 데이터를 로컬 상태로 관리 (취소 시 상태만 변경)
-	const [displayMyRaffles, setDisplayMyRaffles] = React.useState(hostedRaffles)
-	const [displayParticipatedRaffles] = React.useState(participatedRaffles)
-	const [displayWins] = React.useState(winRaffles)
+	// Hydration 에러 방지를 위해 초기값을 빈 배열로 설정하고 useEffect에서 설정
+	const [displayMyRaffles, setDisplayMyRaffles] = React.useState<typeof hostedRaffles>([])
+	const [displayParticipatedRaffles, setDisplayParticipatedRaffles] = React.useState<
+		typeof participatedRaffles
+	>([])
+	const [displayWins, setDisplayWins] = React.useState<typeof winRaffles>([])
+
+	// 클라이언트에서만 데이터 설정 (Hydration 에러 방지)
+	React.useEffect(() => {
+		setDisplayMyRaffles(hostedRaffles || [])
+		setDisplayParticipatedRaffles(participatedRaffles || [])
+		setDisplayWins(winRaffles || [])
+	}, [hostedRaffles, participatedRaffles, winRaffles])
 
 	const handleLockAndMarkLocked = React.useCallback(
 		async (raffleId: string) => {
